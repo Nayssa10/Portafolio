@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="dsBg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#120426" />
+      <stop offset="50%" stop-color="#1A0735" />
+      <stop offset="100%" stop-color="#16052F" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="500" fill="url(#dsBg1)" />
+
+  <text x="60" y="55" fill="#ffffff" font-family="sans-serif" font-size="20" font-weight="700">Design Tokens: Sistema Semántico de Color</text>
+  <text x="60" y="80" fill="#C6B39A" font-family="sans-serif" font-size="12">Variables CSS sincronizadas con Tailwind v4 & Figma Tokens Studio</text>
+
+  <!-- Palette Swatches Grid -->
+  <g transform="translate(60, 110)">
+    <!-- Swatch 1: Deep Purple -->
+    <g transform="translate(0, 0)">
+      <rect width="150" height="110" rx="14" fill="#1A0735" stroke="#ffffff" stroke-opacity="0.2" />
+      <text x="14" y="65" fill="#ffffff" font-family="sans-serif" font-size="13" font-weight="700">Deep Purple</text>
+      <text x="14" y="82" fill="#C6B39A" font-family="sans-serif" font-size="11">#1A0735</text>
+      <text x="14" y="98" fill="#ffffff" opacity="0.4" font-family="sans-serif" font-size="9">--bg-primary</text>
+    </g>
+
+    <!-- Swatch 2: Surface Purple -->
+    <g transform="translate(175, 0)">
+      <rect width="150" height="110" rx="14" fill="#220D3E" stroke="#ffffff" stroke-opacity="0.2" />
+      <text x="14" y="65" fill="#ffffff" font-family="sans-serif" font-size="13" font-weight="700">Surface</text>
+      <text x="14" y="82" fill="#C6B39A" font-family="sans-serif" font-size="11">#220D3E</text>
+      <text x="14" y="98" fill="#ffffff" opacity="0.4" font-family="sans-serif" font-size="9">--surface-card</text>
+    </g>
+
+    <!-- Swatch 3: Rubine Red -->
+    <g transform="translate(350, 0)">
+      <rect width="150" height="110" rx="14" fill="#8D3A3C" stroke="#ffffff" stroke-opacity="0.2" />
+      <text x="14" y="65" fill="#ffffff" font-family="sans-serif" font-size="13" font-weight="700">Rubine Wine</text>
+      <text x="14" y="82" fill="#ffffff" opacity="0.9" font-family="sans-serif" font-size="11">#8D3A3C</text>
+      <text x="14" y="98" fill="#ffffff" opacity="0.6" font-family="sans-serif" font-size="9">--accent-primary</text>
+    </g>
+
+    <!-- Swatch 4: Camel Gold -->
+    <g transform="translate(525, 0)">
+      <rect width="150" height="110" rx="14" fill="#C6B39A" stroke="#ffffff" stroke-opacity="0.2" />
+      <text x="14" y="65" fill="#1A0735" font-family="sans-serif" font-size="13" font-weight="700">Camel Gold</text>
+      <text x="14" y="82" fill="#1A0735" font-family="sans-serif" font-size="11">#C6B39A</text>
+      <text x="14" y="98" fill="#1A0735" opacity="0.7" font-family="sans-serif" font-size="9">--brand-gold</text>
+    </g>
+  </g>
+
+  <!-- Typography & Spacing scale banner below -->
+  <g transform="translate(60, 260)">
+    <rect width="675" height="180" rx="16" fill="#1C0933" stroke="#ffffff" stroke-opacity="0.1" />
+    
+    <text x="30" y="35" fill="#C6B39A" font-family="sans-serif" font-size="12" font-weight="700">ESCALA TIPOGRÁFICA & TOKENS DE ESPACIADO</text>
+    
+    <text x="30" y="75" fill="#ffffff" font-family="serif" font-size="26" font-weight="700">Cormorant Garamond (Headings)</text>
+    <text x="30" y="105" fill="#ffffff" opacity="0.8" font-family="sans-serif" font-size="14">Geist Sans · 400 Regular / 500 Medium / 700 Bold (Body text & UI)</text>
+
+    <!-- Spacing Badges -->
+    <g transform="translate(30, 130)">
+      <rect width="70" height="26" rx="6" fill="#2E134D" />
+      <text x="35" y="17" fill="#C6B39A" font-family="sans-serif" font-size="10" font-weight="700" text-anchor="middle">xs: 4px</text>
+
+      <rect x="85" width="70" height="26" rx="6" fill="#2E134D" />
+      <text x="120" y="17" fill="#C6B39A" font-family="sans-serif" font-size="10" font-weight="700" text-anchor="middle">sm: 8px</text>
+
+      <rect x="170" width="75" height="26" rx="6" fill="#2E134D" />
+      <text x="207" y="17" fill="#C6B39A" font-family="sans-serif" font-size="10" font-weight="700" text-anchor="middle">md: 16px</text>
+
+      <rect x="260" width="75" height="26" rx="6" fill="#2E134D" />
+      <text x="297" y="17" fill="#C6B39A" font-family="sans-serif" font-size="10" font-weight="700" text-anchor="middle">lg: 24px</text>
+
+      <rect x="350" width="75" height="26" rx="6" fill="#2E134D" />
+      <text x="387" y="17" fill="#C6B39A" font-family="sans-serif" font-size="10" font-weight="700" text-anchor="middle">xl: 32px</text>
+    </g>
+  </g>
+</svg>

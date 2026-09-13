@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="dsBg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18072E" />
+      <stop offset="100%" stop-color="#14052B" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="500" fill="url(#dsBg2)" />
+
+  <text x="60" y="55" fill="#ffffff" font-family="sans-serif" font-size="20" font-weight="700">Librería de Componentes Atómicos en Tailwind CSS</text>
+  <text x="60" y="80" fill="#C6B39A" font-family="sans-serif" font-size="12">Botones, inputs, badges y tarjetas documentados con variantes CVA (Class Variance Authority)</text>
+
+  <!-- Component Card 1: Buttons -->
+  <g transform="translate(60, 110)">
+    <rect width="210" height="330" rx="16" fill="#200C39" stroke="#ffffff" stroke-opacity="0.1" />
+    <text x="20" y="30" fill="#C6B39A" font-family="sans-serif" font-size="11" font-weight="700">BOTONES & VARIANTES</text>
+
+    <!-- Primary -->
+    <rect x="20" y="50" width="170" height="42" rx="10" fill="#C6B39A" />
+    <text x="105" y="76" fill="#1A0735" font-family="sans-serif" font-size="12" font-weight="700" text-anchor="middle">Primary Button</text>
+
+    <!-- Secondary -->
+    <rect x="20" y="105" width="170" height="42" rx="10" fill="#8D3A3C" />
+    <text x="105" y="131" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="700" text-anchor="middle">Accent Action</text>
+
+    <!-- Outline -->
+    <rect x="20" y="160" width="170" height="42" rx="10" fill="none" stroke="#C6B39A" stroke-width="1.5" />
+    <text x="105" y="186" fill="#C6B39A" font-family="sans-serif" font-size="12" font-weight="700" text-anchor="middle">Ghost / Outline</text>
+
+    <!-- Disabled -->
+    <rect x="20" y="215" width="170" height="42" rx="10" fill="#ffffff" fill-opacity="0.05" />
+    <text x="105" y="241" fill="#ffffff" opacity="0.3" font-family="sans-serif" font-size="12" font-weight="600" text-anchor="middle">Disabled State</text>
+
+    <!-- Pill with icon -->
+    <rect x="20" y="270" width="170" height="36" rx="18" fill="#10B981" fill-opacity="0.2" stroke="#10B981" stroke-width="1" />
+    <text x="105" y="293" fill="#34D399" font-family="sans-serif" font-size="11" font-weight="700" text-anchor="middle">✓ Icon Button</text>
+  </g>
+
+  <!-- Component Card 2: Form Controls -->
+  <g transform="translate(295, 110)">
+    <rect width="210" height="330" rx="16" fill="#200C39" stroke="#ffffff" stroke-opacity="0.1" />
+    <text x="20" y="30" fill="#C6B39A" font-family="sans-serif" font-size="11" font-weight="700">INPUTS & CONTROLES</text>
+
+    <!-- Text Input Active -->
+    <text x="20" y="60" fill="#ffffff" font-family="sans-serif" font-size="10" font-weight="600">Email Address</text>
+    <rect x="20" y="70" width="170" height="40" rx="8" fill="#150628" stroke="#C6B39A" stroke-width="1.5" />
+    <text x="32" y="94" fill="#ffffff" font-family="sans-serif" font-size="11">nayssa@studio.dev</text>
+
+    <!-- Text Input Error -->
+    <text x="20" y="132" fill="#ffffff" font-family="sans-serif" font-size="10" font-weight="600">Password</text>
+    <rect x="20" y="142" width="170" height="40" rx="8" fill="#150628" stroke="#EF4444" stroke-width="1.5" />
+    <text x="32" y="166" fill="#EF4444" font-family="sans-serif" font-size="11">••••••••</text>
+    <text x="20" y="196" fill="#EF4444" font-family="sans-serif" font-size="9">Mínimo 8 caracteres</text>
+
+    <!-- Toggle Switch -->
+    <text x="20" y="235" fill="#ffffff" font-family="sans-serif" font-size="11" font-weight="600">Notificaciones</text>
+    <rect x="20" y="250" width="46" height="24" rx="12" fill="#10B981" />
+    <circle cx="53" cy="262" r="9" fill="#ffffff" />
+    <text x="75" y="266" fill="#34D399" font-family="sans-serif" font-size="10" font-weight="600">Activo</text>
+  </g>
+
+  <!-- Component Card 3: Badges & Tags -->
+  <g transform="translate(530, 110)">
+    <rect width="210" height="330" rx="16" fill="#200C39" stroke="#ffffff" stroke-opacity="0.1" />
+    <text x="20" y="30" fill="#C6B39A" font-family="sans-serif" font-size="11" font-weight="700">CHIPS, BADGES & AVATARS</text>
+
+    <g transform="translate(20, 55)">
+      <rect width="80" height="24" rx="12" fill="#8D3A3C" fill-opacity="0.3" stroke="#8D3A3C" stroke-width="1" />
+      <text x="40" y="16" fill="#ffffff" font-family="sans-serif" font-size="10" font-weight="600" text-anchor="middle">UX Design</text>
+
+      <rect x="90" width="75" height="24" rx="12" fill="#C6B39A" fill-opacity="0.2" stroke="#C6B39A" stroke-width="1" />
+      <text x="127" y="16" fill="#C6B39A" font-family="sans-serif" font-size="10" font-weight="600" text-anchor="middle">React 19</text>
+    </g>
+
+    <!-- Avatar Group -->
+    <g transform="translate(20, 110)">
+      <text x="0" y="15" fill="#ffffff" font-family="sans-serif" font-size="11" font-weight="600">Avatar Stack</text>
+      <circle cx="16" cy="40" r="16" fill="#C6B39A" stroke="#200C39" stroke-width="2" />
+      <circle cx="38" cy="40" r="16" fill="#8D3A3C" stroke="#200C39" stroke-width="2" />
+      <circle cx="60" cy="40" r="16" fill="#3B82F6" stroke="#200C39" stroke-width="2" />
+      <circle cx="82" cy="40" r="16" fill="#10B981" stroke="#200C39" stroke-width="2" />
+      <text x="82" y="44" fill="#ffffff" font-family="sans-serif" font-size="9" font-weight="700" text-anchor="middle">+4</text>
+    </g>
+
+    <!-- Toast Preview -->
+    <g transform="translate(15, 200)">
+      <rect width="180" height="60" rx="12" fill="#14052B" stroke="#10B981" stroke-opacity="0.6" stroke-width="1" />
+      <circle cx="28" cy="30" r="10" fill="#10B981" />
+      <path d="M 23 30 L 26 33 L 33 26" fill="none" stroke="#ffffff" stroke-width="2" />
+      <text x="46" y="26" fill="#ffffff" font-family="sans-serif" font-size="11" font-weight="700">Cambios guardados</text>
+      <text x="46" y="40" fill="#34D399" font-family="sans-serif" font-size="9">Tokens sincronizados</text>
+    </g>
+  </g>
+</svg>

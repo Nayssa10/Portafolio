@@ -2,25 +2,32 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
+import ProjectCarousel from "@/components/ProjectCarousel";
+import { featuredProjects } from "@/data/projects";
 import {
   Mail,
   Code2,
-  Palette,
-  Layers,
   Layout,
   CheckCircle2,
-  Copy,
   Check,
-  ExternalLink,
   Menu,
-  ChevronDown,
   ArrowUpRight,
   Sparkles,
-  Search,
+  Layers,
+  Palette,
 } from "lucide-react";
 
 // Inline brand SVGs for precision
+function FourPointStar({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 0C12 6.627 6.627 12 0 12C6.627 12 12 17.373 12 24C12 17.373 17.373 12 24 12C17.373 12 12 6.627 12 0Z" />
+    </svg>
+  );
+}
+
 function LinkedinIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
     <svg className={className} fill="currentColor" viewBox="0 0 24 24">
@@ -108,6 +115,56 @@ function GitIcon({ className = "w-5 h-5" }: { className?: string }) {
   );
 }
 
+const projectStars = [
+  // Top header zone (1% - 15%)
+  { top: "2%", left: "6%", size: "w-5 h-5", delay: 0, duration: 5.5, color: "text-[#C6B39A]", type: "star" },
+  { top: "4%", right: "12%", size: "w-6 h-6", delay: 1.2, duration: 6, color: "text-[#8D3A3C]", type: "sparkle" },
+  { top: "7%", left: "24%", size: "w-3.5 h-3.5", delay: 2.1, duration: 4.8, color: "text-[#C6B39A]", type: "dot" },
+  { top: "9%", right: "28%", size: "w-4 h-4", delay: 0.8, duration: 5.2, color: "text-[#C6B39A]", type: "star" },
+  { top: "12%", left: "4%", size: "w-7 h-7", delay: 1.7, duration: 6.8, color: "text-[#8D3A3C]", type: "sparkle" },
+  { top: "15%", right: "6%", size: "w-5 h-5", delay: 2.9, duration: 5.4, color: "text-[#C6B39A]", type: "star" },
+
+  // Card 1 zone (18% - 32%)
+  { top: "18%", left: "12%", size: "w-3.5 h-3.5", delay: 0.5, duration: 4.5, color: "text-[#C6B39A]", type: "dot" },
+  { top: "21%", right: "16%", size: "w-6 h-6", delay: 1.9, duration: 6.2, color: "text-[#8D3A3C]", type: "sparkle" },
+  { top: "24%", left: "3%", size: "w-8 h-8", delay: 2.4, duration: 7.2, color: "text-[#8D3A3C]", type: "layers" },
+  { top: "26%", right: "4%", size: "w-4 h-4", delay: 0.3, duration: 5.1, color: "text-[#C6B39A]", type: "star" },
+  { top: "29%", left: "15%", size: "w-5 h-5", delay: 1.4, duration: 5.8, color: "text-[#C6B39A]", type: "sparkle" },
+  { top: "32%", right: "10%", size: "w-3.5 h-3.5", delay: 2.7, duration: 4.6, color: "text-[#8D3A3C]", type: "dot" },
+
+  // Gap between Card 1 and Card 2 (35% - 45%)
+  { top: "35%", left: "7%", size: "w-5 h-5", delay: 0.9, duration: 5.6, color: "text-[#C6B39A]", type: "star" },
+  { top: "37%", right: "18%", size: "w-7 h-7", delay: 2.0, duration: 6.5, color: "text-[#8D3A3C]", type: "sparkle" },
+  { top: "40%", left: "20%", size: "w-4 h-4", delay: 1.1, duration: 4.9, color: "text-[#C6B39A]", type: "dot" },
+  { top: "42%", right: "3%", size: "w-9 h-9", delay: 0.6, duration: 7.8, color: "text-[#C6B39A]", type: "palette" },
+  { top: "45%", left: "4%", size: "w-6 h-6", delay: 2.3, duration: 6.1, color: "text-[#8D3A3C]", type: "sparkle" },
+
+  // Card 2 zone (48% - 60%)
+  { top: "48%", right: "14%", size: "w-4 h-4", delay: 1.5, duration: 5.3, color: "text-[#C6B39A]", type: "star" },
+  { top: "51%", left: "10%", size: "w-5 h-5", delay: 2.8, duration: 6.0, color: "text-[#C6B39A]", type: "sparkle" },
+  { top: "53%", right: "5%", size: "w-3.5 h-3.5", delay: 0.4, duration: 4.7, color: "text-[#8D3A3C]", type: "dot" },
+  { top: "56%", left: "16%", size: "w-4 h-4", delay: 1.8, duration: 5.0, color: "text-[#C6B39A]", type: "star" },
+  { top: "59%", right: "11%", size: "w-7 h-7", delay: 2.5, duration: 6.7, color: "text-[#8D3A3C]", type: "sparkle" },
+
+  // Gap between Card 2 and Card 3 (62% - 72%)
+  { top: "62%", left: "3%", size: "w-8 h-8", delay: 0.7, duration: 8.0, color: "text-[#C6B39A]", type: "code" },
+  { top: "65%", right: "7%", size: "w-5 h-5", delay: 1.6, duration: 5.5, color: "text-[#C6B39A]", type: "star" },
+  { top: "67%", left: "12%", size: "w-3.5 h-3.5", delay: 2.2, duration: 4.8, color: "text-[#8D3A3C]", type: "dot" },
+  { top: "70%", right: "15%", size: "w-6 h-6", delay: 0.9, duration: 6.3, color: "text-[#8D3A3C]", type: "sparkle" },
+  { top: "72%", left: "5%", size: "w-4 h-4", delay: 2.6, duration: 5.2, color: "text-[#C6B39A]", type: "star" },
+
+  // Card 3 & Bottom zone (75% - 98%)
+  { top: "75%", right: "4%", size: "w-6 h-6", delay: 1.3, duration: 5.9, color: "text-[#C6B39A]", type: "sparkle" },
+  { top: "78%", left: "14%", size: "w-4 h-4", delay: 0.2, duration: 4.6, color: "text-[#8D3A3C]", type: "dot" },
+  { top: "81%", right: "12%", size: "w-8 h-8", delay: 2.1, duration: 6.9, color: "text-[#8D3A3C]", type: "sparkle" },
+  { top: "84%", left: "6%", size: "w-5 h-5", delay: 1.7, duration: 5.7, color: "text-[#C6B39A]", type: "star" },
+  { top: "87%", right: "20%", size: "w-3.5 h-3.5", delay: 2.9, duration: 4.7, color: "text-[#C6B39A]", type: "dot" },
+  { top: "90%", left: "11%", size: "w-6 h-6", delay: 0.6, duration: 6.4, color: "text-[#8D3A3C]", type: "sparkle" },
+  { top: "93%", right: "6%", size: "w-4 h-4", delay: 1.4, duration: 5.1, color: "text-[#C6B39A]", type: "star" },
+  { top: "96%", left: "18%", size: "w-3.5 h-3.5", delay: 2.4, duration: 4.9, color: "text-[#8D3A3C]", type: "dot" },
+  { top: "98%", right: "13%", size: "w-5 h-5", delay: 1.0, duration: 5.8, color: "text-[#C6B39A]", type: "sparkle" },
+];
+
 export default function Home() {
   const [copied, setCopied] = useState(false);
 
@@ -117,38 +174,7 @@ export default function Home() {
     setTimeout(() => setCopied(false), 2500);
   };
 
-  const projects = [
-    {
-      title: "App de Productividad y Bienestar Estudiantil",
-      subtitle: "Caso de Estudio UX/UI · Mobile",
-      description:
-        "Investigación con usuarios y prototipado interactivo de alta fidelidad para reducir la sobrecarga cognitiva en universitarios.",
-      tags: ["UX Research", "Figma", "Wireframes", "Design System"],
-      category: "UX/UI Design",
-      highlight: "8 entrevistas · 3 iteraciones de wireframes",
-      color: "from-[#8D3A3C]/40 via-[#220D3E]/80 to-[#1A0735]",
-    },
-    {
-      title: "Rediseño de E-Commerce & Checkout Flow",
-      subtitle: "Diseño Web & Optimización de Conversión",
-      description:
-        "Auditoría heurística y rediseño de interfaz para simplificar el embudo de compra en 3 pasos clave, priorizando accesibilidad y mobile-first.",
-      tags: ["UI Design", "Figma", "Heurísticas", "Front-End Ready"],
-      category: "Product Design",
-      highlight: "-35% fricción en checkout conceptual",
-      color: "from-[#7B694E]/40 via-[#220D3E]/80 to-[#1A0735]",
-    },
-    {
-      title: "Design System & UI Library con Tailwind",
-      subtitle: "Frontend & Arquitectura de Componentes",
-      description:
-        "Librería de componentes atómicos documentados con tokens de diseño, contrastes WCAG AA y variantes interactivas listas para producción.",
-      tags: ["Next.js", "TypeScript", "Tailwind CSS", "Atomic Design"],
-      category: "Design Engineering",
-      highlight: "Tokens centralizados · 20+ componentes",
-      color: "from-[#C6B39A]/30 via-[#220D3E]/80 to-[#1A0735]",
-    },
-  ];
+  const projects = featuredProjects;
 
   return (
     <div className="min-h-screen bg-[#1A0735] text-white flex flex-col font-sans selection:bg-[#8D3A3C] selection:text-white">
@@ -194,10 +220,12 @@ export default function Home() {
             <a href="#" className="hover:text-[#C6B39A] transition-colors">
               Inicio
             </a>
-            <a href="#proyectos" className="hover:text-[#C6B39A] transition-colors flex items-center gap-1">
-              <span>Proyectos</span>
-              <ChevronDown className="w-3.5 h-3.5 opacity-70" />
-            </a>
+            <Link
+              href="/proyectos"
+              className="hover:text-[#C6B39A] transition-colors"
+            >
+              Proyectos
+            </Link>
             <a href="#habilidades" className="hover:text-[#C6B39A] transition-colors">
               Habilidades
             </a>
@@ -343,7 +371,7 @@ export default function Home() {
               whileTap={{ scale: 0.9 }}
               href="mailto:nayssa1310@gmail.com"
               title="Email"
-              className="w-8 h-8 rounded-full bg-[#1877F2] flex items-center justify-center text-white shadow-lg"
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#C6B39A] hover:text-[#1A0735] text-white/90 border border-[#C6B39A]/30 backdrop-blur-md flex items-center justify-center transition-all shadow-lg"
             >
               <Mail className="w-4 h-4" />
             </motion.a>
@@ -355,7 +383,7 @@ export default function Home() {
               target="_blank"
               rel="noopener noreferrer"
               title="LinkedIn"
-              className="w-8 h-8 rounded-full bg-[#0A66C2] flex items-center justify-center text-white shadow-lg"
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#C6B39A] hover:text-[#1A0735] text-white/90 border border-[#C6B39A]/30 backdrop-blur-md flex items-center justify-center transition-all shadow-lg"
             >
               <LinkedinIcon className="w-4 h-4" />
             </motion.a>
@@ -367,7 +395,7 @@ export default function Home() {
               target="_blank"
               rel="noopener noreferrer"
               title="GitHub"
-              className="w-8 h-8 rounded-full bg-[#0F0A1C] border border-white/30 flex items-center justify-center text-white shadow-lg"
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#C6B39A] hover:text-[#1A0735] text-white/90 border border-[#C6B39A]/30 backdrop-blur-md flex items-center justify-center transition-all shadow-lg"
             >
               <GithubIcon className="w-4 h-4" />
             </motion.a>
@@ -380,6 +408,39 @@ export default function Home() {
         {/* Ambient Atmospheric Glows */}
         <div className="absolute top-1/4 -left-32 w-96 h-96 bg-[#8D3A3C]/20 rounded-full blur-[130px] pointer-events-none" />
         <div className="absolute bottom-1/3 -right-32 w-96 h-96 bg-[#C6B39A]/15 rounded-full blur-[130px] pointer-events-none" />
+
+        {/* Ambient Constellation (Data-driven, evenly distributed across full section height) */}
+        {projectStars.map((item, idx) => (
+          <motion.div
+            key={idx}
+            animate={
+              item.type === "dot"
+                ? { scale: [0.8, 1.4, 0.8], opacity: [0.15, 0.5, 0.15] }
+                : { y: [-10, 10, -10], rotate: [0, 8, 0], opacity: [0.12, 0.38, 0.12] }
+            }
+            transition={{
+              duration: item.duration,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: item.delay,
+            }}
+            style={{
+              top: item.top,
+              left: item.left,
+              right: item.right,
+            }}
+            className={`absolute pointer-events-none ${item.color} z-0`}
+          >
+            {item.type === "star" && <FourPointStar className={item.size} />}
+            {item.type === "sparkle" && <Sparkles className={item.size} />}
+            {item.type === "layers" && <Layers className={item.size} />}
+            {item.type === "palette" && <Palette className={item.size} />}
+            {item.type === "code" && <Code2 className={item.size} />}
+            {item.type === "dot" && (
+              <span className="block w-1.5 h-1.5 rounded-full bg-current shadow-[0_0_6px_currentColor]" />
+            )}
+          </motion.div>
+        ))}
 
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-4">
@@ -402,32 +463,19 @@ export default function Home() {
                 transition={{ duration: 0.3 }}
                 className="rounded-3xl bg-[#220D3E]/70 hover:bg-[#220D3E] border border-[#C6B39A]/20 hover:border-[#C6B39A]/55 backdrop-blur-md overflow-hidden grid grid-cols-1 lg:grid-cols-12 transition-all group shadow-2xl"
               >
-                {/* Visual Preview Side */}
+                {/* Visual Carousel Preview Side */}
                 <div
-                  className={`lg:col-span-5 p-8 sm:p-10 flex flex-col justify-between bg-gradient-to-br ${project.color} border-b lg:border-b-0 ${
+                  className={`lg:col-span-5 border-b lg:border-b-0 ${
                     idx % 2 === 1 ? "lg:order-2 lg:border-l" : "lg:border-r"
-                  } border-white/10 relative min-h-[240px] sm:min-h-[280px]`}
+                  } border-white/10 relative min-h-[280px] sm:min-h-[340px] flex items-center justify-center overflow-hidden`}
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold px-3 py-1 rounded-full bg-black/40 text-white/90 backdrop-blur-md border border-white/15">
-                      {project.category}
-                    </span>
-                    <span className="font-serif font-bold text-2xl text-[#C6B39A]/30">
-                      0{idx + 1}
-                    </span>
-                  </div>
-
-                  <div className="py-4">
-                    <div className="p-4 rounded-2xl bg-black/35 backdrop-blur-sm border border-white/10">
-                      <span className="text-xs sm:text-sm font-semibold text-[#C6B39A] flex items-center gap-2">
-                        ✦ {project.highlight}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs text-white/50">
-                    <span>Estudio de caso UX/UI & Front-End</span>
-                  </div>
+                  <ProjectCarousel
+                    images={project.images}
+                    title={project.title}
+                    category={project.category}
+                    highlight={project.highlight}
+                    color={project.color}
+                  />
                 </div>
 
                 {/* Content Side */}
@@ -476,6 +524,20 @@ export default function Home() {
                 </div>
               </motion.div>
             ))}
+          </div>
+
+          {/* More Projects Action Button */}
+          <div className="mt-16 sm:mt-20 flex justify-center">
+            <Link href="/proyectos">
+              <motion.div
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.96 }}
+                className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl bg-white/10 hover:bg-[#C6B39A] border border-[#C6B39A]/35 hover:border-[#C6B39A] backdrop-blur-md text-sm font-bold text-white hover:text-[#1A0735] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_0_30px_rgba(198,179,154,0.45)] transition-all duration-300 cursor-pointer"
+              >
+                <span>Ver más proyectos</span>
+                <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+              </motion.div>
+            </Link>
           </div>
         </div>
       </section>

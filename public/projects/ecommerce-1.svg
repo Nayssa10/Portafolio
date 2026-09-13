@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="ecomBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14052B" />
+      <stop offset="50%" stop-color="#220D3E" />
+      <stop offset="100%" stop-color="#1A0735" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="500" fill="url(#ecomBg)" />
+
+  <!-- Browser Window Mockup -->
+  <g transform="translate(60, 40)">
+    <rect width="680" height="420" rx="16" fill="#0D041A" stroke="#7B694E" stroke-opacity="0.4" stroke-width="1.5" />
+    
+    <!-- Browser Top Bar -->
+    <rect width="680" height="38" rx="16" fill="#1C0933" />
+    <circle cx="25" cy="19" r="5" fill="#EF4444" />
+    <circle cx="42" cy="19" r="5" fill="#F59E0B" />
+    <circle cx="59" cy="19" r="5" fill="#10B981" />
+    
+    <!-- URL Bar -->
+    <rect x="180" y="8" width="320" height="22" rx="11" fill="#0F031F" stroke="#ffffff" stroke-opacity="0.1" />
+    <text x="340" y="23" fill="#C6B39A" font-family="sans-serif" font-size="10" text-anchor="middle">store.studio/checkout/express</text>
+
+    <!-- Checkout 3 Steps Breadcrumbs -->
+    <g transform="translate(140, 60)">
+      <!-- Step 1: Active -->
+      <circle cx="20" cy="15" r="12" fill="#7B694E" />
+      <text x="20" y="19" fill="#ffffff" font-family="sans-serif" font-size="10" font-weight="700" text-anchor="middle">1</text>
+      <text x="40" y="19" fill="#ffffff" font-family="sans-serif" font-size="11" font-weight="600">Envío</text>
+      <line x1="85" y1="15" x2="160" y2="15" stroke="#7B694E" stroke-width="2" />
+
+      <!-- Step 2 -->
+      <circle cx="180" cy="15" r="12" fill="#2E134D" stroke="#C6B39A" stroke-width="1" />
+      <text x="180" y="19" fill="#C6B39A" font-family="sans-serif" font-size="10" font-weight="700" text-anchor="middle">2</text>
+      <text x="200" y="19" fill="#C6B39A" font-family="sans-serif" font-size="11">Pago Seguro</text>
+      <line x1="285" y1="15" x2="350" y2="15" stroke="#ffffff" stroke-opacity="0.2" stroke-width="2" />
+
+      <!-- Step 3 -->
+      <circle cx="370" cy="15" r="12" fill="#2E134D" stroke="#ffffff" stroke-opacity="0.2" stroke-width="1" />
+      <text x="370" y="19" fill="#ffffff" opacity="0.4" font-family="sans-serif" font-size="10" font-weight="700" text-anchor="middle">3</text>
+      <text x="390" y="19" fill="#ffffff" opacity="0.4" font-family="sans-serif" font-size="11">Confirmación</text>
+    </g>
+
+    <!-- Content 2 Columns -->
+    <!-- Left Column: Form -->
+    <g transform="translate(40, 115)">
+      <text x="0" y="15" fill="#ffffff" font-family="sans-serif" font-size="14" font-weight="700">Dirección de Entrega</text>
+      
+      <!-- Quick Fill Pill -->
+      <rect x="0" y="30" width="340" height="42" rx="8" fill="#200C39" stroke="#ffffff" stroke-opacity="0.1" />
+      <text x="16" y="55" fill="#ffffff" opacity="0.8" font-family="sans-serif" font-size="11">Av. Javier Prado 1420, Dpto 502</text>
+
+      <rect x="0" y="85" width="160" height="42" rx="8" fill="#200C39" stroke="#ffffff" stroke-opacity="0.1" />
+      <text x="16" y="110" fill="#ffffff" opacity="0.6" font-family="sans-serif" font-size="11">Lima, San Isidro</text>
+
+      <rect x="180" y="85" width="160" height="42" rx="8" fill="#200C39" stroke="#ffffff" stroke-opacity="0.1" />
+      <text x="196" y="110" fill="#ffffff" opacity="0.6" font-family="sans-serif" font-size="11">Código Postal</text>
+
+      <!-- Express Payment Buttons -->
+      <text x="0" y="155" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="600">Pago Rápido con 1 Clic</text>
+      <rect x="0" y="170" width="165" height="44" rx="8" fill="#000000" stroke="#ffffff" stroke-opacity="0.2" />
+      <text x="82" y="197" fill="#ffffff" font-family="sans-serif" font-size="12" font-weight="700" text-anchor="middle">Apple Pay</text>
+      <rect x="175" y="170" width="165" height="44" rx="8" fill="#220D3E" stroke="#C6B39A" stroke-width="1.5" />
+      <text x="257" y="197" fill="#C6B39A" font-family="sans-serif" font-size="12" font-weight="700" text-anchor="middle">Tarjeta / Yape</text>
+    </g>
+
+    <!-- Right Column: Order Summary Card -->
+    <g transform="translate(420, 115)">
+      <rect width="220" height="260" rx="12" fill="#1C0933" stroke="#C6B39A" stroke-opacity="0.25" stroke-width="1" />
+      <text x="18" y="28" fill="#ffffff" font-family="sans-serif" font-size="13" font-weight="700">Resumen del Pedido</text>
+
+      <!-- Item 1 -->
+      <rect x="18" y="45" width="36" height="36" rx="6" fill="#7B694E" />
+      <text x="64" y="60" fill="#ffffff" font-family="sans-serif" font-size="11" font-weight="600">Minimal Backpack</text>
+      <text x="64" y="74" fill="#C6B39A" font-family="sans-serif" font-size="10">S/ 189.00</text>
+
+      <!-- Pricing lines -->
+      <line x1="18" y1="100" x2="202" y2="100" stroke="#ffffff" stroke-opacity="0.1" />
+      <text x="18" y="125" fill="#ffffff" opacity="0.6" font-family="sans-serif" font-size="11">Subtotal</text>
+      <text x="202" y="125" fill="#ffffff" font-family="sans-serif" font-size="11" text-anchor="end">S/ 189.00</text>
+      <text x="18" y="150" fill="#ffffff" opacity="0.6" font-family="sans-serif" font-size="11">Envío Express</text>
+      <text x="202" y="150" fill="#10B981" font-family="sans-serif" font-size="11" text-anchor="end">Gratis</text>
+
+      <line x1="18" y1="175" x2="202" y2="175" stroke="#ffffff" stroke-opacity="0.1" />
+      <text x="18" y="200" fill="#ffffff" font-family="sans-serif" font-size="13" font-weight="700">Total</text>
+      <text x="202" y="200" fill="#C6B39A" font-family="sans-serif" font-size="14" font-weight="800" text-anchor="end">S/ 189.00</text>
+
+      <!-- Continue CTA -->
+      <rect x="18" y="215" width="184" height="34" rx="8" fill="#C6B39A" />
+      <text x="110" y="236" fill="#1A0735" font-family="sans-serif" font-size="11" font-weight="800" text-anchor="middle">CONTINUAR AL PAGO →</text>
+    </g>
+  </g>
+</svg>

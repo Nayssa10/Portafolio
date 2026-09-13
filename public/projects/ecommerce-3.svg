@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="ecomBg3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#120426" />
+      <stop offset="100%" stop-color="#1F0A38" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="500" fill="url(#ecomBg3)" />
+
+  <text x="400" y="50" fill="#ffffff" font-family="sans-serif" font-size="20" font-weight="700" text-anchor="middle">Experiencia Mobile-First: Bottom Sheet de Pago</text>
+  <text x="400" y="75" fill="#C6B39A" font-family="sans-serif" font-size="12" text-anchor="middle">Diseño ergonómico pensado para la 'Thumb Zone' con microinteracciones fluidas</text>
+
+  <!-- Phone Mockup -->
+  <g transform="translate(260, 95)">
+    <rect width="280" height="380" rx="32" fill="#0A0214" stroke="#7B694E" stroke-width="1.5" />
+    
+    <!-- Background dimmed app screen -->
+    <rect x="8" y="8" width="264" height="180" rx="24" fill="#140624" opacity="0.6" />
+    
+    <!-- Bottom Sheet modal sliding up -->
+    <rect x="8" y="110" width="264" height="262" rx="24" fill="#200C39" stroke="#ffffff" stroke-opacity="0.1" />
+    <!-- Drag indicator handle -->
+    <rect x="120" y="122" width="40" height="4" rx="2" fill="#ffffff" opacity="0.4" />
+
+    <text x="30" y="150" fill="#ffffff" font-family="sans-serif" font-size="14" font-weight="700">Confirmar & Pagar</text>
+    <text x="250" y="150" fill="#C6B39A" font-family="sans-serif" font-size="14" font-weight="800" text-anchor="end">S/ 189.00</text>
+
+    <!-- Payment option 1: Yape / Plin -->
+    <g transform="translate(26, 168)">
+      <rect width="228" height="46" rx="10" fill="#2E134D" stroke="#7B694E" stroke-width="1.5" />
+      <circle cx="24" cy="23" r="12" fill="#7B1FA2" />
+      <text x="24" y="27" fill="#ffffff" font-family="sans-serif" font-size="10" font-weight="700" text-anchor="middle">Y</text>
+      <text x="46" y="24" fill="#ffffff" font-family="sans-serif" font-size="11" font-weight="600">Yape / Plin (Instantáneo)</text>
+      <text x="46" y="37" fill="#C6B39A" font-family="sans-serif" font-size="9">Sin comisiones extras</text>
+      <circle cx="210" cy="23" r="7" fill="#10B981" />
+    </g>
+
+    <!-- Payment option 2: Card -->
+    <g transform="translate(26, 222)">
+      <rect width="228" height="46" rx="10" fill="#18072E" stroke="#ffffff" stroke-opacity="0.1" />
+      <circle cx="24" cy="23" r="12" fill="#2563EB" />
+      <text x="24" y="27" fill="#ffffff" font-family="sans-serif" font-size="10" font-weight="700" text-anchor="middle">💳</text>
+      <text x="46" y="24" fill="#ffffff" font-family="sans-serif" font-size="11" font-weight="600">Tarjeta Débito / Crédito</text>
+      <text x="46" y="37" fill="#ffffff" opacity="0.5" font-family="sans-serif" font-size="9">•••• 4291</text>
+      <circle cx="210" cy="23" r="7" fill="none" stroke="#ffffff" stroke-opacity="0.3" />
+    </g>
+
+    <!-- Pay Button (Thumb friendly) -->
+    <g transform="translate(26, 285)">
+      <rect width="228" height="48" rx="14" fill="#C6B39A" />
+      <text x="114" y="30" fill="#1A0735" font-family="sans-serif" font-size="13" font-weight="800" text-anchor="middle">DESLIZAR PARA PAGAR →</text>
+    </g>
+  </g>
+</svg>
