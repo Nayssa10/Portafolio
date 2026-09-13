@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+:root {
+  --background: #1A0735;
+  --foreground: #ffffff;
+}
+
+@theme {
+  --color-purple-deep: #1A0735;
+  --color-purple-surface: #220D3E;
+  --color-purple-dark: #14052B;
+  --color-rubine: #8D3A3C;
+  --color-tamarind: #3B1319;
+  --color-boho: #7B694E;
+  --color-camel-coat: #C6B39A;
+  --font-serif: var(--font-cormorant), Georgia, serif;
+  --font-display: var(--font-cormorant), Georgia, serif;
+  --font-cormorant: var(--font-cormorant), Georgia, serif;
+  --font-dancing: var(--font-dancing-script), cursive;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #1A0735;
+  color: #ffffff;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+}
