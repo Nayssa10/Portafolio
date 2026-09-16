@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -10,13 +10,14 @@ import {
   Mail,
   Code2,
   Layout,
-  CheckCircle2,
   Check,
   Menu,
   ArrowUpRight,
   Sparkles,
   Layers,
   Palette,
+  Send,
+  Loader2,
 } from "lucide-react";
 
 // Inline brand SVGs for precision
@@ -167,17 +168,91 @@ const projectStars = [
 
 export default function Home() {
   const [copied, setCopied] = useState(false);
+  const [formState, setFormState] = useState({ name: "", email: "", message: "" });
+  const [formSent, setFormSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [liveProjects, setLiveProjects] = useState(featuredProjects);
+  const [liveProfile, setLiveProfile] = useState({
+    name: "Nayssa Chu Bustamante",
+    title: "Diseño UX/UI & Desarrollo Front-End",
+    heroSubtitle: "Diseño interfaces intuitivas, elegantes y técnicamente viables.",
+    aboutTitle: "Sobre mí",
+    aboutText:
+      "Estudiante de 8vo ciclo de Ingeniería de Sistemas e Informática. Lo que más me apasiona es el desarrollo Front-End y el diseño UX/UI. Me interesa no solo que una aplicación o página web funcione, sino también que sea intuitiva, visualmente atractiva y que realmente facilite la experiencia de quien la utiliza.",
+    email: "nayssa1310@gmail.com",
+    available: true,
+    availableText: "Disponible para proyectos & prácticas",
+    location: "Lima, Perú",
+    linkedin: "https://www.linkedin.com/in/nayssa",
+    github: "https://github.com/Nayssa10",
+  });
+
+  useEffect(() => {
+    fetch("/api/projects")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const featured = data.filter((p: { featured?: boolean }) => p.featured);
+          if (featured.length > 0) {
+            setLiveProjects(featured);
+          }
+        }
+      })
+      .catch(() => {});
+
+    fetch("/api/profile")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.name) {
+          setLiveProfile(data);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const copyEmail = () => {
-    navigator.clipboard.writeText("nayssa1310@gmail.com");
+    navigator.clipboard.writeText(liveProfile.email || "nayssa1310@gmail.com");
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
 
-  const projects = featuredProjects;
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formState.email || !formState.message) return;
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formState),
+      });
+
+      if (res.ok) {
+        setFormSent(true);
+        setFormState({ name: "", email: "", message: "" });
+        setTimeout(() => setFormSent(false), 5000);
+      } else {
+        // Fallback to mailto
+        const subject = encodeURIComponent(`Mensaje de ${formState.name || "Contacto Portfolio"}`);
+        const body = encodeURIComponent(`${formState.message}\n\nDe: ${formState.name} (${formState.email})`);
+        window.open(`mailto:nayssa1310@gmail.com?subject=${subject}&body=${body}`, "_blank");
+        setFormSent(true);
+      }
+    } catch {
+      const subject = encodeURIComponent(`Mensaje de ${formState.name || "Contacto Portfolio"}`);
+      const body = encodeURIComponent(`${formState.message}\n\nDe: ${formState.name} (${formState.email})`);
+      window.open(`mailto:nayssa1310@gmail.com?subject=${subject}&body=${body}`, "_blank");
+      setFormSent(true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const projects = liveProjects;
 
   return (
-    <div className="min-h-screen bg-[#1A0735] text-white flex flex-col font-sans selection:bg-[#8D3A3C] selection:text-white">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#1A0735] text-white flex flex-col font-sans selection:bg-[#8D3A3C] selection:text-white">
       {/* HERO SECTION: Exact layout from user reference with interactive motion */}
       <section className="relative min-h-screen flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#16052F] via-[#1A0735] to-[#120426] px-6 sm:px-10 lg:px-16 py-6">
 
@@ -215,49 +290,50 @@ export default function Home() {
             N
           </motion.a>
 
-          {/* Center Pill Menu */}
-          <nav className="hidden md:flex items-center gap-6 px-7 py-2.5 rounded-full bg-white/10 hover:bg-white/[0.14] backdrop-blur-md border border-[#C6B39A]/25 text-sm font-medium text-white/90 shadow-lg transition-all">
-            <a href="#" className="hover:text-[#C6B39A] transition-colors">
-              Inicio
-            </a>
-            <Link
-              href="/proyectos"
-              className="hover:text-[#C6B39A] transition-colors"
-            >
-              Proyectos
-            </Link>
-            <a href="#habilidades" className="hover:text-[#C6B39A] transition-colors">
-              Habilidades
-            </a>
-            <a href="#contacto" className="hover:text-[#C6B39A] transition-colors">
-              Contacto
-            </a>
-          </nav>
+          {/* Right Navigation & Action Icons */}
+          <div className="flex items-center gap-4">
+            <nav className="hidden md:flex items-center gap-6 px-7 py-2.5 rounded-full bg-white/10 hover:bg-white/[0.14] backdrop-blur-md border border-[#C6B39A]/25 text-sm font-medium text-white/90 shadow-lg transition-all">
+              <a href="#perfil" className="hover:text-[#C6B39A] transition-colors">
+                Perfil
+              </a>
+              <Link
+                href="/proyectos"
+                className="hover:text-[#C6B39A] transition-colors"
+              >
+                Proyectos
+              </Link>
+              <a href="#habilidades" className="hover:text-[#C6B39A] transition-colors">
+                Habilidades
+              </a>
+              <a href="#contacto" className="hover:text-[#C6B39A] transition-colors">
+                Contacto
+              </a>
+            </nav>
 
-          {/* Right Action Icons */}
-          <div className="flex items-center gap-3">
-            <motion.button
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.92 }}
-              onClick={copyEmail}
-              title="Copiar correo"
-              className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-[#C6B39A]/25 flex items-center justify-center text-white/90 hover:text-white transition-all shadow-md"
-            >
-              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Mail className="w-4 h-4" />}
-            </motion.button>
-            <motion.a
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.92 }}
-              href="#proyectos"
-              className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-[#C6B39A]/25 flex items-center justify-center text-white/90 hover:text-white transition-all shadow-md"
-            >
-              <Menu className="w-4 h-4" />
-            </motion.a>
+            <div className="flex items-center gap-3">
+              <motion.button
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92 }}
+                onClick={copyEmail}
+                title="Copiar correo"
+                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-[#C6B39A]/25 flex items-center justify-center text-white/90 hover:text-white transition-all shadow-md"
+              >
+                {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Mail className="w-4 h-4" />}
+              </motion.button>
+              <motion.a
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92 }}
+                href="#proyectos"
+                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-[#C6B39A]/25 flex items-center justify-center text-white/90 hover:text-white transition-all shadow-md"
+              >
+                <Menu className="w-4 h-4" />
+              </motion.a>
+            </div>
           </div>
         </motion.header>
 
-        {/* Hero 3-Column Split Content */}
-        <div className="relative z-20 w-full max-w-7xl mx-auto flex-1 grid grid-cols-1 lg:grid-cols-12 items-center gap-6 py-4 lg:py-0">
+        {/* Hero 3-Column Split Content (Perfil section first, at top) */}
+        <div id="perfil" className="relative z-20 w-full max-w-7xl mx-auto flex-1 grid grid-cols-1 lg:grid-cols-12 items-center gap-6 py-4 lg:py-0">
           {/* Left Column: Welcome */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
@@ -266,19 +342,27 @@ export default function Home() {
             className="lg:col-span-4 flex flex-col items-start text-left gap-5 order-2 lg:order-1"
           >
             <h1 className="font-dancing text-5xl sm:text-6xl lg:text-[66px] font-bold text-white leading-[1.12] tracking-wide">
-              Nayssa Chu <br />
-              <span className="font-semibold bg-gradient-to-r from-white via-[#C6B39A] to-[#8D3A3C] bg-clip-text text-transparent">
-                Bustamante
-              </span>
+              {liveProfile.name.split(" ").length > 1 ? (
+                <>
+                  {liveProfile.name.split(" ").slice(0, -1).join(" ")} <br />
+                  <span className="font-semibold bg-gradient-to-r from-white via-[#C6B39A] to-[#8D3A3C] bg-clip-text text-transparent">
+                    {liveProfile.name.split(" ").slice(-1)[0]}
+                  </span>
+                </>
+              ) : (
+                liveProfile.name
+              )}
             </h1>
 
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#220D3E]/80 border border-[#C6B39A]/35 text-[11px] font-semibold text-[#C6B39A] backdrop-blur-md">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              Disponible para proyectos & prácticas
-            </span>
+            {liveProfile.available && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#220D3E]/80 border border-[#C6B39A]/35 text-[11px] font-semibold text-[#C6B39A] backdrop-blur-md">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                {liveProfile.availableText}
+              </span>
+            )}
 
             <p className="text-xs sm:text-sm text-white/75 leading-relaxed max-w-xs font-light">
-              Diseño UX/UI & Desarrollo Front-End. Construyendo interfaces intuitivas, elegantes y técnicamente viables.
+              {liveProfile.heroSubtitle}
             </p>
           </motion.div>
 
@@ -321,12 +405,8 @@ export default function Home() {
               Sobre mí
             </h2>
 
-            <p className="text-sm sm:text-[15px] text-white/80 leading-relaxed max-w-sm sm:max-w-md font-light text-center">
-              Estudiante de 8vo ciclo de Ingeniería de Sistemas e Informática. Lo que más me apasiona es el{" "}
-              <span className="text-[#C6B39A] font-medium">desarrollo Front-End</span> y el{" "}
-              <span className="text-[#C6B39A] font-medium">diseño UX/UI</span>. Me interesa no solo
-              que una aplicación o página web funcione, sino también que sea intuitiva, visualmente
-              atractiva y que realmente facilite la experiencia de quien la utiliza.
+            <p className="text-sm sm:text-[15px] text-white/80 leading-relaxed max-w-sm sm:max-w-md font-light text-center whitespace-pre-line">
+              {liveProfile.aboutText}
             </p>
 
             <div className="pt-3 w-full flex justify-end">
@@ -346,7 +426,7 @@ export default function Home() {
         <footer className="relative z-30 w-full max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-[#C6B39A]/15 text-xs text-white/50">
           {/* Left: Copyright */}
           <div className="order-2 sm:order-1">
-            <span>© 2026 Nayssa Chu · Todos los derechos reservados</span>
+            <span>© {new Date().getFullYear()} {liveProfile.name} · Todos los derechos reservados</span>
           </div>
 
           {/* Center: Mouse Scroll Indicator (Animated) */}
@@ -369,7 +449,7 @@ export default function Home() {
             <motion.a
               whileHover={{ scale: 1.15, y: -2 }}
               whileTap={{ scale: 0.9 }}
-              href="mailto:nayssa1310@gmail.com"
+              href={`mailto:${liveProfile.email}`}
               title="Email"
               className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#C6B39A] hover:text-[#1A0735] text-white/90 border border-[#C6B39A]/30 backdrop-blur-md flex items-center justify-center transition-all shadow-lg"
             >
@@ -379,7 +459,7 @@ export default function Home() {
             <motion.a
               whileHover={{ scale: 1.15, y: -2 }}
               whileTap={{ scale: 0.9 }}
-              href="https://www.linkedin.com/in/nayssa"
+              href={liveProfile.linkedin || "https://www.linkedin.com/in/nayssa"}
               target="_blank"
               rel="noopener noreferrer"
               title="LinkedIn"
@@ -391,7 +471,7 @@ export default function Home() {
             <motion.a
               whileHover={{ scale: 1.15, y: -2 }}
               whileTap={{ scale: 0.9 }}
-              href="https://github.com/Nayssa10"
+              href={liveProfile.github || "https://github.com/Nayssa10"}
               target="_blank"
               rel="noopener noreferrer"
               title="GitHub"
@@ -404,10 +484,10 @@ export default function Home() {
       </section>
 
       {/* SELECTED WORK / CASE STUDIES - HORIZONTAL FEATURE ROWS */}
-      <section id="proyectos" className="relative py-24 sm:py-28 px-6 bg-gradient-to-b from-[#120426] via-[#1A0735] to-[#14052B] border-t border-[#C6B39A]/20 overflow-hidden">
+      <section id="proyectos" className="relative w-full max-w-full py-24 sm:py-28 px-6 bg-gradient-to-b from-[#120426] via-[#1A0735] to-[#14052B] border-t border-[#C6B39A]/20 overflow-hidden overflow-x-clip [contain:paint]">
         {/* Ambient Atmospheric Glows */}
-        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-[#8D3A3C]/20 rounded-full blur-[130px] pointer-events-none" />
-        <div className="absolute bottom-1/3 -right-32 w-96 h-96 bg-[#C6B39A]/15 rounded-full blur-[130px] pointer-events-none" />
+        <div className="absolute top-1/4 -left-16 w-80 h-80 bg-[#8D3A3C]/20 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-1/3 -right-16 w-80 h-80 bg-[#C6B39A]/15 rounded-full blur-[100px] pointer-events-none" />
 
         {/* Ambient Constellation (Data-driven, evenly distributed across full section height) */}
         {projectStars.map((item, idx) => (
@@ -542,116 +622,272 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SKILLS & TOOLKIT */}
-      <section id="habilidades" className="py-24 px-6 bg-[#14052B] border-t border-[#C6B39A]/20">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#C6B39A] bg-[#220D3E]/80 px-3.5 py-1 rounded-full border border-[#C6B39A]/30">
-              Herramientas & Conocimiento
+      {/* SKILLS TIMELINE / HABILIDADES */}
+      <section id="habilidades" className="w-full max-w-full py-24 px-6 bg-gradient-to-b from-[#14052B] via-[#240D42] to-[#16052F] border-t border-[#C6B39A]/20 relative overflow-hidden overflow-x-clip [contain:paint]">
+        {/* Subtle, faint ambient stars */}
+        <motion.div
+          animate={{ y: [-4, 4, -4], opacity: [0.12, 0.3, 0.12] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-24 left-[8%] pointer-events-none text-[#C6B39A]/30"
+        >
+          <Sparkles className="w-4 h-4" />
+        </motion.div>
+        <motion.div
+          animate={{ y: [4, -4, 4], opacity: [0.12, 0.3, 0.12] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          className="absolute top-36 right-[8%] pointer-events-none text-[#8D3A3C]/40"
+        >
+          <FourPointStar className="w-4 h-4" />
+        </motion.div>
+
+
+        <div className="max-w-6xl mx-auto relative z-10">
+          {/* Header with scroll enter animation */}
+          <motion.div
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="text-center max-w-2xl mx-auto mb-20"
+          >
+            <span className="text-xs font-bold uppercase tracking-wider text-[#C6B39A] bg-[#220D3E]/80 px-3.5 py-1 rounded-full border border-[#C6B39A]/25">
+              Especialidad & Dominio
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mt-4">
-              Mi Caja de Herramientas
+              Mis Habilidades
             </h2>
-            <p className="text-sm sm:text-base text-white/70 mt-3">
-              Tecnologías y metodologías que combino en cada fase de diseño y desarrollo.
+            <p className="text-sm sm:text-base text-white/70 mt-3 leading-relaxed">
+              Disciplinas y competencias prácticas que combino para crear interfaces intuitivas, escalables y con criterio técnico.
             </p>
+          </motion.div>
+
+          {/* DESKTOP TIMELINE (Compact & Scalable: Ready for 3, 4 or more pillars) */}
+          <div className="hidden lg:flex flex-col relative py-4">
+            {/* TIMELINE AXIS & NODES */}
+            <div className="relative mb-8">
+              {/* Continuous Clean Horizontal Line (Draws smoothly on scroll) */}
+              <motion.div
+                initial={{ scaleX: 0, opacity: 0 }}
+                whileInView={{ scaleX: 1, opacity: 1 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="absolute top-1/2 left-10 right-10 h-0.5 -translate-y-1/2 bg-gradient-to-r from-transparent via-[#C6B39A]/45 to-transparent z-0 origin-center"
+              />
+
+              <div className="grid grid-cols-3 gap-8 relative z-10">
+                {/* Node 1 */}
+                <motion.div
+                  initial={{ opacity: 0, y: -16, scale: 0.9 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.5, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex flex-col items-center"
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    className="w-13 h-13 rounded-full bg-[#1A0735] border border-[#C6B39A]/60 flex items-center justify-center text-[#C6B39A] shadow-md relative z-20 cursor-pointer transition-transform"
+                  >
+                    <Palette className="w-5 h-5" />
+                  </motion.div>
+                  {/* Compact stem & arrowhead pointing DOWN */}
+                  <div className="flex flex-col items-center mt-2">
+                    <div className="w-0.5 h-6 bg-[#C6B39A]/70" />
+                    <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-[#C6B39A]/80" />
+                  </div>
+                </motion.div>
+
+                {/* Node 2 */}
+                <motion.div
+                  initial={{ opacity: 0, y: -16, scale: 0.9 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.5, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex flex-col items-center"
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    className="w-13 h-13 rounded-full bg-[#1A0735] border border-[#C6B39A]/60 flex items-center justify-center text-[#C6B39A] shadow-md relative z-20 cursor-pointer transition-transform"
+                  >
+                    <Layout className="w-5 h-5" />
+                  </motion.div>
+                  <div className="flex flex-col items-center mt-2">
+                    <div className="w-0.5 h-6 bg-[#C6B39A]/70" />
+                    <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-[#C6B39A]/80" />
+                  </div>
+                </motion.div>
+
+                {/* Node 3 */}
+                <motion.div
+                  initial={{ opacity: 0, y: -16, scale: 0.9 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.5, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex flex-col items-center"
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    className="w-13 h-13 rounded-full bg-[#1A0735] border border-[#C6B39A]/60 flex items-center justify-center text-[#C6B39A] shadow-md relative z-20 cursor-pointer transition-transform"
+                  >
+                    <Sparkles className="w-5 h-5" />
+                  </motion.div>
+                  <div className="flex flex-col items-center mt-2">
+                    <div className="w-0.5 h-6 bg-[#C6B39A]/70" />
+                    <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-[#C6B39A]/80" />
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+
+            {/* COLUMNS ALIGNED UNDERNEATH WITH ORGANIC LEVITATION */}
+            <div className="grid grid-cols-3 gap-8 text-center items-start">
+              {/* Col 1: Diseño UX/UI (Floats gently) */}
+              <motion.div
+                initial={{ opacity: 0, y: 22 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.6, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                className="px-3 flex flex-col items-center"
+              >
+                <motion.div
+                  animate={{ y: [-4, 4, -4] }}
+                  transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  className="flex flex-col items-center cursor-default transition-transform"
+                >
+                  <span className="text-[11px] font-mono font-bold tracking-widest text-[#C6B39A] uppercase block mb-1.5">
+                    01 · Experiencia
+                  </span>
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-white tracking-tight mb-2">
+                    Diseño UX/UI
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-white/70 max-w-xs mx-auto leading-relaxed font-light mb-3">
+                    Interfaces intuitivas, prototipado interactivo y diseño centrado en resolver fricciones de usuario.
+                  </p>
+                  <div className="text-[11px] font-medium text-[#C6B39A]/85 tracking-wide">
+                    Figma · Design Systems · Prototipado
+                  </div>
+                </motion.div>
+              </motion.div>
+
+              {/* Col 2: Desarrollo Front-End (Counter-floats) */}
+              <motion.div
+                initial={{ opacity: 0, y: 22 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                className="px-3 flex flex-col items-center"
+              >
+                <motion.div
+                  animate={{ y: [4, -4, 4] }}
+                  transition={{ duration: 6.2, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  className="flex flex-col items-center cursor-default transition-transform"
+                >
+                  <span className="text-[11px] font-mono font-bold tracking-widest text-[#C6B39A] uppercase block mb-1.5">
+                    02 · Desarrollo
+                  </span>
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-white tracking-tight mb-2">
+                    Desarrollo Front-End
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-white/70 max-w-xs mx-auto leading-relaxed font-light mb-3">
+                    Traducción precisa a componentes modulares, limpios y dinámicos en código moderno.
+                  </p>
+                  <div className="text-[11px] font-medium text-[#C6B39A]/85 tracking-wide">
+                    Next.js · React · Tailwind CSS · TypeScript
+                  </div>
+                </motion.div>
+              </motion.div>
+
+              {/* Col 3: Rendimiento & a11y (Floats gently) */}
+              <motion.div
+                initial={{ opacity: 0, y: 22 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.6, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                className="px-3 flex flex-col items-center"
+              >
+                <motion.div
+                  animate={{ y: [-4, 4, -4] }}
+                  transition={{ duration: 5.8, repeat: Infinity, ease: "easeInOut", delay: 0.7 }}
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  className="flex flex-col items-center cursor-default transition-transform"
+                >
+                  <span className="text-[11px] font-mono font-bold tracking-widest text-[#C6B39A] uppercase block mb-1.5">
+                    03 · Calidad
+                  </span>
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-white tracking-tight mb-2">
+                    Rendimiento & a11y
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-white/70 max-w-xs mx-auto leading-relaxed font-light mb-3">
+                    Accesibilidad universal, diseño responsive mobile-first y optimización web para velocidad real.
+                  </p>
+                  <div className="text-[11px] font-medium text-[#C6B39A]/85 tracking-wide">
+                    Accesibilidad a11y · Mobile-First · Performance
+                  </div>
+                </motion.div>
+              </motion.div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Category 1 */}
-            <motion.div whileHover={{ y: -6 }} className="p-7 rounded-3xl bg-[#220D3E]/60 hover:bg-[#220D3E]/90 border border-[#C6B39A]/20 shadow-xl">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-[#8D3A3C]/20 border border-[#C6B39A]/25 flex items-center justify-center p-2 text-[#C6B39A]">
-                  <FigmaIcon className="w-5 h-5" />
+          {/* MOBILE / TABLET TIMELINE (Clean Open Stream with Entrance Animation) */}
+          <div className="lg:hidden relative pl-8 border-l-2 border-[#C6B39A]/40 space-y-10 my-8 ml-4">
+            {[
+              {
+                badge: "01 · Experiencia",
+                title: "Diseño UX/UI",
+                desc: "Interfaces intuitivas, prototipado interactivo y diseño centrado en personas.",
+                icon: <Palette className="w-5 h-5 text-[#C6B39A]" />,
+              },
+              {
+                badge: "02 · Desarrollo",
+                title: "Desarrollo Front-End",
+                desc: "Traducción precisa a componentes modulares, limpios y dinámicos en código moderno.",
+                icon: <Layout className="w-5 h-5 text-[#C6B39A]" />,
+              },
+              {
+                badge: "03 · Calidad",
+                title: "Rendimiento & a11y",
+                desc: "Accesibilidad universal, diseño responsive mobile-first y código optimizado.",
+                icon: <Sparkles className="w-5 h-5 text-[#C6B39A]" />,
+              },
+            ].map((step, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.5, delay: idx * 0.15, ease: [0.16, 1, 0.3, 1] }}
+                className="relative"
+              >
+                {/* Node icon attached to the vertical line */}
+                <div className="absolute -left-[45px] top-0 w-10 h-10 rounded-full bg-[#1A0735] border-2 border-[#C6B39A] flex items-center justify-center shadow-md">
+                  {step.icon}
                 </div>
-                <div>
-                  <h3 className="font-bold text-lg text-white">Diseño UX/UI</h3>
-                  <p className="text-xs text-white/60">Experiencia e interfaz</p>
-                </div>
-              </div>
-              <ul className="space-y-2.5 text-sm text-white/80">
-                {[
-                  "Figma (Auto Layout, Components, Variants)",
-                  "User Research & Entrevistas",
-                  "Wireframing & Prototipado interactivo",
-                  "Arquitectura de la Información",
-                  "Design Systems & Guías de Estilo",
-                  "Evaluación Heurística & Usabilidad",
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#C6B39A] shrink-0" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
 
-            {/* Category 2 */}
-            <motion.div whileHover={{ y: -6 }} className="p-7 rounded-3xl bg-[#220D3E]/60 hover:bg-[#220D3E]/90 border border-[#C6B39A]/20 shadow-xl">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-[#8D3A3C]/20 border border-[#C6B39A]/25 flex items-center justify-center text-[#C6B39A]">
-                  <Layout className="w-5 h-5" />
-                </div>
                 <div>
-                  <h3 className="font-bold text-lg text-white">Desarrollo Front-End</h3>
-                  <p className="text-xs text-white/60">Implementación en código</p>
+                  <span className="text-xs font-mono font-bold tracking-wider text-[#C6B39A] block mb-1">
+                    {step.badge}
+                  </span>
+                  <h3 className="font-serif text-2xl font-bold text-white mb-1.5">
+                    {step.title}
+                  </h3>
+                  <p className="text-sm text-white/70 leading-relaxed font-light">
+                    {step.desc}
+                  </p>
                 </div>
-              </div>
-              <ul className="space-y-2.5 text-sm text-white/80">
-                {[
-                  "React & Next.js (App Router)",
-                  "Tailwind CSS v4 & CSS moderno",
-                  "TypeScript & JavaScript (ES6+)",
-                  "HTML5 semántico & Accesibilidad web",
-                  "Responsive Web Design (Mobile First)",
-                  "Git & GitHub para control de versiones",
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#C6B39A] shrink-0" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-
-            {/* Category 3 */}
-            <motion.div whileHover={{ y: -6 }} className="p-7 rounded-3xl bg-[#220D3E]/60 hover:bg-[#220D3E]/90 border border-[#C6B39A]/20 shadow-xl">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-[#8D3A3C]/20 border border-[#C6B39A]/25 flex items-center justify-center text-[#C6B39A]">
-                  <Code2 className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg text-white">Ingeniería de Sistemas</h3>
-                  <p className="text-xs text-white/60">Fundamentos técnicos</p>
-                </div>
-              </div>
-              <ul className="space-y-2.5 text-sm text-white/80">
-                {[
-                  "Estructuras de Datos & Algoritmos",
-                  "Consumo e integración de APIs REST",
-                  "Modelado de Sistemas & Diagramas de Flujo",
-                  "Metodologías Ágiles (Scrum)",
-                  "Criterio de rendimiento & optimización web",
-                  "Resolución estructurada de problemas",
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#C6B39A] shrink-0" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* DYNAMIC TECH ICONS RUNWAY / MARQUEE (EDGE TO EDGE) */}
-      <section className="relative py-12 sm:py-14 bg-[#16052F] border-t border-b border-[#C6B39A]/20 overflow-hidden">
+      <section className="relative w-full max-w-full py-12 sm:py-14 bg-[#16052F] border-t border-b border-[#C6B39A]/20 overflow-hidden overflow-x-clip [contain:paint]">
         {/* Soft edge gradient fades for cinematic entry & exit */}
         <div className="absolute left-0 top-0 bottom-0 w-20 sm:w-32 bg-gradient-to-r from-[#16052F] to-transparent z-10 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-20 sm:w-32 bg-gradient-to-l from-[#16052F] to-transparent z-10 pointer-events-none" />
 
-        <div className="flex overflow-hidden select-none">
+        <div className="w-full max-w-full flex overflow-hidden select-none">
           <motion.div
             animate={{ x: ["0%", "-100%"] }}
             transition={{
@@ -723,68 +959,154 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CONTACT BANNER */}
-      <section id="contacto" className="py-24 px-6 bg-[#120426] border-t border-[#C6B39A]/20">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative rounded-3xl bg-gradient-to-br from-[#2A0E46] via-[#220D3E] to-[#1A0735] p-10 md:p-14 overflow-hidden border border-[#C6B39A]/30 shadow-2xl">
-            <div className="absolute top-0 right-0 w-80 h-80 bg-[#8D3A3C]/25 rounded-full blur-3xl pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-60 h-60 bg-[#C6B39A]/15 rounded-full blur-2xl pointer-events-none"></div>
+      {/* 2-COLUMN SPLIT CONTACT SECTION (Compact & Refined) */}
+      <section id="contacto" className="w-full max-w-full py-12 sm:py-14 px-6 bg-gradient-to-b from-[#14052B] via-[#1A0735] to-[#120426] border-t border-[#C6B39A]/20 relative overflow-hidden overflow-x-clip [contain:paint]">
+        <div className="max-w-5xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          
+          {/* LEFT COLUMN: Title + Subtitle + Socials */}
+          <div className="lg:col-span-6 flex flex-col items-start text-left">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#C6B39A] bg-[#220D3E]/80 px-2.5 py-0.5 rounded-full border border-[#C6B39A]/25 mb-3">
+              Contacto
+            </span>
 
-            <div className="relative z-10 flex flex-col items-center text-center gap-6">
-              <span className="text-xs font-bold tracking-wider uppercase px-3 py-1 rounded-full bg-white/10 text-[#C6B39A] border border-[#C6B39A]/30">
-                ¿Hablamos?
+            <h2 className="font-serif text-2xl sm:text-3xl lg:text-[34px] font-bold tracking-tight text-white leading-tight max-w-sm">
+              Construyamos experiencias digitales memorables
+            </h2>
+
+            <p className="text-xs text-white/70 leading-relaxed font-light mt-2.5 max-w-sm">
+              Abierta a proyectos freelance, colaboraciones y nuevas oportunidades donde pueda sumar valor con criterio UX/UI y front-end.
+            </p>
+
+            {/* Social Icons & Email below it */}
+            <div className="mt-5 pt-4 border-t border-white/10 w-full flex flex-col gap-3">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[#C6B39A] font-bold">
+                Redes & Canales
               </span>
-
-              <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white max-w-xl">
-                Construyamos experiencias digitales memorables
-              </h2>
-
-              <p className="text-sm sm:text-base text-white/70 max-w-lg leading-relaxed">
-                Actualmente estoy abierta a prácticas pre-profesionales, proyectos freelance y
-                nuevas oportunidades donde pueda sumar valor con UX/UI y Front-End.
-              </p>
-
-              <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+              <div className="flex flex-wrap items-center gap-2.5">
                 <motion.a
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.06, y: -1 }}
                   whileTap={{ scale: 0.95 }}
-                  href="mailto:nayssa1310@gmail.com"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-[#C6B39A] hover:bg-[#D5C5AE] text-[#1A0735] font-bold text-sm shadow-[0_0_20px_rgba(198,179,154,0.3)] hover:shadow-[0_0_30px_rgba(198,179,154,0.5)] transition-all"
-                >
-                  <Mail className="w-4 h-4" />
-                  <span>Enviar un correo</span>
-                </motion.a>
-
-                <motion.a
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  href="https://www.linkedin.com/in/nayssa"
+                  href={liveProfile.linkedin || "https://www.linkedin.com/in/nayssa"}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm transition-all border border-white/20"
+                  title="LinkedIn"
+                  className="w-8 h-8 rounded-lg bg-white/10 hover:bg-[#C6B39A] hover:text-[#1A0735] text-white border border-[#C6B39A]/30 flex items-center justify-center transition-all shadow-sm"
                 >
-                  <LinkedinIcon className="w-4 h-4" />
-                  <span>LinkedIn</span>
+                  <LinkedinIcon className="w-3.5 h-3.5" />
                 </motion.a>
 
                 <motion.a
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.06, y: -1 }}
                   whileTap={{ scale: 0.95 }}
-                  href="https://github.com/Nayssa10"
+                  href={liveProfile.github || "https://github.com/Nayssa10"}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm transition-all border border-white/20"
+                  title="GitHub"
+                  className="w-8 h-8 rounded-lg bg-white/10 hover:bg-[#C6B39A] hover:text-[#1A0735] text-white border border-[#C6B39A]/30 flex items-center justify-center transition-all shadow-sm"
                 >
-                  <GithubIcon className="w-4 h-4" />
-                  <span>GitHub</span>
+                  <GithubIcon className="w-3.5 h-3.5" />
                 </motion.a>
+
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={copyEmail}
+                  title="Copiar correo"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/12 border border-white/15 hover:border-[#C6B39A]/40 text-xs text-white/90 font-mono transition-all cursor-pointer"
+                >
+                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Mail className="w-3.5 h-3.5 text-[#C6B39A]" />}
+                  <span>{copied ? "¡Copiado!" : (liveProfile.email || "nayssa1310@gmail.com")}</span>
+                </motion.button>
               </div>
 
-              <p className="text-xs text-white/50 pt-4">
-                nayssa1310@gmail.com · Lima, Perú
-              </p>
+              <span className="text-[10px] font-mono text-white/40 tracking-wider">
+                {liveProfile.location || "Lima, Perú"}
+              </span>
             </div>
           </div>
+
+          {/* RIGHT COLUMN: Interactive Direct Message Card */}
+          <div className="lg:col-span-6 w-full">
+            <div className="rounded-2xl bg-[#220D3E]/70 border border-[#C6B39A]/20 p-5 sm:p-6 backdrop-blur-md shadow-xl relative overflow-hidden">
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-3.5">
+                  <h3 className="font-serif text-lg sm:text-xl font-bold text-white tracking-tight">
+                    Escribime directamente
+                  </h3>
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                </div>
+
+                <form onSubmit={handleSendMessage} className="flex flex-col gap-2.5">
+                  <div>
+                    <label className="block text-[10px] font-mono text-white/60 uppercase tracking-wider mb-1">
+                      Nombre
+                    </label>
+                    <input
+                      type="text"
+                      value={formState.name}
+                      onChange={(e) => setFormState({ ...formState, name: e.target.value })}
+                      placeholder="Tu nombre o empresa"
+                      className="w-full px-3 py-2 rounded-lg bg-white/[0.06] border border-white/10 focus:border-[#C6B39A] focus:bg-white/[0.09] text-xs text-white placeholder-white/30 outline-none transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-mono text-white/60 uppercase tracking-wider mb-1">
+                      Tu Correo
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={formState.email}
+                      onChange={(e) => setFormState({ ...formState, email: e.target.value })}
+                      placeholder="nombre@ejemplo.com"
+                      className="w-full px-3 py-2 rounded-lg bg-white/[0.06] border border-white/10 focus:border-[#C6B39A] focus:bg-white/[0.09] text-xs text-white placeholder-white/30 outline-none transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-mono text-white/60 uppercase tracking-wider mb-1">
+                      Mensaje
+                    </label>
+                    <textarea
+                      rows={2}
+                      required
+                      value={formState.message}
+                      onChange={(e) => setFormState({ ...formState, message: e.target.value })}
+                      placeholder="¿De qué trata tu proyecto o propuesta?"
+                      className="w-full px-3 py-2 rounded-lg bg-white/[0.06] border border-white/10 focus:border-[#C6B39A] focus:bg-white/[0.09] text-xs text-white placeholder-white/30 outline-none transition-all resize-none"
+                    />
+                  </div>
+
+                  <motion.button
+                    whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
+                    whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="mt-1 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-[#C6B39A] hover:bg-[#D5C5AE] text-[#1A0735] font-bold text-xs tracking-wide shadow-sm transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Enviando mensaje...</span>
+                      </>
+                    ) : formSent ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-800" />
+                        <span>¡Mensaje enviado con éxito!</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Enviar mensaje</span>
+                        <Send className="w-3 h-3" />
+                      </>
+                    )}
+                  </motion.button>
+                </form>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
     </div>

@@ -21,6 +21,8 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
+  max-width: 100%;
 }
 
 body {
@@ -29,4 +31,8 @@ body {
   font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
   margin: 0;
   padding: 0;
+  overflow-x: clip;
+  max-width: 100%;
+  width: 100%;
+  touch-action: pan-y;
 }

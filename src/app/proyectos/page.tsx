@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import ProjectCarousel from "@/components/ProjectCarousel";
@@ -39,11 +39,23 @@ const categories = ["Todos", "UX/UI Design", "Product Design", "Design Engineeri
 
 export default function ProyectosPage() {
   const [selectedCategory, setSelectedCategory] = useState("Todos");
+  const [projectsList, setProjectsList] = useState(allProjects);
+
+  useEffect(() => {
+    fetch("/api/projects")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setProjectsList(data);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const filteredProjects =
     selectedCategory === "Todos"
-      ? allProjects
-      : allProjects.filter((p) => p.category === selectedCategory);
+      ? projectsList
+      : projectsList.filter((p) => p.category === selectedCategory);
 
   return (
     <div className="min-h-screen bg-[#1A0735] text-white flex flex-col font-sans selection:bg-[#8D3A3C] selection:text-white relative overflow-hidden">

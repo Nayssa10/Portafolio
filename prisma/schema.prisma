@@ -1,0 +1,79 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  subtitle    String?  @default("")
+  category    String
+  highlight   String?  @default("")
+  color       String?  @default("from-[#8D3A3C]/40 via-[#220D3E]/80 to-[#1A0735]")
+  description String
+  problem     String?
+  solution    String?
+  impact      String?
+  featured    Boolean  @default(true)
+  order       Int      @default(0)
+  tags        String[]
+  tools       String[]
+  images      String[]
+  metrics     Json?
+  caseStudy   Json?
+  link        String?
+  github      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Skill {
+  id          String   @id @default(cuid())
+  badge       String?  @default("01 · Experiencia")
+  category    String
+  title       String
+  description String
+  tags        String[]
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Profile {
+  id            String   @id @default("profile")
+  name          String   @default("Nayssa Chu Bustamante")
+  title         String   @default("Diseño UX/UI & Desarrollo Front-End")
+  heroSubtitle  String   @default("Diseño interfaces intuitivas, elegantes y técnicamente viables.")
+  bio           String   @default("Diseño interfaces intuitivas, elegantes y técnicamente viables.")
+  aboutTitle    String   @default("Sobre mí")
+  aboutText     String   @default("Estudiante de 8vo ciclo de Ingeniería de Sistemas e Informática. Lo que más me apasiona es el desarrollo Front-End y el diseño UX/UI. Me interesa no solo que una aplicación o página web funcione, sino también que sea intuitiva, visualmente atractiva y que realmente facilite la experiencia de quien la utiliza.")
+  email         String   @default("nayssa1310@gmail.com")
+  available     Boolean  @default(true)
+  availableText String   @default("Disponible para proyectos & prácticas")
+  location      String   @default("Lima, Perú")
+  linkedin      String   @default("https://www.linkedin.com/in/nayssa")
+  github        String   @default("https://github.com/Nayssa10")
+  updatedAt     DateTime @updatedAt
+}
