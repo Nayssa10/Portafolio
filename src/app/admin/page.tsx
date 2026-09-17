@@ -105,7 +105,7 @@ export default function AdminDashboardPage() {
     slug: "",
     category: "UX/UI Design",
     highlight: "",
-    color: "from-[#8D3A3C]/40 via-[#220D3E]/80 to-[#1A0735]",
+    color: "from-[#4D0E13]/60 via-[#22080C]/90 to-[#140507]",
     description: "",
     problem: "",
     solution: "",
@@ -258,7 +258,7 @@ export default function AdminDashboardPage() {
         slug: autoSlug,
         color:
           projectForm.color ||
-          "from-[#8D3A3C]/40 via-[#220D3E]/80 to-[#1A0735]",
+          "from-[#4D0E13]/60 via-[#22080C]/90 to-[#140507]",
       };
 
       const res = await fetch(url, {
@@ -369,37 +369,37 @@ export default function AdminDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#17052E] text-white flex items-center justify-center">
+      <div className="min-h-screen bg-[#160407] text-[#EEE4DA] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-[#D9C7B2] border-t-transparent rounded-full animate-spin" />
-          <p className="font-serif italic text-sm text-[#D9C7B2]">Cargando panel de gestión...</p>
+          <div className="w-8 h-8 border-2 border-[#D8C4AC] border-t-transparent rounded-full animate-spin" />
+          <p className="font-serif italic text-sm text-[#D8C4AC]">Cargando panel de gestión...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#17052E] via-[#1A0735] to-[#120326] text-[#F7F3EC] flex flex-col md:flex-row font-sans selection:bg-[#8D3A3C] selection:text-white relative">
+    <div className="min-h-screen bg-gradient-to-b from-[#160407] via-[#20070A] to-[#120305] text-[#EEE4DA] flex flex-col md:flex-row font-sans selection:bg-[#4D0E13] selection:text-[#EEE4DA] relative">
       {/* Ambient background glows */}
-      <div className="absolute top-0 right-1/4 w-[480px] h-[480px] bg-[#3B1254]/30 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-1/4 left-64 w-[480px] h-[480px] bg-[#D9C7B2]/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-0 right-1/4 w-[480px] h-[480px] bg-[#4D0E13]/35 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-1/4 left-64 w-[480px] h-[480px] bg-[#C8A49F]/15 rounded-full blur-[150px] pointer-events-none" />
 
       {/* FIXED LEFT SIDEBAR */}
-      <aside className="md:fixed md:inset-y-0 md:left-0 md:w-64 w-full bg-[#17052E]/95 border-b md:border-b-0 md:border-r border-[#D9C7B2]/20 flex flex-col justify-between z-30 backdrop-blur-xl shadow-2xl shrink-0">
+      <aside className="md:fixed md:inset-y-0 md:left-0 md:w-64 w-full bg-[#160407]/95 border-b md:border-b-0 md:border-r border-[#D8C4AC]/20 flex flex-col justify-between z-30 backdrop-blur-xl shadow-2xl shrink-0">
         {/* Top: Brand & User Info */}
-        <div className="p-5 sm:p-6 border-b border-[#D9C7B2]/15">
+        <div className="p-5 sm:p-6 border-b border-[#D8C4AC]/15">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#2D0E44] border border-[#D9C7B2]/40 flex items-center justify-center text-[#D9C7B2] font-serif italic text-xl shadow-inner shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-[#4D0E13] border border-[#D8C4AC]/40 flex items-center justify-center text-[#D8C4AC] font-serif italic text-xl shadow-inner shrink-0">
               N
             </div>
             <div className="min-w-0">
               <h1 className="font-serif italic text-base leading-tight text-white flex items-center gap-1.5">
                 <span>Panel de Gestión</span>
-                <span className="text-[9px] uppercase font-mono tracking-widest px-2 py-0.5 rounded-full bg-[#8D3A3C]/40 text-[#FFD6D8] border border-[#8D3A3C]/60 not-italic font-bold">
+                <span className="text-[9px] uppercase font-mono tracking-widest px-2 py-0.5 rounded-full bg-[#4D0E13] text-[#EEE4DA] border border-[#C8A49F]/40 not-italic font-bold">
                   Admin
                 </span>
               </h1>
-              <p className="text-[11px] font-mono text-[#DECDBB]/80 font-medium truncate mt-0.5">
+              <p className="text-[11px] font-mono text-[#D8C4AC]/80 font-medium truncate mt-0.5">
                 {profile?.name || "Nayssa Chu Bustamante"}
               </p>
             </div>
@@ -413,8 +413,8 @@ export default function AdminDashboardPage() {
             onClick={() => setActiveTab("profile")}
             className={`flex-1 md:flex-none flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "profile"
-                ? "bg-[#D9C7B2] text-[#1A0735] shadow-lg shadow-black/40 font-bold"
-                : "text-[#DECDBB] hover:text-white hover:bg-white/[0.08]"
+                ? "bg-[#D8C4AC] text-[#140507] shadow-lg shadow-black/40 font-bold"
+                : "text-[#D8C4AC]/80 hover:text-[#EEE4DA] hover:bg-white/[0.06]"
             }`}
           >
             <User className="w-4 h-4 shrink-0" />
@@ -430,8 +430,8 @@ export default function AdminDashboardPage() {
             }}
             className={`flex-1 md:flex-none flex items-center justify-between gap-2.5 px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "projects"
-                ? "bg-[#D9C7B2] text-[#1A0735] shadow-lg shadow-black/40 font-bold"
-                : "text-[#DECDBB] hover:text-white hover:bg-white/[0.08]"
+                ? "bg-[#D8C4AC] text-[#140507] shadow-lg shadow-black/40 font-bold"
+                : "text-[#D8C4AC]/80 hover:text-[#EEE4DA] hover:bg-white/[0.06]"
             }`}
           >
             <div className="flex items-center gap-2.5">
@@ -441,8 +441,8 @@ export default function AdminDashboardPage() {
             <span
               className={`text-[10px] font-mono px-2 py-0.5 rounded-md font-bold ${
                 activeTab === "projects"
-                  ? "bg-[#1A0735]/20 text-[#1A0735]"
-                  : "bg-black/40 text-white"
+                  ? "bg-[#140507]/20 text-[#140507]"
+                  : "bg-[#4D0E13]/60 text-[#EEE4DA]"
               }`}
             >
               {projects.length}
@@ -458,8 +458,8 @@ export default function AdminDashboardPage() {
             }}
             className={`flex-1 md:flex-none flex items-center justify-between gap-2.5 px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "skills"
-                ? "bg-[#D9C7B2] text-[#1A0735] shadow-lg shadow-black/40 font-bold"
-                : "text-[#DECDBB] hover:text-white hover:bg-white/[0.08]"
+                ? "bg-[#D8C4AC] text-[#140507] shadow-lg shadow-black/40 font-bold"
+                : "text-[#D8C4AC]/80 hover:text-[#EEE4DA] hover:bg-white/[0.06]"
             }`}
           >
             <div className="flex items-center gap-2.5">
@@ -469,8 +469,8 @@ export default function AdminDashboardPage() {
             <span
               className={`text-[10px] font-mono px-2 py-0.5 rounded-md font-bold ${
                 activeTab === "skills"
-                  ? "bg-[#1A0735]/20 text-[#1A0735]"
-                  : "bg-black/40 text-white"
+                  ? "bg-[#140507]/20 text-[#140507]"
+                  : "bg-[#4D0E13]/60 text-[#EEE4DA]"
               }`}
             >
               {skills.length}
@@ -482,8 +482,8 @@ export default function AdminDashboardPage() {
             onClick={() => setActiveTab("messages")}
             className={`flex-1 md:flex-none flex items-center justify-between gap-2.5 px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "messages"
-                ? "bg-[#D9C7B2] text-[#1A0735] shadow-lg shadow-black/40 font-bold"
-                : "text-[#DECDBB] hover:text-white hover:bg-white/[0.08]"
+                ? "bg-[#D8C4AC] text-[#140507] shadow-lg shadow-black/40 font-bold"
+                : "text-[#D8C4AC]/80 hover:text-[#EEE4DA] hover:bg-white/[0.06]"
             }`}
           >
             <div className="flex items-center gap-2.5">
@@ -491,7 +491,7 @@ export default function AdminDashboardPage() {
               <span>Mensajes</span>
             </div>
             {unreadMessagesCount > 0 && (
-              <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#8D3A3C] text-white shadow-sm">
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#4D0E13] text-[#EEE4DA] border border-[#C8A49F]/30 shadow-sm">
                 {unreadMessagesCount}
               </span>
             )}
@@ -499,19 +499,19 @@ export default function AdminDashboardPage() {
         </nav>
 
         {/* Bottom: External link & Logout */}
-        <div className="p-4 border-t border-[#D9C7B2]/15 flex flex-row md:flex-col gap-2">
+        <div className="p-4 border-t border-[#D8C4AC]/15 flex flex-row md:flex-col gap-2">
           <Link
             href="/"
             target="_blank"
-            className="flex-1 flex items-center justify-center gap-2 text-xs text-[#F7F3EC] hover:text-white px-3.5 py-2 rounded-xl bg-[#2D0E44] hover:bg-[#381254] transition-all border border-[#D9C7B2]/30 font-medium shadow-sm"
+            className="flex-1 flex items-center justify-center gap-2 text-xs text-[#EEE4DA] hover:text-white px-3.5 py-2 rounded-xl bg-[#24090D] hover:bg-[#340E14] transition-all border border-[#D8C4AC]/25 font-medium shadow-sm"
           >
-            <Eye className="w-3.5 h-3.5 text-[#D9C7B2]" />
+            <Eye className="w-3.5 h-3.5 text-[#D8C4AC]" />
             <span>Ver Portafolio</span>
             <ExternalLink className="w-3.5 h-3.5 opacity-60" />
           </Link>
           <button
             onClick={handleLogout}
-            className="flex items-center justify-center gap-2 text-xs text-[#FF9E9F] hover:text-white px-3.5 py-2 rounded-xl bg-[#8D3A3C]/30 hover:bg-[#8D3A3C]/55 transition-all border border-[#8D3A3C]/50 cursor-pointer font-medium"
+            className="flex items-center justify-center gap-2 text-xs text-[#C8A49F] hover:text-[#EEE4DA] px-3.5 py-2 rounded-xl bg-[#4D0E13]/40 hover:bg-[#4D0E13]/80 transition-all border border-[#C8A49F]/30 cursor-pointer font-medium"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Salir</span>
@@ -529,26 +529,26 @@ export default function AdminDashboardPage() {
                 <h2 className="font-serif italic text-2xl sm:text-3xl text-white font-normal">
                   Perfil, Hero & Sobre Mí
                 </h2>
-                <p className="text-xs text-[#DECDBB] mt-1 font-medium">
+                <p className="text-xs text-[#D8C4AC] mt-1 font-medium">
                   Administra todos los textos, títulos y enlaces mostrados en la cabecera y sección principal
                 </p>
               </div>
 
               {profileSuccessMsg && (
-                <div className="p-4 rounded-2xl bg-[#2D0E44] border border-[#D9C7B2]/50 text-[#D9C7B2] text-xs flex items-center gap-2.5 shadow-md font-medium">
-                  <CheckCircle className="w-4 h-4 text-[#D9C7B2]" />
+                <div className="p-4 rounded-2xl bg-[#4D0E13] border border-[#D8C4AC]/50 text-[#EEE4DA] text-xs flex items-center gap-2.5 shadow-md font-medium">
+                  <CheckCircle className="w-4 h-4 text-[#D8C4AC]" />
                   <span>{profileSuccessMsg}</span>
                 </div>
               )}
 
               <form
                 onSubmit={handleSaveProfile}
-                className="bg-[#230B37]/90 border border-[#D9C7B2]/30 rounded-3xl p-6 sm:p-8 space-y-6 backdrop-blur-xl shadow-2xl shadow-black/40"
+                className="bg-[#22080C]/90 border border-[#D8C4AC]/25 rounded-3xl p-6 sm:p-8 space-y-6 backdrop-blur-xl shadow-2xl shadow-black/40"
               >
                 {/* 1. Basic Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                       Nombre
                     </label>
                     <input
@@ -557,11 +557,11 @@ export default function AdminDashboardPage() {
                       onChange={(e) =>
                         setProfile({ ...profile, name: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                       Título
                     </label>
                     <input
@@ -570,14 +570,14 @@ export default function AdminDashboardPage() {
                       onChange={(e) =>
                         setProfile({ ...profile, title: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                     />
                   </div>
                 </div>
 
                 {/* 2. Hero Subtitle */}
                 <div>
-                  <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                  <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                     Bajada del Hero
                   </label>
                   <textarea
@@ -587,13 +587,13 @@ export default function AdminDashboardPage() {
                       setProfile({ ...profile, heroSubtitle: e.target.value, bio: e.target.value })
                     }
                     placeholder="Diseño UX/UI & Desarrollo Front-End..."
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2] leading-relaxed"
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC] leading-relaxed"
                   />
                 </div>
 
                 {/* 3. Sobre Mí */}
                 <div>
-                  <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                  <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                     Sobre Mí
                   </label>
                   <textarea
@@ -603,12 +603,12 @@ export default function AdminDashboardPage() {
                       setProfile({ ...profile, aboutText: e.target.value })
                     }
                     placeholder="Estudiante de 8vo ciclo de Ingeniería de Sistemas e Informática..."
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2] leading-relaxed"
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC] leading-relaxed"
                   />
                 </div>
 
                 {/* 4. Availability Status */}
-                <div className="p-5 rounded-2xl bg-[#140424]/90 border border-[#D9C7B2]/20 space-y-4">
+                <div className="p-5 rounded-2xl bg-[#140406]/90 border border-[#D8C4AC]/20 space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="font-serif italic text-base text-white font-medium">
@@ -624,12 +624,12 @@ export default function AdminDashboardPage() {
                         }
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-[#2D0E44] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D9C7B2]"></div>
+                      <div className="w-11 h-6 bg-[#4D0E13] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D8C4AC]"></div>
                     </label>
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2]/90 font-medium mb-1">
+                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC]/90 font-medium mb-1">
                       Texto de disponibilidad
                     </label>
                     <input
@@ -639,7 +639,7 @@ export default function AdminDashboardPage() {
                         setProfile({ ...profile, availableText: e.target.value })
                       }
                       placeholder="Disponible para proyectos & prácticas"
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#1F0735] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#180508] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                     />
                   </div>
                 </div>
@@ -647,7 +647,7 @@ export default function AdminDashboardPage() {
                 {/* 5. Contact & Location */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                       Email de Contacto
                     </label>
                     <input
@@ -656,11 +656,11 @@ export default function AdminDashboardPage() {
                       onChange={(e) =>
                         setProfile({ ...profile, email: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                       Ubicación
                     </label>
                     <input
@@ -669,7 +669,7 @@ export default function AdminDashboardPage() {
                       onChange={(e) =>
                         setProfile({ ...profile, location: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                     />
                   </div>
                 </div>
@@ -677,7 +677,7 @@ export default function AdminDashboardPage() {
                 {/* 6. Social Links */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                       LinkedIn
                     </label>
                     <input
@@ -686,11 +686,11 @@ export default function AdminDashboardPage() {
                       onChange={(e) =>
                         setProfile({ ...profile, linkedin: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                       GitHub
                     </label>
                     <input
@@ -699,15 +699,15 @@ export default function AdminDashboardPage() {
                       onChange={(e) =>
                         setProfile({ ...profile, github: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                     />
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-4 border-t border-[#D9C7B2]/20">
+                <div className="flex justify-end pt-4 border-t border-[#D8C4AC]/20">
                   <button
                     type="submit"
-                    className="flex items-center gap-1.5 px-7 py-3 rounded-xl bg-[#D9C7B2] hover:bg-[#EADBCC] text-[#1A0735] text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                    className="flex items-center gap-1.5 px-7 py-3 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
                   >
                     <Save className="w-4 h-4" />
                     <span>Guardar Cambios del Perfil</span>
@@ -722,7 +722,7 @@ export default function AdminDashboardPage() {
             isCreatingProject || editingProject ? (
               /* DEDICATED FULL VIEW (Clean dedicated window/screen without modal) */
               <div className="space-y-6 animate-in fade-in duration-200">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#D9C7B2]/20">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#D8C4AC]/20">
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
@@ -730,7 +730,7 @@ export default function AdminDashboardPage() {
                         setIsCreatingProject(false);
                         setEditingProject(null);
                       }}
-                      className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#D9C7B2] hover:text-white px-3.5 py-2 rounded-xl bg-[#230B37] hover:bg-[#2D0E44] border border-[#D9C7B2]/30 transition-all cursor-pointer shadow-sm"
+                      className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#D8C4AC] hover:text-white px-3.5 py-2 rounded-xl bg-[#22080C] hover:bg-[#2E0A0F] border border-[#D8C4AC]/30 transition-all cursor-pointer shadow-sm"
                     >
                       <ArrowLeft className="w-4 h-4" />
                       <span>Volver a proyectos</span>
@@ -747,14 +747,14 @@ export default function AdminDashboardPage() {
                         setIsCreatingProject(false);
                         setEditingProject(null);
                       }}
-                      className="px-4 py-2 rounded-xl text-[#DECDBB] hover:text-white text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                      className="px-4 py-2 rounded-xl text-[#D8C4AC] hover:text-white text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                     >
                       Cancelar
                     </button>
                     <button
                       type="button"
                       onClick={() => handleSaveProject()}
-                      className="px-5 py-2.5 rounded-xl bg-[#D9C7B2] hover:bg-[#EADBCC] text-[#1A0735] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
+                      className="px-5 py-2.5 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
                     >
                       <Save className="w-3.5 h-3.5" />
                       <span>Guardar Proyecto</span>
@@ -762,12 +762,12 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
 
-                <div className="bg-[#230B37]/90 border border-[#D9C7B2]/30 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-sm">
+                <div className="bg-[#22080C]/90 border border-[#D8C4AC]/25 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-sm">
                   <form onSubmit={handleSaveProject} className="space-y-6">
                     {/* Row 1: Título & Subtítulo */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                           Título *
                         </label>
                         <input
@@ -787,11 +787,11 @@ export default function AdminDashboardPage() {
                             })
                           }
                           placeholder="App de Productividad"
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                           Subtítulo
                         </label>
                         <input
@@ -801,7 +801,7 @@ export default function AdminDashboardPage() {
                             setProjectForm({ ...projectForm, subtitle: e.target.value })
                           }
                           placeholder="Caso de Estudio UX/UI · Mobile"
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                         />
                       </div>
                     </div>
@@ -809,7 +809,7 @@ export default function AdminDashboardPage() {
                     {/* Row 2: Categoría, Highlight & Orden/Destacado */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                           Categoría
                         </label>
                         <select
@@ -817,7 +817,7 @@ export default function AdminDashboardPage() {
                           onChange={(e) =>
                             setProjectForm({ ...projectForm, category: e.target.value })
                           }
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                         >
                           <option value="UX/UI Design">UX/UI Design</option>
                           <option value="Product Design">Product Design</option>
@@ -825,7 +825,7 @@ export default function AdminDashboardPage() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                           Highlight
                         </label>
                         <input
@@ -835,12 +835,12 @@ export default function AdminDashboardPage() {
                             setProjectForm({ ...projectForm, highlight: e.target.value })
                           }
                           placeholder="8 entrevistas · 3 iteraciones"
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                         />
                       </div>
                       <div className="flex items-center gap-5">
                         <div className="flex-1">
-                          <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                          <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                             Orden
                           </label>
                           <input
@@ -852,10 +852,10 @@ export default function AdminDashboardPage() {
                                 order: Number(e.target.value),
                               })
                             }
-                            className="w-full px-3 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium"
+                            className="w-full px-3 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium"
                           />
                         </div>
-                        <label className="flex items-center gap-2 cursor-pointer text-xs text-white font-medium mt-6 shrink-0">
+                        <label className="flex items-center gap-2 cursor-pointer text-xs text-[#EEE4DA] font-medium mt-6 shrink-0">
                           <input
                             type="checkbox"
                             checked={projectForm.featured ?? true}
@@ -865,7 +865,7 @@ export default function AdminDashboardPage() {
                                 featured: e.target.checked,
                               })
                             }
-                            className="accent-[#D9C7B2] w-4 h-4 cursor-pointer"
+                            className="accent-[#D8C4AC] w-4 h-4 cursor-pointer"
                           />
                           <span>Destacado</span>
                         </label>
@@ -874,7 +874,7 @@ export default function AdminDashboardPage() {
 
                     {/* Row 3: Descripción */}
                     <div>
-                      <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                      <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                         Descripción *
                       </label>
                       <textarea
@@ -888,14 +888,14 @@ export default function AdminDashboardPage() {
                           })
                         }
                         placeholder="Descripción breve del proyecto..."
-                        className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2] leading-relaxed"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC] leading-relaxed"
                       />
                     </div>
 
                     {/* Row 4: Caso de estudio (Problema, Solución, Impacto) */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                           Problema
                         </label>
                         <textarea
@@ -905,11 +905,11 @@ export default function AdminDashboardPage() {
                             setProjectForm({ ...projectForm, problem: e.target.value })
                           }
                           placeholder="El desafío o fricción..."
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                           Solución
                         </label>
                         <textarea
@@ -919,11 +919,11 @@ export default function AdminDashboardPage() {
                             setProjectForm({ ...projectForm, solution: e.target.value })
                           }
                           placeholder="La propuesta de diseño..."
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                           Impacto
                         </label>
                         <textarea
@@ -933,7 +933,7 @@ export default function AdminDashboardPage() {
                             setProjectForm({ ...projectForm, impact: e.target.value })
                           }
                           placeholder="Resultados métricos..."
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                         />
                       </div>
                     </div>
@@ -941,7 +941,7 @@ export default function AdminDashboardPage() {
                     {/* Row 5: Etiquetas & Herramientas */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                           Etiquetas
                         </label>
                         <input
@@ -957,11 +957,11 @@ export default function AdminDashboardPage() {
                             })
                           }
                           placeholder="UX Research, Figma, Design System"
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                           Herramientas
                         </label>
                         <input
@@ -977,14 +977,14 @@ export default function AdminDashboardPage() {
                             })
                           }
                           placeholder="Figma, Tailwind, Next.js"
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                         />
                       </div>
                     </div>
 
                     {/* Row 6: Imágenes (Real local file upload) */}
                     <div>
-                      <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                      <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                         Imágenes
                       </label>
 
@@ -999,20 +999,20 @@ export default function AdminDashboardPage() {
 
                       <div
                         onClick={() => fileInputRef.current?.click()}
-                        className="border-2 border-dashed border-[#D9C7B2]/30 hover:border-[#D9C7B2]/70 bg-[#140424]/80 hover:bg-[#140424] rounded-2xl p-6 text-center cursor-pointer transition-all flex items-center justify-center gap-4 group"
+                        className="border-2 border-dashed border-[#D8C4AC]/30 hover:border-[#D8C4AC]/70 bg-[#140406]/80 hover:bg-[#140406] rounded-2xl p-6 text-center cursor-pointer transition-all flex items-center justify-center gap-4 group"
                       >
-                        <div className="w-11 h-11 rounded-xl bg-[#2D0E44] border border-[#D9C7B2]/30 flex items-center justify-center text-[#D9C7B2] group-hover:scale-105 transition-transform shrink-0">
+                        <div className="w-11 h-11 rounded-xl bg-[#4D0E13] border border-[#D8C4AC]/30 flex items-center justify-center text-[#D8C4AC] group-hover:scale-105 transition-transform shrink-0">
                           {isUploadingImages ? (
-                            <Loader2 className="w-5 h-5 animate-spin text-[#D9C7B2]" />
+                            <Loader2 className="w-5 h-5 animate-spin text-[#D8C4AC]" />
                           ) : (
-                            <Upload className="w-5 h-5 text-[#D9C7B2]" />
+                            <Upload className="w-5 h-5 text-[#D8C4AC]" />
                           )}
                         </div>
                         <div className="text-left">
                           <p className="text-sm font-semibold text-white">
                             {isUploadingImages ? "Subiendo imágenes..." : "Subir imágenes locales"}
                           </p>
-                          <p className="text-xs text-[#DECDBB]/70 font-mono">
+                          <p className="text-xs text-[#D8C4AC]/70 font-mono">
                             PNG, JPG, SVG, WebP (se guardan directamente en el servidor local)
                           </p>
                         </div>
@@ -1028,7 +1028,7 @@ export default function AdminDashboardPage() {
                           {projectForm.images.map((imgUrl, index) => (
                             <div
                               key={index}
-                              className="relative group rounded-xl overflow-hidden border border-[#D9C7B2]/30 bg-[#140424] w-24 h-20 flex items-center justify-center shadow-md shrink-0"
+                              className="relative group rounded-xl overflow-hidden border border-[#D8C4AC]/30 bg-[#140406] w-24 h-20 flex items-center justify-center shadow-md shrink-0"
                             >
                               <img
                                 src={imgUrl}
@@ -1055,7 +1055,7 @@ export default function AdminDashboardPage() {
                     {/* Row 7: Enlaces */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                           Enlace en vivo
                         </label>
                         <input
@@ -1065,11 +1065,11 @@ export default function AdminDashboardPage() {
                             setProjectForm({ ...projectForm, link: e.target.value })
                           }
                           placeholder="https://..."
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                           GitHub
                         </label>
                         <input
@@ -1079,25 +1079,25 @@ export default function AdminDashboardPage() {
                             setProjectForm({ ...projectForm, github: e.target.value })
                           }
                           placeholder="https://github.com/..."
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                         />
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#D9C7B2]/20">
+                    <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#D8C4AC]/20">
                       <button
                         type="button"
                         onClick={() => {
                           setIsCreatingProject(false);
                           setEditingProject(null);
                         }}
-                        className="px-4 py-2.5 rounded-xl text-[#DECDBB] hover:text-white text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                        className="px-4 py-2.5 rounded-xl text-[#D8C4AC] hover:text-white text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                       >
                         Cancelar
                       </button>
                       <button
                         type="submit"
-                        className="px-6 py-2.5 rounded-xl bg-[#D9C7B2] hover:bg-[#EADBCC] text-[#1A0735] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-md cursor-pointer"
+                        className="px-6 py-2.5 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-md cursor-pointer"
                       >
                         <Save className="w-4 h-4" />
                         <span>Guardar Proyecto</span>
@@ -1114,7 +1114,7 @@ export default function AdminDashboardPage() {
                     <h2 className="font-serif italic text-2xl sm:text-3xl text-white font-normal">
                       Proyectos
                     </h2>
-                    <p className="text-xs text-[#DECDBB] mt-1 font-medium">
+                    <p className="text-xs text-[#D8C4AC] mt-1 font-medium">
                       Todos los proyectos mostrados en el portafolio
                     </p>
                   </div>
@@ -1128,7 +1128,7 @@ export default function AdminDashboardPage() {
                         slug: "",
                         category: "UX/UI Design",
                         highlight: "8 entrevistas · 3 iteraciones",
-                        color: "from-[#8D3A3C]/40 via-[#220D3E]/80 to-[#1A0735]",
+                        color: "from-[#4D0E13]/60 via-[#22080C]/90 to-[#140507]",
                         description: "",
                         problem: "",
                         solution: "",
@@ -1142,7 +1142,7 @@ export default function AdminDashboardPage() {
                         github: "",
                       });
                     }}
-                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#D9C7B2] hover:bg-[#EADBCC] text-[#1A0735] text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Nuevo Proyecto</span>
@@ -1153,38 +1153,38 @@ export default function AdminDashboardPage() {
                   {projects.map((proj) => (
                     <div
                       key={proj.id}
-                      className="bg-[#230B37]/80 border border-[#D9C7B2]/25 rounded-3xl p-6 flex flex-col justify-between hover:border-[#D9C7B2]/60 transition-all backdrop-blur-sm group shadow-xl shadow-black/40"
+                      className="bg-[#22080C]/90 border border-[#D8C4AC]/25 rounded-3xl p-6 flex flex-col justify-between hover:border-[#D8C4AC]/60 transition-all backdrop-blur-sm group shadow-xl shadow-black/40"
                     >
                       <div>
                         <div className="flex items-start justify-between gap-2 mb-2">
-                          <span className="text-[10px] font-mono font-bold text-[#D9C7B2] uppercase tracking-widest">
+                          <span className="text-[10px] font-mono font-bold text-[#D8C4AC] uppercase tracking-widest">
                             {proj.subtitle || proj.category}
                           </span>
                           <div className="flex items-center gap-2">
                             {proj.featured && (
-                              <span className="text-[9px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#8D3A3C]/40 text-[#FFD6D8] border border-[#8D3A3C]/60 font-bold">
+                              <span className="text-[9px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#4D0E13] text-[#EEE4DA] border border-[#C8A49F]/40 font-bold">
                                 Destacado
                               </span>
                             )}
-                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-black/40 text-white font-bold border border-[#D9C7B2]/20">
+                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#140406]/80 text-[#C8A49F] font-bold border border-[#D8C4AC]/20">
                               #{proj.order}
                             </span>
                           </div>
                         </div>
 
-                        <h3 className="font-serif italic text-xl text-white mb-1.5 group-hover:text-[#D9C7B2] transition-colors font-medium">
+                        <h3 className="font-serif italic text-xl text-white mb-1.5 group-hover:text-[#D8C4AC] transition-colors font-medium">
                           {proj.title}
                         </h3>
 
                         {proj.highlight && (
                           <div className="mb-2">
-                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#2D0E44] text-[#D9C7B2] border border-[#D9C7B2]/30">
+                            <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-md bg-[#4D0E13]/40 text-[#EEE4DA] border border-[#C8A49F]/40">
                               ✨ {proj.highlight}
                             </span>
                           </div>
                         )}
 
-                        <p className="text-xs text-[#DECDBB] line-clamp-2 mb-4 leading-relaxed font-normal">
+                        <p className="text-xs text-[#D8C4AC]/80 line-clamp-2 mb-4 leading-relaxed font-normal">
                           {proj.description}
                         </p>
 
@@ -1192,7 +1192,7 @@ export default function AdminDashboardPage() {
                           {proj.tags.slice(0, 4).map((tag, i) => (
                             <span
                               key={i}
-                              className="text-[10px] px-2.5 py-1 rounded-lg bg-[#140424] text-[#F7F3EC] border border-[#D9C7B2]/25 font-mono font-medium"
+                              className="text-[10px] px-2.5 py-1 rounded-lg bg-[#C8A49F]/15 text-[#EEE4DA] border border-[#C8A49F]/30 font-mono font-medium"
                             >
                               {tag}
                             </span>
@@ -1200,8 +1200,8 @@ export default function AdminDashboardPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-[#D9C7B2]/20">
-                        <span className="text-[11px] font-mono text-[#D9C7B2]/80 font-medium">
+                      <div className="flex items-center justify-between pt-4 border-t border-[#D8C4AC]/20">
+                        <span className="text-[11px] font-mono text-[#D8C4AC]/80 font-medium">
                           /{proj.slug}
                         </span>
                         <div className="flex items-center gap-2">
@@ -1210,14 +1210,14 @@ export default function AdminDashboardPage() {
                               setEditingProject(proj);
                               setProjectForm(proj);
                             }}
-                            className="p-2 rounded-xl bg-[#2D0E44] hover:bg-[#D9C7B2] hover:text-[#1A0735] text-white border border-[#D9C7B2]/30 transition-all cursor-pointer"
+                            className="p-2 rounded-xl bg-[#24090D] hover:bg-[#D8C4AC] hover:text-[#140507] text-[#EEE4DA] border border-[#D8C4AC]/25 transition-all cursor-pointer"
                             title="Editar"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => handleDeleteProject(proj.id)}
-                            className="p-2 rounded-xl bg-[#8D3A3C]/30 text-[#FFD6D8] hover:bg-[#8D3A3C]/60 border border-[#8D3A3C]/50 transition-all cursor-pointer"
+                            className="p-2 rounded-xl bg-[#4D0E13]/40 text-[#C8A49F] hover:bg-[#4D0E13] hover:text-[#EEE4DA] border border-[#4D0E13] transition-all cursor-pointer"
                             title="Eliminar"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -1236,7 +1236,7 @@ export default function AdminDashboardPage() {
             isCreatingSkill || editingSkill ? (
               /* DEDICATED FULL VIEW (Clean view without modal) */
               <div className="space-y-6 animate-in fade-in duration-200">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#D9C7B2]/20">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#D8C4AC]/20">
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
@@ -1244,7 +1244,7 @@ export default function AdminDashboardPage() {
                         setIsCreatingSkill(false);
                         setEditingSkill(null);
                       }}
-                      className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#D9C7B2] hover:text-white px-3.5 py-2 rounded-xl bg-[#230B37] hover:bg-[#2D0E44] border border-[#D9C7B2]/30 transition-all cursor-pointer shadow-sm"
+                      className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#D8C4AC] hover:text-white px-3.5 py-2 rounded-xl bg-[#22080C] hover:bg-[#2E0A0F] border border-[#D8C4AC]/30 transition-all cursor-pointer shadow-sm"
                     >
                       <ArrowLeft className="w-4 h-4" />
                       <span>Volver a habilidades</span>
@@ -1261,14 +1261,14 @@ export default function AdminDashboardPage() {
                         setIsCreatingSkill(false);
                         setEditingSkill(null);
                       }}
-                      className="px-4 py-2 rounded-xl text-[#DECDBB] hover:text-white text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                      className="px-4 py-2 rounded-xl text-[#D8C4AC] hover:text-white text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                     >
                       Cancelar
                     </button>
                     <button
                       type="button"
                       onClick={() => handleSaveSkill()}
-                      className="px-5 py-2.5 rounded-xl bg-[#D9C7B2] hover:bg-[#EADBCC] text-[#1A0735] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
+                      className="px-5 py-2.5 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
                     >
                       <Save className="w-3.5 h-3.5" />
                       <span>Guardar Habilidad</span>
@@ -1276,11 +1276,11 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
 
-                <div className="bg-[#230B37]/90 border border-[#D9C7B2]/30 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-sm">
+                <div className="bg-[#22080C]/90 border border-[#D8C4AC]/25 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-sm">
                   <form onSubmit={handleSaveSkill} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                           Badge
                         </label>
                         <input
@@ -1291,11 +1291,11 @@ export default function AdminDashboardPage() {
                             setSkillForm({ ...skillForm, badge: e.target.value })
                           }
                           placeholder="01 · Experiencia"
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                           Título *
                         </label>
                         <input
@@ -1306,11 +1306,11 @@ export default function AdminDashboardPage() {
                             setSkillForm({ ...skillForm, title: e.target.value })
                           }
                           placeholder="Diseño UX/UI"
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                           Categoría
                         </label>
                         <input
@@ -1320,13 +1320,13 @@ export default function AdminDashboardPage() {
                             setSkillForm({ ...skillForm, category: e.target.value })
                           }
                           placeholder="UX/UI Design"
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                      <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                         Descripción *
                       </label>
                       <textarea
@@ -1339,12 +1339,12 @@ export default function AdminDashboardPage() {
                             description: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2] leading-relaxed"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC] leading-relaxed"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-1.5">
+                      <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
                         Tecnologías
                       </label>
                       <input
@@ -1360,24 +1360,24 @@ export default function AdminDashboardPage() {
                           })
                         }
                         placeholder="Next.js, React, Tailwind CSS, TypeScript"
-                        className="w-full px-4 py-2.5 rounded-xl bg-[#140424] border border-[#D9C7B2]/30 text-white text-xs font-medium focus:outline-none focus:border-[#D9C7B2]"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
                       />
                     </div>
 
-                    <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#D9C7B2]/20">
+                    <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#D8C4AC]/20">
                       <button
                         type="button"
                         onClick={() => {
                           setIsCreatingSkill(false);
                           setEditingSkill(null);
                         }}
-                        className="px-4 py-2.5 rounded-xl text-[#DECDBB] hover:text-white text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                        className="px-4 py-2.5 rounded-xl text-[#D8C4AC] hover:text-white text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
                       >
                         Cancelar
                       </button>
                       <button
                         type="submit"
-                        className="px-6 py-2.5 rounded-xl bg-[#D9C7B2] hover:bg-[#EADBCC] text-[#1A0735] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-md cursor-pointer"
+                        className="px-6 py-2.5 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-md cursor-pointer"
                       >
                         <Save className="w-4 h-4" />
                         <span>Guardar Habilidad</span>
@@ -1394,7 +1394,7 @@ export default function AdminDashboardPage() {
                     <h2 className="font-serif italic text-2xl sm:text-3xl text-white font-normal">
                       Habilidades
                     </h2>
-                    <p className="text-xs text-[#DECDBB] mt-1 font-medium">
+                    <p className="text-xs text-[#D8C4AC] mt-1 font-medium">
                       Administra las 3 columnas y tecnologías exhibidas en la sección de habilidades
                     </p>
                   </div>
@@ -1411,7 +1411,7 @@ export default function AdminDashboardPage() {
                         order: skills.length,
                       });
                     }}
-                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#D9C7B2] hover:bg-[#EADBCC] text-[#1A0735] text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Nueva Habilidad</span>
@@ -1422,35 +1422,35 @@ export default function AdminDashboardPage() {
                   {skills.map((s) => (
                     <div
                       key={s.id}
-                      className="bg-[#230B37]/80 border border-[#D9C7B2]/25 rounded-3xl p-6 flex flex-col justify-between backdrop-blur-sm shadow-xl shadow-black/40 text-center"
+                      className="bg-[#22080C]/90 border border-[#D8C4AC]/25 rounded-3xl p-6 flex flex-col justify-between backdrop-blur-sm shadow-xl shadow-black/40 text-center"
                     >
                       <div>
-                        <span className="text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-bold block mb-1">
+                        <span className="text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-bold block mb-1">
                           {s.badge || s.category}
                         </span>
                         <h3 className="font-serif italic text-lg text-white font-medium mb-2">
                           {s.title}
                         </h3>
-                        <p className="text-xs text-[#DECDBB] mb-4 leading-relaxed font-normal">
+                        <p className="text-xs text-[#D8C4AC]/80 mb-4 leading-relaxed font-normal">
                           {s.description}
                         </p>
-                        <div className="text-[11px] font-mono text-[#D9C7B2]/90 font-medium">
+                        <div className="text-[11px] font-mono text-[#C8A49F] font-medium">
                           {s.tags.join(" · ")}
                         </div>
                       </div>
-                      <div className="flex justify-center gap-2 pt-4 border-t border-[#D9C7B2]/20 mt-5">
+                      <div className="flex justify-center gap-2 pt-4 border-t border-[#D8C4AC]/20 mt-5">
                         <button
                           onClick={() => {
                             setEditingSkill(s);
                             setSkillForm(s);
                           }}
-                          className="p-2 rounded-xl bg-[#2D0E44] text-white hover:bg-[#D9C7B2] hover:text-[#1A0735] border border-[#D9C7B2]/30 transition-colors cursor-pointer"
+                          className="p-2 rounded-xl bg-[#24090D] text-[#EEE4DA] hover:bg-[#D8C4AC] hover:text-[#140507] border border-[#D8C4AC]/25 transition-colors cursor-pointer"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => handleDeleteSkill(s.id)}
-                          className="p-2 rounded-xl bg-[#8D3A3C]/30 text-[#FFD6D8] hover:bg-[#8D3A3C]/60 border border-[#8D3A3C]/50 transition-colors cursor-pointer"
+                          className="p-2 rounded-xl bg-[#4D0E13]/40 text-[#C8A49F] hover:bg-[#4D0E13] hover:text-[#EEE4DA] border border-[#4D0E13] transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -1470,37 +1470,37 @@ export default function AdminDashboardPage() {
                   <h2 className="font-serif italic text-2xl sm:text-3xl text-white font-normal flex items-center gap-3">
                     Bandeja de Mensajes
                     {unreadMessagesCount > 0 && (
-                      <span className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#8D3A3C] text-white border border-[#8D3A3C] not-italic shadow-sm font-bold">
+                      <span className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#4D0E13] text-[#EEE4DA] border border-[#C8A49F]/40 not-italic shadow-sm font-bold">
                         {unreadMessagesCount} nuevos
                       </span>
                     )}
                   </h2>
-                  <p className="text-xs text-[#DECDBB] mt-1 font-medium">
+                  <p className="text-xs text-[#D8C4AC] mt-1 font-medium">
                     Mensajes enviados directamente desde tu sitio
                   </p>
                 </div>
               </div>
 
               {/* Status banner */}
-              <div className="p-5 rounded-3xl bg-[#230B37]/90 border border-[#D9C7B2]/30 flex items-start gap-3.5 backdrop-blur-md shadow-lg shadow-black/20">
-                <Mail className="w-4 h-4 text-[#D9C7B2] shrink-0 mt-0.5" />
+              <div className="p-5 rounded-3xl bg-[#22080C]/90 border border-[#D8C4AC]/25 flex items-start gap-3.5 backdrop-blur-md shadow-lg shadow-black/20">
+                <Mail className="w-4 h-4 text-[#D8C4AC] shrink-0 mt-0.5" />
                 <div className="text-xs space-y-1">
                   <p className="font-semibold text-white font-serif italic text-sm">
                     Recepción en Base de Datos & Gmail
                   </p>
-                  <p className="text-[#DECDBB] font-normal leading-relaxed">
-                    Cada mensaje queda registrado de forma permanente en tu base de datos PostgreSQL. Para recibirlos también al instante en tu correo (<strong>nayssa1310@gmail.com</strong>), configurá tu Contraseña de Aplicación de 16 caracteres en <code className="bg-[#140424] px-1.5 py-0.5 rounded text-[#D9C7B2] font-mono text-[11px] border border-[#D9C7B2]/30">.env.local</code>.
+                  <p className="text-[#D8C4AC]/80 font-normal leading-relaxed">
+                    Cada mensaje queda registrado de forma permanente en tu base de datos PostgreSQL. Para recibirlos también al instante en tu correo (<strong>nayssa1310@gmail.com</strong>), configurá tu Contraseña de Aplicación de 16 caracteres en <code className="bg-[#140406] px-1.5 py-0.5 rounded text-[#D8C4AC] font-mono text-[11px] border border-[#D8C4AC]/25">.env.local</code>.
                   </p>
                 </div>
               </div>
 
               {messages.length === 0 ? (
-                <div className="text-center py-16 bg-[#230B37]/60 rounded-3xl border border-[#D9C7B2]/20 backdrop-blur-sm">
-                  <Inbox className="w-8 h-8 text-[#D9C7B2]/60 mx-auto mb-3" />
+                <div className="text-center py-16 bg-[#22080C]/60 rounded-3xl border border-[#D8C4AC]/20 backdrop-blur-sm">
+                  <Inbox className="w-8 h-8 text-[#D8C4AC]/60 mx-auto mb-3" />
                   <p className="font-serif italic text-base text-white">
                     Bandeja limpia por ahora
                   </p>
-                  <p className="text-xs text-[#DECDBB] mt-1">
+                  <p className="text-xs text-[#D8C4AC]/70 mt-1">
                     Los mensajes que te envíen aparecerán organizados aquí.
                   </p>
                 </div>
@@ -1511,23 +1511,23 @@ export default function AdminDashboardPage() {
                       key={msg.id}
                       className={`p-6 rounded-3xl border transition-all ${
                         msg.read
-                          ? "bg-[#230B37]/60 border-[#D9C7B2]/20"
-                          : "bg-[#230B37] border-[#D9C7B2]/50 shadow-xl shadow-black/40"
+                          ? "bg-[#22080C]/60 border-[#D8C4AC]/20"
+                          : "bg-[#22080C] border-[#D8C4AC]/50 shadow-xl shadow-black/40"
                       }`}
                     >
                       <div className="flex items-start justify-between gap-4 mb-3">
                         <div className="flex items-center gap-2.5">
                           {!msg.read && (
-                            <span className="w-2 h-2 rounded-full bg-[#D9C7B2] shrink-0 animate-pulse" />
+                            <span className="w-2 h-2 rounded-full bg-[#D8C4AC] shrink-0 animate-pulse" />
                           )}
                           <h4 className="font-serif italic text-base text-white font-medium">
                             {msg.name}
                           </h4>
-                          <span className="text-xs text-[#D9C7B2] font-mono font-medium">
+                          <span className="text-xs text-[#D8C4AC] font-mono font-medium">
                             &lt;{msg.email}&gt;
                           </span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#DECDBB]">
+                        <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#D8C4AC]/70">
                           <Clock className="w-3 h-3" />
                           <span>
                             {new Date(msg.createdAt).toLocaleString("es-PE", {
@@ -1541,14 +1541,14 @@ export default function AdminDashboardPage() {
                         </div>
                       </div>
 
-                      <p className="text-xs text-[#F7F3EC] bg-[#140424] p-4 rounded-2xl border border-[#D9C7B2]/25 whitespace-pre-wrap leading-relaxed my-3 font-normal">
+                      <p className="text-xs text-[#EEE4DA] bg-[#140406] p-4 rounded-2xl border border-[#D8C4AC]/25 whitespace-pre-wrap leading-relaxed my-3 font-normal">
                         {msg.message}
                       </p>
 
                       <div className="flex items-center justify-between pt-2">
                         <a
                           href={`mailto:${msg.email}?subject=Respuesta a tu mensaje desde mi portafolio`}
-                          className="inline-flex items-center gap-1.5 text-xs text-[#D9C7B2] hover:text-white font-mono font-medium transition-colors"
+                          className="inline-flex items-center gap-1.5 text-xs text-[#D8C4AC] hover:text-white font-mono font-medium transition-colors"
                         >
                           <Mail className="w-3.5 h-3.5" />
                           <span>Responder por correo</span>
@@ -1562,8 +1562,8 @@ export default function AdminDashboardPage() {
                             }
                             className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl border transition-all cursor-pointer font-medium ${
                               msg.read
-                                ? "text-[#DECDBB] border-[#D9C7B2]/20 hover:text-white"
-                                : "text-[#1A0735] border-[#D9C7B2] bg-[#D9C7B2] hover:bg-[#EADBCC]"
+                                ? "text-[#D8C4AC] border-[#D8C4AC]/20 hover:text-white"
+                                : "text-[#140507] border-[#D8C4AC] bg-[#D8C4AC] hover:bg-[#EEE4DA]"
                             }`}
                           >
                             <Check className="w-3 h-3" />
@@ -1571,7 +1571,7 @@ export default function AdminDashboardPage() {
                           </button>
                           <button
                             onClick={() => handleDeleteMessage(msg.id)}
-                            className="p-2 rounded-xl bg-[#8D3A3C]/30 text-[#FFD6D8] hover:bg-[#8D3A3C]/60 border border-[#8D3A3C]/50 transition-colors cursor-pointer"
+                            className="p-2 rounded-xl bg-[#4D0E13]/40 text-[#C8A49F] hover:bg-[#4D0E13] hover:text-[#EEE4DA] border border-[#4D0E13] transition-colors cursor-pointer"
                             title="Eliminar mensaje"
                           >
                             <Trash2 className="w-3.5 h-3.5" />

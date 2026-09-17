@@ -64,7 +64,7 @@ export async function POST(request: Request) {
         slug,
         category: category || "UX/UI Design",
         highlight: highlight || "",
-        color: color || "from-[#8D3A3C]/40 via-[#220D3E]/80 to-[#1A0735]",
+        color: color || "from-[#4D0E13]/50 via-[#22080C]/90 to-[#140507]",
         description,
         problem: problem || null,
         solution: solution || null,

@@ -21,7 +21,7 @@ export const allProjects: Project[] = [
     tags: ["UX Research", "Figma", "Wireframes", "Design System"],
     category: "UX/UI Design",
     highlight: "8 entrevistas · 3 iteraciones de wireframes",
-    color: "from-[#8D3A3C]/40 via-[#220D3E]/80 to-[#1A0735]",
+    color: "from-[#4D0E13]/60 via-[#22080C]/90 to-[#140507]",
     images: [
       "/projects/student-app-1.svg",
       "/projects/student-app-2.svg",
@@ -38,7 +38,7 @@ export const allProjects: Project[] = [
     tags: ["UI Design", "Figma", "Heurísticas", "Front-End Ready"],
     category: "Product Design",
     highlight: "-35% fricción en checkout conceptual",
-    color: "from-[#7B694E]/40 via-[#220D3E]/80 to-[#1A0735]",
+    color: "from-[#D8C4AC]/25 via-[#22080C]/90 to-[#140507]",
     images: [
       "/projects/ecommerce-1.svg",
       "/projects/ecommerce-2.svg",
@@ -55,7 +55,7 @@ export const allProjects: Project[] = [
     tags: ["Next.js", "TypeScript", "Tailwind CSS", "Atomic Design"],
     category: "Design Engineering",
     highlight: "Tokens centralizados · 20+ componentes",
-    color: "from-[#C6B39A]/30 via-[#220D3E]/80 to-[#1A0735]",
+    color: "from-[#C8A49F]/30 via-[#22080C]/90 to-[#140507]",
     images: [
       "/projects/design-system-1.svg",
       "/projects/design-system-2.svg",
@@ -72,7 +72,7 @@ export const allProjects: Project[] = [
     tags: ["UX Research", "SaaS Dashboard", "Figma", "Design Tokens"],
     category: "UX/UI Design",
     highlight: "Historial clínico en 1 clic · WCAG AA",
-    color: "from-[#8D3A3C]/35 via-[#220D3E]/80 to-[#1A0735]",
+    color: "from-[#4D0E13]/50 via-[#22080C]/90 to-[#140507]",
     images: [
       "/projects/student-app-1.svg",
       "/projects/design-system-2.svg",
@@ -89,7 +89,7 @@ export const allProjects: Project[] = [
     tags: ["Mobile UX", "React Native", "Figma", "Design System"],
     category: "Product Design",
     highlight: "Onboarding guiado · +32% retención",
-    color: "from-[#7B694E]/35 via-[#220D3E]/80 to-[#1A0735]",
+    color: "from-[#D8C4AC]/20 via-[#22080C]/90 to-[#140507]",
     images: [
       "/projects/ecommerce-3.svg",
       "/projects/student-app-2.svg",
@@ -106,7 +106,7 @@ export const allProjects: Project[] = [
     tags: ["Next.js", "Tailwind CSS", "Framer Motion", "SEO Ready"],
     category: "Design Engineering",
     highlight: "98 Lighthouse Score · Carga ultrarrápida",
-    color: "from-[#C6B39A]/25 via-[#220D3E]/80 to-[#1A0735]",
+    color: "from-[#C8A49F]/25 via-[#22080C]/90 to-[#140507]",
     images: [
       "/projects/design-system-1.svg",
       "/projects/design-system-3.svg",

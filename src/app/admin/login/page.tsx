@@ -41,48 +41,48 @@ export default function AdminLoginPage() {
   };
 
   return (
-    // Base: Black Cherry / Deep Cosmic Plum (#150529)
-    <div className="min-h-screen bg-gradient-to-b from-[#17052E] via-[#1A0735] to-[#120326] text-[#F7F3EC] flex items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-[#8D3A3C] selection:text-white">
-      {/* Ambient plum & linen glow */}
-      <div className="absolute top-1/4 -left-20 w-[450px] h-[450px] bg-[#3B1254]/40 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-20 w-[450px] h-[450px] bg-[#D9C7B2]/12 rounded-full blur-[140px] pointer-events-none" />
+    // Base: Deep Velvet Burgundy Noir (#160407)
+    <div className="min-h-screen bg-gradient-to-b from-[#160407] via-[#20070A] to-[#120305] text-[#EEE4DA] flex items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-[#4D0E13] selection:text-[#EEE4DA]">
+      {/* Ambient Burgundy & Dusty Pink glow */}
+      <div className="absolute top-1/4 -left-20 w-[450px] h-[450px] bg-[#4D0E13]/40 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-1/4 -right-20 w-[450px] h-[450px] bg-[#C8A49F]/15 rounded-full blur-[140px] pointer-events-none" />
 
       {/* Floating Sparkle accent */}
-      <div className="absolute top-14 right-1/4 text-[#D9C7B2]/50 pointer-events-none">
+      <div className="absolute top-14 right-1/4 text-[#D8C4AC]/60 pointer-events-none">
         <Sparkles className="w-5 h-5" />
       </div>
 
       <div className="w-full max-w-md relative z-10">
-        {/* Card: Reserve Bordeaux (#250C3A) with Linen Beige (#D9C7B2) border */}
-        <div className="rounded-3xl bg-[#230B37]/90 border border-[#D9C7B2]/30 p-8 sm:p-10 backdrop-blur-2xl shadow-2xl shadow-black/80 relative">
+        {/* Card: Deep Burgundy Surface (#22080C) with Sand (#D8C4AC) border */}
+        <div className="rounded-3xl bg-[#22080C]/90 border border-[#D8C4AC]/25 p-8 sm:p-10 backdrop-blur-2xl shadow-2xl shadow-black/80 relative">
           {/* Header */}
           <div className="text-center mb-8">
-            <span className="inline-block text-[11px] font-mono uppercase tracking-[0.25em] text-[#D9C7B2] font-semibold mb-3">
+            <span className="inline-block text-[11px] font-mono uppercase tracking-[0.25em] text-[#D8C4AC] font-semibold mb-3">
               Área Privada
             </span>
-            <h1 className="font-serif italic text-3xl sm:text-4xl text-[#F7F3EC] font-normal tracking-tight">
+            <h1 className="font-serif italic text-3xl sm:text-4xl text-[#EEE4DA] font-normal tracking-tight">
               Gestión del Portafolio
             </h1>
-            <p className="text-xs text-[#DECDBB]/80 mt-2 font-normal">
+            <p className="text-xs text-[#D8C4AC]/80 mt-2 font-normal">
               Ingresá tus credenciales para administrar tus contenidos
             </p>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-3.5 rounded-xl bg-[#8D3A3C]/40 border border-[#8D3A3C]/70 text-[#FFD6D8] text-xs flex items-center gap-2.5 shadow-sm font-medium">
-              <AlertCircle className="w-4 h-4 shrink-0 text-[#FF9E9F]" />
+            <div className="mb-6 p-3.5 rounded-xl bg-[#4D0E13]/60 border border-[#C8A49F]/40 text-[#EEE4DA] text-xs flex items-center gap-2.5 shadow-sm font-medium">
+              <AlertCircle className="w-4 h-4 shrink-0 text-[#C8A49F]" />
               <span>{error}</span>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-2">
+              <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-2">
                 Usuario
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#DECDBB]/60">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#C8A49F]/70">
                   <User className="w-4 h-4" />
                 </div>
                 <input
@@ -91,17 +91,17 @@ export default function AdminLoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Tu usuario"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#140424]/80 border border-[#D9C7B2]/30 text-white placeholder-[#DECDBB]/40 focus:outline-none focus:border-[#D9C7B2] focus:ring-1 focus:ring-[#D9C7B2]/40 transition-all text-xs font-normal"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#140406]/90 border border-[#D8C4AC]/25 text-[#EEE4DA] placeholder-[#C8A49F]/40 focus:outline-none focus:border-[#D8C4AC] focus:ring-1 focus:ring-[#D8C4AC]/40 transition-all text-xs font-normal"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D9C7B2] font-semibold mb-2">
+              <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-2">
                 Contraseña
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#DECDBB]/60">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#C8A49F]/70">
                   <Lock className="w-4 h-4" />
                 </div>
                 <input
@@ -110,19 +110,19 @@ export default function AdminLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#140424]/80 border border-[#D9C7B2]/30 text-white placeholder-[#DECDBB]/40 focus:outline-none focus:border-[#D9C7B2] focus:ring-1 focus:ring-[#D9C7B2]/40 transition-all text-xs font-normal"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#140406]/90 border border-[#D8C4AC]/25 text-[#EEE4DA] placeholder-[#C8A49F]/40 focus:outline-none focus:border-[#D8C4AC] focus:ring-1 focus:ring-[#D8C4AC]/40 transition-all text-xs font-normal"
                 />
               </div>
             </div>
 
-            {/* Primary button: Linen Beige (#D9C7B2) with Deep Plum text */}
+            {/* Primary button: Sand (#D8C4AC) with Deep Burgundy text */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-2 py-3.5 px-6 rounded-xl bg-[#D9C7B2] hover:bg-[#EADBCC] text-[#1A0735] font-bold text-xs uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-black/40 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full mt-2 py-3.5 px-6 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] font-bold text-xs uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-black/40 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {isLoading ? (
-                <div className="w-4 h-4 border-2 border-[#1A0735]/30 border-t-[#1A0735] rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-[#140507]/30 border-t-[#140507] rounded-full animate-spin" />
               ) : (
                 <>
                   <span>Ingresar al panel</span>
@@ -132,10 +132,10 @@ export default function AdminLoginPage() {
             </button>
           </form>
 
-          <div className="mt-8 text-center pt-6 border-t border-[#D9C7B2]/20">
+          <div className="mt-8 text-center pt-6 border-t border-[#D8C4AC]/20">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 text-xs text-[#DECDBB]/75 hover:text-white transition-colors"
+              className="inline-flex items-center gap-2 text-xs text-[#D8C4AC]/80 hover:text-[#EEE4DA] transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Volver al portafolio</span>

@@ -103,7 +103,7 @@ export default function ProjectCarousel({
     return (
       <div
         className={`relative w-full h-full min-h-[260px] sm:min-h-[300px] flex flex-col justify-between p-8 bg-gradient-to-br ${
-          color || "from-[#8D3A3C]/40 via-[#220D3E]/80 to-[#1A0735]"
+          color || "from-[#4D0E13]/60 via-[#22080C]/90 to-[#140507]"
         } ${className}`}
       >
         <div className="flex items-center justify-between">
@@ -116,7 +116,7 @@ export default function ProjectCarousel({
         {highlight && (
           <div className="py-4">
             <div className="p-4 rounded-2xl bg-black/35 backdrop-blur-sm border border-white/10">
-              <span className="text-xs sm:text-sm font-semibold text-[#C6B39A] flex items-center gap-2">
+              <span className="text-xs sm:text-sm font-semibold text-[#D8C4AC] flex items-center gap-2">
                 ✦ {highlight}
               </span>
             </div>
@@ -142,7 +142,7 @@ export default function ProjectCarousel({
       onMouseLeave={() => setIsHovered(false)}
       onFocus={() => setIsHovered(true)}
       onBlur={() => setIsHovered(false)}
-      className={`group/carousel relative w-full h-full min-h-[260px] sm:min-h-[320px] lg:min-h-[360px] overflow-hidden bg-[#0F041D] flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C6B39A] ${className}`}
+      className={`group/carousel relative w-full h-full min-h-[260px] sm:min-h-[320px] lg:min-h-[360px] overflow-hidden bg-[#140406] flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D8C4AC] ${className}`}
     >
       {/* Dynamic Slide Progress Bar */}
       {isMultiple && autoPlay && !isHovered && !isZoomed && (
@@ -152,7 +152,7 @@ export default function ProjectCarousel({
             initial={{ width: "0%" }}
             animate={{ width: "100%" }}
             transition={{ duration: autoPlayInterval / 1000, ease: "linear" }}
-            className="h-full bg-gradient-to-r from-[#8D3A3C] via-[#C6B39A] to-[#8D3A3C]"
+            className="h-full bg-gradient-to-r from-[#4D0E13] via-[#D8C4AC] to-[#4D0E13]"
           />
         </div>
       )}
@@ -209,7 +209,7 @@ export default function ProjectCarousel({
       {/* Top Right Controls: Counter Badge & Zoom */}
       <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
         {isMultiple && (
-          <span className="text-[11px] font-semibold tracking-wider px-2.5 py-1 rounded-full bg-black/60 text-[#C6B39A] backdrop-blur-md border border-white/20 shadow-lg">
+          <span className="text-[11px] font-semibold tracking-wider px-2.5 py-1 rounded-full bg-black/60 text-[#D8C4AC] backdrop-blur-md border border-white/20 shadow-lg">
             {currentIndex + 1} / {images.length}
           </span>
         )}
@@ -254,7 +254,7 @@ export default function ProjectCarousel({
       {/* Bottom Indicators & Highlight */}
       <div className="absolute bottom-3 inset-x-0 z-20 flex flex-col items-center gap-2 px-4 pointer-events-none">
         {highlight && (
-          <span className="hidden sm:inline-block text-[11px] font-medium text-[#C6B39A] bg-black/70 px-3 py-0.5 rounded-full border border-white/10 backdrop-blur-md max-w-[90%] truncate">
+          <span className="hidden sm:inline-block text-[11px] font-medium text-[#D8C4AC] bg-black/70 px-3 py-0.5 rounded-full border border-white/10 backdrop-blur-md max-w-[90%] truncate">
             ✦ {highlight}
           </span>
         )}
@@ -270,7 +270,7 @@ export default function ProjectCarousel({
                 aria-current={currentIndex === idx ? "true" : "false"}
                 className={`transition-all duration-300 rounded-full ${
                   currentIndex === idx
-                    ? "w-6 h-2 bg-[#C6B39A] shadow-[0_0_8px_rgba(198,179,154,0.6)]"
+                    ? "w-6 h-2 bg-[#D8C4AC] shadow-[0_0_8px_rgba(216,196,172,0.6)]"
                     : "w-2 h-2 bg-white/40 hover:bg-white/80"
                 }`}
               />

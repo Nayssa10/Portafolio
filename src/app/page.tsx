@@ -80,9 +80,9 @@ function NextjsIcon({ className = "w-5 h-5" }: { className?: string }) {
       <circle cx="90" cy="90" r="90" fill="white" />
       <path
         d="M149.508 157.438L69.1478 54H54V125.97H66.1136V69.3836L139.999 164.845C143.333 162.614 146.509 160.137 149.508 157.438Z"
-        fill="#1A0735"
+        fill="#140507"
       />
-      <rect x="115" y="54" width="12" height="72" fill="#1A0735" />
+      <rect x="115" y="54" width="12" height="72" fill="#140507" />
     </svg>
   );
 }
@@ -118,52 +118,52 @@ function GitIcon({ className = "w-5 h-5" }: { className?: string }) {
 
 const projectStars = [
   // Top header zone (1% - 15%)
-  { top: "2%", left: "6%", size: "w-5 h-5", delay: 0, duration: 5.5, color: "text-[#C6B39A]", type: "star" },
-  { top: "4%", right: "12%", size: "w-6 h-6", delay: 1.2, duration: 6, color: "text-[#8D3A3C]", type: "sparkle" },
-  { top: "7%", left: "24%", size: "w-3.5 h-3.5", delay: 2.1, duration: 4.8, color: "text-[#C6B39A]", type: "dot" },
-  { top: "9%", right: "28%", size: "w-4 h-4", delay: 0.8, duration: 5.2, color: "text-[#C6B39A]", type: "star" },
-  { top: "12%", left: "4%", size: "w-7 h-7", delay: 1.7, duration: 6.8, color: "text-[#8D3A3C]", type: "sparkle" },
-  { top: "15%", right: "6%", size: "w-5 h-5", delay: 2.9, duration: 5.4, color: "text-[#C6B39A]", type: "star" },
+  { top: "2%", left: "6%", size: "w-5 h-5", delay: 0, duration: 5.5, color: "text-[#D8C4AC]", type: "star" },
+  { top: "4%", right: "12%", size: "w-6 h-6", delay: 1.2, duration: 6, color: "text-[#C8A49F]", type: "sparkle" },
+  { top: "7%", left: "24%", size: "w-3.5 h-3.5", delay: 2.1, duration: 4.8, color: "text-[#D8C4AC]", type: "dot" },
+  { top: "9%", right: "28%", size: "w-4 h-4", delay: 0.8, duration: 5.2, color: "text-[#EEE4DA]", type: "star" },
+  { top: "12%", left: "4%", size: "w-7 h-7", delay: 1.7, duration: 6.8, color: "text-[#4D0E13]", type: "sparkle" },
+  { top: "15%", right: "6%", size: "w-5 h-5", delay: 2.9, duration: 5.4, color: "text-[#D8C4AC]", type: "star" },
 
   // Card 1 zone (18% - 32%)
-  { top: "18%", left: "12%", size: "w-3.5 h-3.5", delay: 0.5, duration: 4.5, color: "text-[#C6B39A]", type: "dot" },
-  { top: "21%", right: "16%", size: "w-6 h-6", delay: 1.9, duration: 6.2, color: "text-[#8D3A3C]", type: "sparkle" },
-  { top: "24%", left: "3%", size: "w-8 h-8", delay: 2.4, duration: 7.2, color: "text-[#8D3A3C]", type: "layers" },
-  { top: "26%", right: "4%", size: "w-4 h-4", delay: 0.3, duration: 5.1, color: "text-[#C6B39A]", type: "star" },
-  { top: "29%", left: "15%", size: "w-5 h-5", delay: 1.4, duration: 5.8, color: "text-[#C6B39A]", type: "sparkle" },
-  { top: "32%", right: "10%", size: "w-3.5 h-3.5", delay: 2.7, duration: 4.6, color: "text-[#8D3A3C]", type: "dot" },
+  { top: "18%", left: "12%", size: "w-3.5 h-3.5", delay: 0.5, duration: 4.5, color: "text-[#D8C4AC]", type: "dot" },
+  { top: "21%", right: "16%", size: "w-6 h-6", delay: 1.9, duration: 6.2, color: "text-[#C8A49F]", type: "sparkle" },
+  { top: "24%", left: "3%", size: "w-8 h-8", delay: 2.4, duration: 7.2, color: "text-[#4D0E13]", type: "layers" },
+  { top: "26%", right: "4%", size: "w-4 h-4", delay: 0.3, duration: 5.1, color: "text-[#D8C4AC]", type: "star" },
+  { top: "29%", left: "15%", size: "w-5 h-5", delay: 1.4, duration: 5.8, color: "text-[#EEE4DA]", type: "sparkle" },
+  { top: "32%", right: "10%", size: "w-3.5 h-3.5", delay: 2.7, duration: 4.6, color: "text-[#4D0E13]", type: "dot" },
 
   // Gap between Card 1 and Card 2 (35% - 45%)
-  { top: "35%", left: "7%", size: "w-5 h-5", delay: 0.9, duration: 5.6, color: "text-[#C6B39A]", type: "star" },
-  { top: "37%", right: "18%", size: "w-7 h-7", delay: 2.0, duration: 6.5, color: "text-[#8D3A3C]", type: "sparkle" },
-  { top: "40%", left: "20%", size: "w-4 h-4", delay: 1.1, duration: 4.9, color: "text-[#C6B39A]", type: "dot" },
-  { top: "42%", right: "3%", size: "w-9 h-9", delay: 0.6, duration: 7.8, color: "text-[#C6B39A]", type: "palette" },
-  { top: "45%", left: "4%", size: "w-6 h-6", delay: 2.3, duration: 6.1, color: "text-[#8D3A3C]", type: "sparkle" },
+  { top: "35%", left: "7%", size: "w-5 h-5", delay: 0.9, duration: 5.6, color: "text-[#D8C4AC]", type: "star" },
+  { top: "37%", right: "18%", size: "w-7 h-7", delay: 2.0, duration: 6.5, color: "text-[#C8A49F]", type: "sparkle" },
+  { top: "40%", left: "20%", size: "w-4 h-4", delay: 1.1, duration: 4.9, color: "text-[#D8C4AC]", type: "dot" },
+  { top: "42%", right: "3%", size: "w-9 h-9", delay: 0.6, duration: 7.8, color: "text-[#EEE4DA]", type: "palette" },
+  { top: "45%", left: "4%", size: "w-6 h-6", delay: 2.3, duration: 6.1, color: "text-[#4D0E13]", type: "sparkle" },
 
   // Card 2 zone (48% - 60%)
-  { top: "48%", right: "14%", size: "w-4 h-4", delay: 1.5, duration: 5.3, color: "text-[#C6B39A]", type: "star" },
-  { top: "51%", left: "10%", size: "w-5 h-5", delay: 2.8, duration: 6.0, color: "text-[#C6B39A]", type: "sparkle" },
-  { top: "53%", right: "5%", size: "w-3.5 h-3.5", delay: 0.4, duration: 4.7, color: "text-[#8D3A3C]", type: "dot" },
-  { top: "56%", left: "16%", size: "w-4 h-4", delay: 1.8, duration: 5.0, color: "text-[#C6B39A]", type: "star" },
-  { top: "59%", right: "11%", size: "w-7 h-7", delay: 2.5, duration: 6.7, color: "text-[#8D3A3C]", type: "sparkle" },
+  { top: "48%", right: "14%", size: "w-4 h-4", delay: 1.5, duration: 5.3, color: "text-[#D8C4AC]", type: "star" },
+  { top: "51%", left: "10%", size: "w-5 h-5", delay: 2.8, duration: 6.0, color: "text-[#EEE4DA]", type: "sparkle" },
+  { top: "53%", right: "5%", size: "w-3.5 h-3.5", delay: 0.4, duration: 4.7, color: "text-[#4D0E13]", type: "dot" },
+  { top: "56%", left: "16%", size: "w-4 h-4", delay: 1.8, duration: 5.0, color: "text-[#D8C4AC]", type: "star" },
+  { top: "59%", right: "11%", size: "w-7 h-7", delay: 2.5, duration: 6.7, color: "text-[#C8A49F]", type: "sparkle" },
 
   // Gap between Card 2 and Card 3 (62% - 72%)
-  { top: "62%", left: "3%", size: "w-8 h-8", delay: 0.7, duration: 8.0, color: "text-[#C6B39A]", type: "code" },
-  { top: "65%", right: "7%", size: "w-5 h-5", delay: 1.6, duration: 5.5, color: "text-[#C6B39A]", type: "star" },
-  { top: "67%", left: "12%", size: "w-3.5 h-3.5", delay: 2.2, duration: 4.8, color: "text-[#8D3A3C]", type: "dot" },
-  { top: "70%", right: "15%", size: "w-6 h-6", delay: 0.9, duration: 6.3, color: "text-[#8D3A3C]", type: "sparkle" },
-  { top: "72%", left: "5%", size: "w-4 h-4", delay: 2.6, duration: 5.2, color: "text-[#C6B39A]", type: "star" },
+  { top: "62%", left: "3%", size: "w-8 h-8", delay: 0.7, duration: 8.0, color: "text-[#D8C4AC]", type: "code" },
+  { top: "65%", right: "7%", size: "w-5 h-5", delay: 1.6, duration: 5.5, color: "text-[#EEE4DA]", type: "star" },
+  { top: "67%", left: "12%", size: "w-3.5 h-3.5", delay: 2.2, duration: 4.8, color: "text-[#4D0E13]", type: "dot" },
+  { top: "70%", right: "15%", size: "w-6 h-6", delay: 0.9, duration: 6.3, color: "text-[#C8A49F]", type: "sparkle" },
+  { top: "72%", left: "5%", size: "w-4 h-4", delay: 2.6, duration: 5.2, color: "text-[#D8C4AC]", type: "star" },
 
   // Card 3 & Bottom zone (75% - 98%)
-  { top: "75%", right: "4%", size: "w-6 h-6", delay: 1.3, duration: 5.9, color: "text-[#C6B39A]", type: "sparkle" },
-  { top: "78%", left: "14%", size: "w-4 h-4", delay: 0.2, duration: 4.6, color: "text-[#8D3A3C]", type: "dot" },
-  { top: "81%", right: "12%", size: "w-8 h-8", delay: 2.1, duration: 6.9, color: "text-[#8D3A3C]", type: "sparkle" },
-  { top: "84%", left: "6%", size: "w-5 h-5", delay: 1.7, duration: 5.7, color: "text-[#C6B39A]", type: "star" },
-  { top: "87%", right: "20%", size: "w-3.5 h-3.5", delay: 2.9, duration: 4.7, color: "text-[#C6B39A]", type: "dot" },
-  { top: "90%", left: "11%", size: "w-6 h-6", delay: 0.6, duration: 6.4, color: "text-[#8D3A3C]", type: "sparkle" },
-  { top: "93%", right: "6%", size: "w-4 h-4", delay: 1.4, duration: 5.1, color: "text-[#C6B39A]", type: "star" },
-  { top: "96%", left: "18%", size: "w-3.5 h-3.5", delay: 2.4, duration: 4.9, color: "text-[#8D3A3C]", type: "dot" },
-  { top: "98%", right: "13%", size: "w-5 h-5", delay: 1.0, duration: 5.8, color: "text-[#C6B39A]", type: "sparkle" },
+  { top: "75%", right: "4%", size: "w-6 h-6", delay: 1.3, duration: 5.9, color: "text-[#EEE4DA]", type: "sparkle" },
+  { top: "78%", left: "14%", size: "w-4 h-4", delay: 0.2, duration: 4.6, color: "text-[#4D0E13]", type: "dot" },
+  { top: "81%", right: "12%", size: "w-8 h-8", delay: 2.1, duration: 6.9, color: "text-[#C8A49F]", type: "sparkle" },
+  { top: "84%", left: "6%", size: "w-5 h-5", delay: 1.7, duration: 5.7, color: "text-[#D8C4AC]", type: "star" },
+  { top: "87%", right: "20%", size: "w-3.5 h-3.5", delay: 2.9, duration: 4.7, color: "text-[#D8C4AC]", type: "dot" },
+  { top: "90%", left: "11%", size: "w-6 h-6", delay: 0.6, duration: 6.4, color: "text-[#4D0E13]", type: "sparkle" },
+  { top: "93%", right: "6%", size: "w-4 h-4", delay: 1.4, duration: 5.1, color: "text-[#D8C4AC]", type: "star" },
+  { top: "96%", left: "18%", size: "w-3.5 h-3.5", delay: 2.4, duration: 4.9, color: "text-[#4D0E13]", type: "dot" },
+  { top: "98%", right: "13%", size: "w-5 h-5", delay: 1.0, duration: 5.8, color: "text-[#C8A49F]", type: "sparkle" },
 ];
 
 export default function Home() {
@@ -252,23 +252,23 @@ export default function Home() {
   const projects = liveProjects;
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#1A0735] text-white flex flex-col font-sans selection:bg-[#8D3A3C] selection:text-white">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#140507] text-[#EEE4DA] flex flex-col font-sans selection:bg-[#4D0E13] selection:text-[#EEE4DA]">
       {/* HERO SECTION: Exact layout from user reference with interactive motion */}
-      <section className="relative min-h-screen flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#16052F] via-[#1A0735] to-[#120426] px-6 sm:px-10 lg:px-16 py-6">
+      <section className="relative min-h-screen flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#160407] via-[#20070A] to-[#120305] px-6 sm:px-10 lg:px-16 py-6">
 
 
         {/* Floating Sparkles in the background */}
         <motion.div
           animate={{ y: [-15, 15, -15], opacity: [0.3, 0.8, 0.3] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-24 left-1/4 pointer-events-none text-[#C6B39A]/50"
+          className="absolute top-24 left-1/4 pointer-events-none text-[#D8C4AC]/50"
         >
           <Sparkles className="w-6 h-6" />
         </motion.div>
         <motion.div
           animate={{ y: [15, -15, 15], opacity: [0.2, 0.7, 0.2] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-          className="absolute top-36 right-1/4 pointer-events-none text-[#8D3A3C]/50"
+          className="absolute top-36 right-1/4 pointer-events-none text-[#C8A49F]/50"
         >
           <Sparkles className="w-5 h-5" />
         </motion.div>
@@ -285,27 +285,27 @@ export default function Home() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             href="#"
-            className="w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-[#C6B39A]/25 flex items-center justify-center font-serif font-bold text-2xl text-white shadow-lg transition-all"
+            className="w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-[#D8C4AC]/25 flex items-center justify-center font-serif font-bold text-2xl text-white shadow-lg transition-all"
           >
             N
           </motion.a>
 
           {/* Right Navigation & Action Icons */}
           <div className="flex items-center gap-4">
-            <nav className="hidden md:flex items-center gap-6 px-7 py-2.5 rounded-full bg-white/10 hover:bg-white/[0.14] backdrop-blur-md border border-[#C6B39A]/25 text-sm font-medium text-white/90 shadow-lg transition-all">
-              <a href="#perfil" className="hover:text-[#C6B39A] transition-colors">
+            <nav className="hidden md:flex items-center gap-6 px-7 py-2.5 rounded-full bg-white/10 hover:bg-white/[0.14] backdrop-blur-md border border-[#D8C4AC]/25 text-sm font-medium text-white/90 shadow-lg transition-all">
+              <a href="#perfil" className="hover:text-[#D8C4AC] transition-colors">
                 Perfil
               </a>
               <Link
                 href="/proyectos"
-                className="hover:text-[#C6B39A] transition-colors"
+                className="hover:text-[#D8C4AC] transition-colors"
               >
                 Proyectos
               </Link>
-              <a href="#habilidades" className="hover:text-[#C6B39A] transition-colors">
+              <a href="#habilidades" className="hover:text-[#D8C4AC] transition-colors">
                 Habilidades
               </a>
-              <a href="#contacto" className="hover:text-[#C6B39A] transition-colors">
+              <a href="#contacto" className="hover:text-[#D8C4AC] transition-colors">
                 Contacto
               </a>
             </nav>
@@ -316,7 +316,7 @@ export default function Home() {
                 whileTap={{ scale: 0.92 }}
                 onClick={copyEmail}
                 title="Copiar correo"
-                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-[#C6B39A]/25 flex items-center justify-center text-white/90 hover:text-white transition-all shadow-md"
+                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-[#D8C4AC]/25 flex items-center justify-center text-white/90 hover:text-white transition-all shadow-md"
               >
                 {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Mail className="w-4 h-4" />}
               </motion.button>
@@ -324,7 +324,7 @@ export default function Home() {
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.92 }}
                 href="#proyectos"
-                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-[#C6B39A]/25 flex items-center justify-center text-white/90 hover:text-white transition-all shadow-md"
+                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-[#D8C4AC]/25 flex items-center justify-center text-white/90 hover:text-white transition-all shadow-md"
               >
                 <Menu className="w-4 h-4" />
               </motion.a>
@@ -345,7 +345,7 @@ export default function Home() {
               {liveProfile.name.split(" ").length > 1 ? (
                 <>
                   {liveProfile.name.split(" ").slice(0, -1).join(" ")} <br />
-                  <span className="font-semibold bg-gradient-to-r from-white via-[#C6B39A] to-[#8D3A3C] bg-clip-text text-transparent">
+                  <span className="font-semibold bg-gradient-to-r from-[#EEE4DA] via-[#D8C4AC] to-[#C8A49F] bg-clip-text text-transparent">
                     {liveProfile.name.split(" ").slice(-1)[0]}
                   </span>
                 </>
@@ -355,7 +355,7 @@ export default function Home() {
             </h1>
 
             {liveProfile.available && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#220D3E]/80 border border-[#C6B39A]/35 text-[11px] font-semibold text-[#C6B39A] backdrop-blur-md">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#4D0E13]/50 border border-[#C8A49F]/40 text-[11px] font-semibold text-[#EEE4DA] backdrop-blur-md">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                 {liveProfile.availableText}
               </span>
@@ -414,7 +414,7 @@ export default function Home() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 href="#proyectos"
-                className="inline-flex items-center justify-center px-7 py-3 rounded-xl bg-[#C6B39A] hover:bg-[#D5C5AE] text-[#1A0735] font-bold text-xs sm:text-sm shadow-[0_0_20px_rgba(198,179,154,0.3)] hover:shadow-[0_0_30px_rgba(198,179,154,0.5)] transition-all"
+                className="inline-flex items-center justify-center px-7 py-3 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] font-bold text-xs sm:text-sm shadow-[0_0_20px_rgba(216,196,172,0.3)] hover:shadow-[0_0_30px_rgba(216,196,172,0.5)] transition-all"
               >
                 Ver Proyectos
               </motion.a>
@@ -423,7 +423,7 @@ export default function Home() {
         </div>
 
         {/* Bottom Row (Copyright, Scroll Icon, Socials) */}
-        <footer className="relative z-30 w-full max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-[#C6B39A]/15 text-xs text-white/50">
+        <footer className="relative z-30 w-full max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-[#D8C4AC]/15 text-xs text-white/50">
           {/* Left: Copyright */}
           <div className="order-2 sm:order-1">
             <span>© {new Date().getFullYear()} {liveProfile.name} · Todos los derechos reservados</span>
@@ -433,13 +433,13 @@ export default function Home() {
           <div className="order-1 sm:order-2 flex flex-col items-center gap-1.5 opacity-80 hover:opacity-100 transition-opacity">
             <a
               href="#proyectos"
-              className="w-5 h-9 rounded-full border-2 border-[#C6B39A]/40 flex items-start justify-center p-1 backdrop-blur-sm shadow-sm"
+              className="w-5 h-9 rounded-full border-2 border-[#D8C4AC]/40 flex items-start justify-center p-1 backdrop-blur-sm shadow-sm"
               aria-label="Hacer scroll hacia abajo"
             >
               <motion.div
                 animate={{ y: [0, 10, 0] }}
                 transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-                className="w-1.5 h-2 bg-[#C6B39A] rounded-full"
+                className="w-1.5 h-2 bg-[#D8C4AC] rounded-full"
               />
             </a>
           </div>
@@ -451,7 +451,7 @@ export default function Home() {
               whileTap={{ scale: 0.9 }}
               href={`mailto:${liveProfile.email}`}
               title="Email"
-              className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#C6B39A] hover:text-[#1A0735] text-white/90 border border-[#C6B39A]/30 backdrop-blur-md flex items-center justify-center transition-all shadow-lg"
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#D8C4AC] hover:text-[#140507] text-[#EEE4DA]/90 border border-[#D8C4AC]/30 backdrop-blur-md flex items-center justify-center transition-all shadow-lg"
             >
               <Mail className="w-4 h-4" />
             </motion.a>
@@ -463,7 +463,7 @@ export default function Home() {
               target="_blank"
               rel="noopener noreferrer"
               title="LinkedIn"
-              className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#C6B39A] hover:text-[#1A0735] text-white/90 border border-[#C6B39A]/30 backdrop-blur-md flex items-center justify-center transition-all shadow-lg"
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#D8C4AC] hover:text-[#140507] text-[#EEE4DA]/90 border border-[#D8C4AC]/30 backdrop-blur-md flex items-center justify-center transition-all shadow-lg"
             >
               <LinkedinIcon className="w-4 h-4" />
             </motion.a>
@@ -475,7 +475,7 @@ export default function Home() {
               target="_blank"
               rel="noopener noreferrer"
               title="GitHub"
-              className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#C6B39A] hover:text-[#1A0735] text-white/90 border border-[#C6B39A]/30 backdrop-blur-md flex items-center justify-center transition-all shadow-lg"
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-[#D8C4AC] hover:text-[#140507] text-[#EEE4DA]/90 border border-[#D8C4AC]/30 backdrop-blur-md flex items-center justify-center transition-all shadow-lg"
             >
               <GithubIcon className="w-4 h-4" />
             </motion.a>
@@ -484,10 +484,10 @@ export default function Home() {
       </section>
 
       {/* SELECTED WORK / CASE STUDIES - HORIZONTAL FEATURE ROWS */}
-      <section id="proyectos" className="relative w-full max-w-full py-24 sm:py-28 px-6 bg-gradient-to-b from-[#120426] via-[#1A0735] to-[#14052B] border-t border-[#C6B39A]/20 overflow-hidden overflow-x-clip [contain:paint]">
+      <section id="proyectos" className="relative w-full max-w-full py-24 sm:py-28 px-6 bg-gradient-to-b from-[#120305] via-[#160407] to-[#140507] border-t border-[#D8C4AC]/20 overflow-hidden overflow-x-clip [contain:paint]">
         {/* Ambient Atmospheric Glows */}
-        <div className="absolute top-1/4 -left-16 w-80 h-80 bg-[#8D3A3C]/20 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-1/3 -right-16 w-80 h-80 bg-[#C6B39A]/15 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute top-1/4 -left-16 w-80 h-80 bg-[#4D0E13]/30 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-1/3 -right-16 w-80 h-80 bg-[#C8A49F]/20 rounded-full blur-[100px] pointer-events-none" />
 
         {/* Ambient Constellation (Data-driven, evenly distributed across full section height) */}
         {projectStars.map((item, idx) => (
@@ -541,7 +541,7 @@ export default function Home() {
                 key={idx}
                 whileHover={{ y: -6 }}
                 transition={{ duration: 0.3 }}
-                className="rounded-3xl bg-[#220D3E]/70 hover:bg-[#220D3E] border border-[#C6B39A]/20 hover:border-[#C6B39A]/55 backdrop-blur-md overflow-hidden grid grid-cols-1 lg:grid-cols-12 transition-all group shadow-2xl"
+                className="rounded-3xl bg-[#22080C]/80 hover:bg-[#2A0B10] border border-[#D8C4AC]/20 hover:border-[#D8C4AC]/55 backdrop-blur-md overflow-hidden grid grid-cols-1 lg:grid-cols-12 transition-all group shadow-2xl"
               >
                 {/* Visual Carousel Preview Side */}
                 <div
@@ -565,10 +565,10 @@ export default function Home() {
                   }`}
                 >
                   <div>
-                    <p className="text-xs font-bold text-[#C6B39A] uppercase tracking-wider mb-2">
+                    <p className="text-xs font-bold text-[#D8C4AC] uppercase tracking-wider mb-2">
                       {project.subtitle}
                     </p>
-                    <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white group-hover:text-[#C6B39A] transition-colors">
+                    <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white group-hover:text-[#D8C4AC] transition-colors">
                       {project.title}
                     </h3>
                     <p className="text-sm sm:text-base text-white/75 mt-3 leading-relaxed font-light">
@@ -581,7 +581,7 @@ export default function Home() {
                       {project.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="px-3 py-1 rounded-lg bg-white/5 text-white/85 text-xs font-medium border border-[#C6B39A]/20"
+                          className="px-3 py-1 rounded-lg bg-white/5 text-white/85 text-xs font-medium border border-[#D8C4AC]/20"
                         >
                           {tag}
                         </span>
@@ -594,7 +594,7 @@ export default function Home() {
                       </span>
                       <a
                         href="mailto:nayssa1310@gmail.com?subject=Consulta sobre caso de estudio"
-                        className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#C6B39A] hover:text-white transition-colors group/link"
+                        className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#D8C4AC] hover:text-white transition-colors group/link"
                       >
                         <span>Solicitar detalles</span>
                         <ArrowUpRight className="w-4 h-4 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
@@ -612,7 +612,7 @@ export default function Home() {
               <motion.div
                 whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.96 }}
-                className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl bg-white/10 hover:bg-[#C6B39A] border border-[#C6B39A]/35 hover:border-[#C6B39A] backdrop-blur-md text-sm font-bold text-white hover:text-[#1A0735] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_0_30px_rgba(198,179,154,0.45)] transition-all duration-300 cursor-pointer"
+                className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl bg-white/10 hover:bg-[#D8C4AC] border border-[#D8C4AC]/35 hover:border-[#D8C4AC] backdrop-blur-md text-sm font-bold text-white hover:text-[#140507] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_0_30px_rgba(216,196,172,0.45)] transition-all duration-300 cursor-pointer"
               >
                 <span>Ver más proyectos</span>
                 <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
@@ -623,19 +623,19 @@ export default function Home() {
       </section>
 
       {/* SKILLS TIMELINE / HABILIDADES */}
-      <section id="habilidades" className="w-full max-w-full py-24 px-6 bg-gradient-to-b from-[#14052B] via-[#240D42] to-[#16052F] border-t border-[#C6B39A]/20 relative overflow-hidden overflow-x-clip [contain:paint]">
+      <section id="habilidades" className="w-full max-w-full py-24 px-6 bg-gradient-to-b from-[#140507] via-[#22080C] to-[#160407] border-t border-[#D8C4AC]/20 relative overflow-hidden overflow-x-clip [contain:paint]">
         {/* Subtle, faint ambient stars */}
         <motion.div
           animate={{ y: [-4, 4, -4], opacity: [0.12, 0.3, 0.12] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-24 left-[8%] pointer-events-none text-[#C6B39A]/30"
+          className="absolute top-24 left-[8%] pointer-events-none text-[#D8C4AC]/30"
         >
           <Sparkles className="w-4 h-4" />
         </motion.div>
         <motion.div
           animate={{ y: [4, -4, 4], opacity: [0.12, 0.3, 0.12] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute top-36 right-[8%] pointer-events-none text-[#8D3A3C]/40"
+          className="absolute top-36 right-[8%] pointer-events-none text-[#C8A49F]/40"
         >
           <FourPointStar className="w-4 h-4" />
         </motion.div>
@@ -650,7 +650,7 @@ export default function Home() {
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="text-center max-w-2xl mx-auto mb-20"
           >
-            <span className="text-xs font-bold uppercase tracking-wider text-[#C6B39A] bg-[#220D3E]/80 px-3.5 py-1 rounded-full border border-[#C6B39A]/25">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#EEE4DA] bg-[#4D0E13]/60 px-3.5 py-1 rounded-full border border-[#C8A49F]/30">
               Especialidad & Dominio
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mt-4">
@@ -671,7 +671,7 @@ export default function Home() {
                 whileInView={{ scaleX: 1, opacity: 1 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute top-1/2 left-10 right-10 h-0.5 -translate-y-1/2 bg-gradient-to-r from-transparent via-[#C6B39A]/45 to-transparent z-0 origin-center"
+                className="absolute top-1/2 left-10 right-10 h-0.5 -translate-y-1/2 bg-gradient-to-r from-transparent via-[#D8C4AC]/45 to-transparent z-0 origin-center"
               />
 
               <div className="grid grid-cols-3 gap-8 relative z-10">
@@ -685,14 +685,14 @@ export default function Home() {
                 >
                   <motion.div
                     whileHover={{ scale: 1.1 }}
-                    className="w-13 h-13 rounded-full bg-[#1A0735] border border-[#C6B39A]/60 flex items-center justify-center text-[#C6B39A] shadow-md relative z-20 cursor-pointer transition-transform"
+                    className="w-13 h-13 rounded-full bg-[#140507] border border-[#D8C4AC]/60 flex items-center justify-center text-[#D8C4AC] shadow-md relative z-20 cursor-pointer transition-transform"
                   >
                     <Palette className="w-5 h-5" />
                   </motion.div>
                   {/* Compact stem & arrowhead pointing DOWN */}
                   <div className="flex flex-col items-center mt-2">
-                    <div className="w-0.5 h-6 bg-[#C6B39A]/70" />
-                    <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-[#C6B39A]/80" />
+                    <div className="w-0.5 h-6 bg-[#D8C4AC]/70" />
+                    <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-[#D8C4AC]/80" />
                   </div>
                 </motion.div>
 
@@ -706,13 +706,13 @@ export default function Home() {
                 >
                   <motion.div
                     whileHover={{ scale: 1.1 }}
-                    className="w-13 h-13 rounded-full bg-[#1A0735] border border-[#C6B39A]/60 flex items-center justify-center text-[#C6B39A] shadow-md relative z-20 cursor-pointer transition-transform"
+                    className="w-13 h-13 rounded-full bg-[#140507] border border-[#D8C4AC]/60 flex items-center justify-center text-[#D8C4AC] shadow-md relative z-20 cursor-pointer transition-transform"
                   >
                     <Layout className="w-5 h-5" />
                   </motion.div>
                   <div className="flex flex-col items-center mt-2">
-                    <div className="w-0.5 h-6 bg-[#C6B39A]/70" />
-                    <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-[#C6B39A]/80" />
+                    <div className="w-0.5 h-6 bg-[#D8C4AC]/70" />
+                    <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-[#D8C4AC]/80" />
                   </div>
                 </motion.div>
 
@@ -726,13 +726,13 @@ export default function Home() {
                 >
                   <motion.div
                     whileHover={{ scale: 1.1 }}
-                    className="w-13 h-13 rounded-full bg-[#1A0735] border border-[#C6B39A]/60 flex items-center justify-center text-[#C6B39A] shadow-md relative z-20 cursor-pointer transition-transform"
+                    className="w-13 h-13 rounded-full bg-[#140507] border border-[#D8C4AC]/60 flex items-center justify-center text-[#D8C4AC] shadow-md relative z-20 cursor-pointer transition-transform"
                   >
                     <Sparkles className="w-5 h-5" />
                   </motion.div>
                   <div className="flex flex-col items-center mt-2">
-                    <div className="w-0.5 h-6 bg-[#C6B39A]/70" />
-                    <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-[#C6B39A]/80" />
+                    <div className="w-0.5 h-6 bg-[#D8C4AC]/70" />
+                    <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-[#D8C4AC]/80" />
                   </div>
                 </motion.div>
               </div>
@@ -754,7 +754,7 @@ export default function Home() {
                   whileHover={{ scale: 1.03, y: -2 }}
                   className="flex flex-col items-center cursor-default transition-transform"
                 >
-                  <span className="text-[11px] font-mono font-bold tracking-widest text-[#C6B39A] uppercase block mb-1.5">
+                  <span className="text-[11px] font-mono font-bold tracking-widest text-[#D8C4AC] uppercase block mb-1.5">
                     01 · Experiencia
                   </span>
                   <h3 className="font-serif text-xl sm:text-2xl font-bold text-white tracking-tight mb-2">
@@ -763,7 +763,7 @@ export default function Home() {
                   <p className="text-xs sm:text-[13px] text-white/70 max-w-xs mx-auto leading-relaxed font-light mb-3">
                     Interfaces intuitivas, prototipado interactivo y diseño centrado en resolver fricciones de usuario.
                   </p>
-                  <div className="text-[11px] font-medium text-[#C6B39A]/85 tracking-wide">
+                  <div className="text-[11px] font-medium text-[#C8A49F] tracking-wide">
                     Figma · Design Systems · Prototipado
                   </div>
                 </motion.div>
@@ -783,7 +783,7 @@ export default function Home() {
                   whileHover={{ scale: 1.03, y: -2 }}
                   className="flex flex-col items-center cursor-default transition-transform"
                 >
-                  <span className="text-[11px] font-mono font-bold tracking-widest text-[#C6B39A] uppercase block mb-1.5">
+                  <span className="text-[11px] font-mono font-bold tracking-widest text-[#D8C4AC] uppercase block mb-1.5">
                     02 · Desarrollo
                   </span>
                   <h3 className="font-serif text-xl sm:text-2xl font-bold text-white tracking-tight mb-2">
@@ -792,7 +792,7 @@ export default function Home() {
                   <p className="text-xs sm:text-[13px] text-white/70 max-w-xs mx-auto leading-relaxed font-light mb-3">
                     Traducción precisa a componentes modulares, limpios y dinámicos en código moderno.
                   </p>
-                  <div className="text-[11px] font-medium text-[#C6B39A]/85 tracking-wide">
+                  <div className="text-[11px] font-medium text-[#C8A49F] tracking-wide">
                     Next.js · React · Tailwind CSS · TypeScript
                   </div>
                 </motion.div>
@@ -812,7 +812,7 @@ export default function Home() {
                   whileHover={{ scale: 1.03, y: -2 }}
                   className="flex flex-col items-center cursor-default transition-transform"
                 >
-                  <span className="text-[11px] font-mono font-bold tracking-widest text-[#C6B39A] uppercase block mb-1.5">
+                  <span className="text-[11px] font-mono font-bold tracking-widest text-[#D8C4AC] uppercase block mb-1.5">
                     03 · Calidad
                   </span>
                   <h3 className="font-serif text-xl sm:text-2xl font-bold text-white tracking-tight mb-2">
@@ -821,7 +821,7 @@ export default function Home() {
                   <p className="text-xs sm:text-[13px] text-white/70 max-w-xs mx-auto leading-relaxed font-light mb-3">
                     Accesibilidad universal, diseño responsive mobile-first y optimización web para velocidad real.
                   </p>
-                  <div className="text-[11px] font-medium text-[#C6B39A]/85 tracking-wide">
+                  <div className="text-[11px] font-medium text-[#C8A49F] tracking-wide">
                     Accesibilidad a11y · Mobile-First · Performance
                   </div>
                 </motion.div>
@@ -830,25 +830,25 @@ export default function Home() {
           </div>
 
           {/* MOBILE / TABLET TIMELINE (Clean Open Stream with Entrance Animation) */}
-          <div className="lg:hidden relative pl-8 border-l-2 border-[#C6B39A]/40 space-y-10 my-8 ml-4">
+          <div className="lg:hidden relative pl-8 border-l-2 border-[#D8C4AC]/40 space-y-10 my-8 ml-4">
             {[
               {
                 badge: "01 · Experiencia",
                 title: "Diseño UX/UI",
                 desc: "Interfaces intuitivas, prototipado interactivo y diseño centrado en personas.",
-                icon: <Palette className="w-5 h-5 text-[#C6B39A]" />,
+                icon: <Palette className="w-5 h-5 text-[#D8C4AC]" />,
               },
               {
                 badge: "02 · Desarrollo",
                 title: "Desarrollo Front-End",
                 desc: "Traducción precisa a componentes modulares, limpios y dinámicos en código moderno.",
-                icon: <Layout className="w-5 h-5 text-[#C6B39A]" />,
+                icon: <Layout className="w-5 h-5 text-[#D8C4AC]" />,
               },
               {
                 badge: "03 · Calidad",
                 title: "Rendimiento & a11y",
                 desc: "Accesibilidad universal, diseño responsive mobile-first y código optimizado.",
-                icon: <Sparkles className="w-5 h-5 text-[#C6B39A]" />,
+                icon: <Sparkles className="w-5 h-5 text-[#D8C4AC]" />,
               },
             ].map((step, idx) => (
               <motion.div
@@ -860,12 +860,12 @@ export default function Home() {
                 className="relative"
               >
                 {/* Node icon attached to the vertical line */}
-                <div className="absolute -left-[45px] top-0 w-10 h-10 rounded-full bg-[#1A0735] border-2 border-[#C6B39A] flex items-center justify-center shadow-md">
+                <div className="absolute -left-[45px] top-0 w-10 h-10 rounded-full bg-[#140507] border-2 border-[#D8C4AC] flex items-center justify-center shadow-md">
                   {step.icon}
                 </div>
 
                 <div>
-                  <span className="text-xs font-mono font-bold tracking-wider text-[#C6B39A] block mb-1">
+                  <span className="text-xs font-mono font-bold tracking-wider text-[#D8C4AC] block mb-1">
                     {step.badge}
                   </span>
                   <h3 className="font-serif text-2xl font-bold text-white mb-1.5">
@@ -882,10 +882,10 @@ export default function Home() {
       </section>
 
       {/* DYNAMIC TECH ICONS RUNWAY / MARQUEE (EDGE TO EDGE) */}
-      <section className="relative w-full max-w-full py-12 sm:py-14 bg-[#16052F] border-t border-b border-[#C6B39A]/20 overflow-hidden overflow-x-clip [contain:paint]">
+      <section className="relative w-full max-w-full py-12 sm:py-14 bg-[#160407] border-t border-b border-[#D8C4AC]/20 overflow-hidden overflow-x-clip [contain:paint]">
         {/* Soft edge gradient fades for cinematic entry & exit */}
-        <div className="absolute left-0 top-0 bottom-0 w-20 sm:w-32 bg-gradient-to-r from-[#16052F] to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-20 sm:w-32 bg-gradient-to-l from-[#16052F] to-transparent z-10 pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-20 sm:w-32 bg-gradient-to-r from-[#160407] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-20 sm:w-32 bg-gradient-to-l from-[#160407] to-transparent z-10 pointer-events-none" />
 
         <div className="w-full max-w-full flex overflow-hidden select-none">
           <motion.div
@@ -960,12 +960,12 @@ export default function Home() {
       </section>
 
       {/* 2-COLUMN SPLIT CONTACT SECTION (Compact & Refined) */}
-      <section id="contacto" className="w-full max-w-full py-12 sm:py-14 px-6 bg-gradient-to-b from-[#14052B] via-[#1A0735] to-[#120426] border-t border-[#C6B39A]/20 relative overflow-hidden overflow-x-clip [contain:paint]">
+      <section id="contacto" className="w-full max-w-full py-12 sm:py-14 px-6 bg-gradient-to-b from-[#160407] via-[#20070A] to-[#120305] border-t border-[#D8C4AC]/20 relative overflow-hidden overflow-x-clip [contain:paint]">
         <div className="max-w-5xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* LEFT COLUMN: Title + Subtitle + Socials */}
           <div className="lg:col-span-6 flex flex-col items-start text-left">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#C6B39A] bg-[#220D3E]/80 px-2.5 py-0.5 rounded-full border border-[#C6B39A]/25 mb-3">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#EEE4DA] bg-[#4D0E13]/60 px-2.5 py-0.5 rounded-full border border-[#C8A49F]/30 mb-3">
               Contacto
             </span>
 
@@ -979,7 +979,7 @@ export default function Home() {
 
             {/* Social Icons & Email below it */}
             <div className="mt-5 pt-4 border-t border-white/10 w-full flex flex-col gap-3">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-[#C6B39A] font-bold">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[#D8C4AC] font-bold">
                 Redes & Canales
               </span>
               <div className="flex flex-wrap items-center gap-2.5">
@@ -990,7 +990,7 @@ export default function Home() {
                   target="_blank"
                   rel="noopener noreferrer"
                   title="LinkedIn"
-                  className="w-8 h-8 rounded-lg bg-white/10 hover:bg-[#C6B39A] hover:text-[#1A0735] text-white border border-[#C6B39A]/30 flex items-center justify-center transition-all shadow-sm"
+                  className="w-8 h-8 rounded-lg bg-white/10 hover:bg-[#D8C4AC] hover:text-[#140507] text-white border border-[#D8C4AC]/30 flex items-center justify-center transition-all shadow-sm"
                 >
                   <LinkedinIcon className="w-3.5 h-3.5" />
                 </motion.a>
@@ -1002,7 +1002,7 @@ export default function Home() {
                   target="_blank"
                   rel="noopener noreferrer"
                   title="GitHub"
-                  className="w-8 h-8 rounded-lg bg-white/10 hover:bg-[#C6B39A] hover:text-[#1A0735] text-white border border-[#C6B39A]/30 flex items-center justify-center transition-all shadow-sm"
+                  className="w-8 h-8 rounded-lg bg-white/10 hover:bg-[#D8C4AC] hover:text-[#140507] text-white border border-[#D8C4AC]/30 flex items-center justify-center transition-all shadow-sm"
                 >
                   <GithubIcon className="w-3.5 h-3.5" />
                 </motion.a>
@@ -1012,9 +1012,9 @@ export default function Home() {
                   whileTap={{ scale: 0.97 }}
                   onClick={copyEmail}
                   title="Copiar correo"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/12 border border-white/15 hover:border-[#C6B39A]/40 text-xs text-white/90 font-mono transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/12 border border-white/15 hover:border-[#D8C4AC]/40 text-xs text-white/90 font-mono transition-all cursor-pointer"
                 >
-                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Mail className="w-3.5 h-3.5 text-[#C6B39A]" />}
+                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Mail className="w-3.5 h-3.5 text-[#D8C4AC]" />}
                   <span>{copied ? "¡Copiado!" : (liveProfile.email || "nayssa1310@gmail.com")}</span>
                 </motion.button>
               </div>
@@ -1027,7 +1027,7 @@ export default function Home() {
 
           {/* RIGHT COLUMN: Interactive Direct Message Card */}
           <div className="lg:col-span-6 w-full">
-            <div className="rounded-2xl bg-[#220D3E]/70 border border-[#C6B39A]/20 p-5 sm:p-6 backdrop-blur-md shadow-xl relative overflow-hidden">
+            <div className="rounded-2xl bg-[#22080C]/85 border border-[#D8C4AC]/20 p-5 sm:p-6 backdrop-blur-md shadow-xl relative overflow-hidden">
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-3.5">
                   <h3 className="font-serif text-lg sm:text-xl font-bold text-white tracking-tight">
@@ -1046,7 +1046,7 @@ export default function Home() {
                       value={formState.name}
                       onChange={(e) => setFormState({ ...formState, name: e.target.value })}
                       placeholder="Tu nombre o empresa"
-                      className="w-full px-3 py-2 rounded-lg bg-white/[0.06] border border-white/10 focus:border-[#C6B39A] focus:bg-white/[0.09] text-xs text-white placeholder-white/30 outline-none transition-all"
+                      className="w-full px-3 py-2 rounded-lg bg-white/[0.06] border border-white/10 focus:border-[#D8C4AC] focus:bg-white/[0.09] text-xs text-white placeholder-white/30 outline-none transition-all"
                     />
                   </div>
 
@@ -1060,7 +1060,7 @@ export default function Home() {
                       value={formState.email}
                       onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                       placeholder="nombre@ejemplo.com"
-                      className="w-full px-3 py-2 rounded-lg bg-white/[0.06] border border-white/10 focus:border-[#C6B39A] focus:bg-white/[0.09] text-xs text-white placeholder-white/30 outline-none transition-all"
+                      className="w-full px-3 py-2 rounded-lg bg-white/[0.06] border border-white/10 focus:border-[#D8C4AC] focus:bg-white/[0.09] text-xs text-white placeholder-white/30 outline-none transition-all"
                     />
                   </div>
 
@@ -1074,7 +1074,7 @@ export default function Home() {
                       value={formState.message}
                       onChange={(e) => setFormState({ ...formState, message: e.target.value })}
                       placeholder="¿De qué trata tu proyecto o propuesta?"
-                      className="w-full px-3 py-2 rounded-lg bg-white/[0.06] border border-white/10 focus:border-[#C6B39A] focus:bg-white/[0.09] text-xs text-white placeholder-white/30 outline-none transition-all resize-none"
+                      className="w-full px-3 py-2 rounded-lg bg-white/[0.06] border border-white/10 focus:border-[#D8C4AC] focus:bg-white/[0.09] text-xs text-white placeholder-white/30 outline-none transition-all resize-none"
                     />
                   </div>
 
@@ -1083,7 +1083,7 @@ export default function Home() {
                     whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
                     type="submit"
                     disabled={isSubmitting}
-                    className="mt-1 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-[#C6B39A] hover:bg-[#D5C5AE] text-[#1A0735] font-bold text-xs tracking-wide shadow-sm transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="mt-1 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] font-bold text-xs tracking-wide shadow-sm transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? (
                       <>
