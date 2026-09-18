@@ -173,7 +173,7 @@ const projectStars = [
 
 export default function Home() {
   const [copied, setCopied] = useState(false);
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(false);
   const [formState, setFormState] = useState({ name: "", email: "", message: "" });
   const [formSent, setFormSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -196,6 +196,15 @@ export default function Home() {
   });
 
   useEffect(() => {
+    // Show intro only on first visit per session
+    try {
+      const hasSeen = sessionStorage.getItem("portfolio_intro_seen");
+      if (!hasSeen) {
+        setShowIntro(true);
+        sessionStorage.setItem("portfolio_intro_seen", "true");
+      }
+    } catch {}
+
     fetch("/api/projects")
       .then((res) => res.json())
       .then((data) => {
