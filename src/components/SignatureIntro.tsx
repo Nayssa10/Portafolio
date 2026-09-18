@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles } from "lucide-react";
 
@@ -10,38 +10,116 @@ interface SignatureIntroProps {
   subtitle?: string;
 }
 
+// Continuous cursive handwriting path for "Nayssa Chu" with sweeping signature underline flourish
+const SIGNATURE_PATH =
+  "M 160 135 C 150 120, 155 80, 185 65 C 195 60, 205 75, 200 95 L 190 140 C 195 110, 220 70, 245 65 C 255 62, 260 75, 255 100 L 248 140 C 248 142, 265 140, 280 125 C 275 115, 260 115, 255 125 C 250 135, 260 142, 275 140 L 278 120 L 278 140 C 282 142, 295 138, 305 125 L 305 135 C 308 142, 318 142, 325 135 L 328 120 L 326 175 C 324 190, 310 195, 300 185 C 290 175, 315 155, 335 140 C 345 132, 355 122, 362 118 C 368 115, 372 120, 368 128 C 362 138, 372 142, 380 138 C 390 132, 400 122, 408 118 C 414 115, 418 120, 414 128 C 408 138, 418 142, 426 138 C 435 132, 442 125, 448 120 C 442 115, 430 115, 426 125 C 422 135, 432 142, 445 140 L 448 120 L 448 140 C 455 142, 480 135, 500 120 C 525 90, 515 65, 545 60 C 565 55, 570 75, 555 95 C 530 130, 520 145, 555 140 C 568 138, 580 120, 595 75 C 602 55, 612 55, 608 75 L 598 140 C 602 122, 615 116, 625 122 C 630 126, 630 135, 628 140 C 635 142, 645 138, 652 125 L 652 136 C 655 142, 665 142, 670 136 L 672 125 L 672 140 C 685 142, 730 138, 770 125 C 800 115, 820 100, 805 112 C 760 145, 450 178, 260 182 C 170 184, 130 175, 175 168 C 240 158, 620 162, 760 166 C 795 167, 815 162, 800 170";
+
 export default function SignatureIntro({
   onComplete,
-  name = "Nayssa Chu Bustamante",
   subtitle = "Diseño UX/UI · Desarrollo Front-End",
 }: SignatureIntroProps) {
   const [isDone, setIsDone] = useState(false);
   const [showSubtitle, setShowSubtitle] = useState(false);
 
-  useEffect(() => {
-    // 1. Reveal subtitle after writing finishes
-    const subTimer = setTimeout(() => {
-      setShowSubtitle(true);
-    }, 3200);
+  const pathRef = useRef<SVGPathElement | null>(null);
+  const glowPathRef = useRef<SVGPathElement | null>(null);
+  const penRef = useRef<SVGGElement | null>(null);
+  const inkPointRef = useRef<SVGCircleElement | null>(null);
 
-    // 2. Dissolve intro after user has enjoyed the animation
-    const finishTimer = setTimeout(() => {
-      setIsDone(true);
-      if (onComplete) {
-        setTimeout(onComplete, 700);
+  useEffect(() => {
+    const path = pathRef.current;
+    const glowPath = glowPathRef.current;
+    if (!path) return;
+
+    const totalLength = path.getTotalLength();
+    path.style.strokeDasharray = `${totalLength}`;
+    path.style.strokeDashoffset = `${totalLength}`;
+
+    if (glowPath) {
+      glowPath.style.strokeDasharray = `${totalLength}`;
+      glowPath.style.strokeDashoffset = `${totalLength}`;
+    }
+
+    // Set initial pen position at start of path
+    const startPt = path.getPointAtLength(0);
+    if (penRef.current) {
+      penRef.current.style.transform = `translate(${startPt.x}px, ${startPt.y}px) rotate(-35deg)`;
+      penRef.current.style.opacity = "1";
+    }
+
+    let startTime: number | null = null;
+    const duration = 3200; // 3.2 seconds for realistic handwriting
+    let animId: number;
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Custom smooth easing
+      const ease =
+        progress < 0.5
+          ? 2 * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+      const currentLength = totalLength * ease;
+      const dashOffset = totalLength - currentLength;
+
+      path.style.strokeDashoffset = `${dashOffset}`;
+      if (glowPath) {
+        glowPath.style.strokeDashoffset = `${dashOffset}`;
       }
-    }, 4500);
+
+      if (currentLength > 0 && currentLength <= totalLength) {
+        const p = path.getPointAtLength(currentLength);
+        const pPrev = path.getPointAtLength(Math.max(0, currentLength - 4));
+        const angleRad = Math.atan2(p.y - pPrev.y, p.x - pPrev.x);
+        const angleDeg = angleRad * (180 / Math.PI);
+
+        // Natural dynamic pen angle reacting to stroke direction
+        const penTilt = Math.max(-55, Math.min(-18, -35 + angleDeg * 0.18));
+
+        if (penRef.current) {
+          penRef.current.style.transform = `translate(${p.x}px, ${p.y}px) rotate(${penTilt}deg)`;
+          if (progress >= 0.98) {
+            // Pen lifts and disappears smoothly at the end
+            penRef.current.style.opacity = "0";
+            penRef.current.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+          }
+        }
+
+        if (inkPointRef.current) {
+          inkPointRef.current.setAttribute("cx", `${p.x}`);
+          inkPointRef.current.setAttribute("cy", `${p.y}`);
+          inkPointRef.current.style.opacity = progress >= 0.98 ? "0" : "0.8";
+        }
+      }
+
+      if (progress < 1) {
+        animId = requestAnimationFrame(animate);
+      } else {
+        setShowSubtitle(true);
+        setTimeout(() => {
+          setIsDone(true);
+          if (onComplete) setTimeout(onComplete, 700);
+        }, 1100);
+      }
+    };
+
+    const delayTimer = setTimeout(() => {
+      animId = requestAnimationFrame(animate);
+    }, 400);
 
     return () => {
-      clearTimeout(subTimer);
-      clearTimeout(finishTimer);
+      clearTimeout(delayTimer);
+      cancelAnimationFrame(animId);
     };
   }, [onComplete]);
 
   const handleSkip = () => {
     setIsDone(true);
     if (onComplete) {
-      setTimeout(onComplete, 400);
+      setTimeout(onComplete, 350);
     }
   };
 
@@ -70,171 +148,116 @@ export default function SignatureIntro({
           {/* Main Signature Stage */}
           <div className="relative w-full max-w-4xl flex flex-col items-center justify-center text-center">
             <svg
-              viewBox="0 0 1000 280"
-              className="w-full max-w-[860px] h-auto overflow-visible"
+              viewBox="0 0 960 260"
+              className="w-full max-w-[840px] h-auto overflow-visible"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
               <defs>
-                {/* Glow Filter */}
-                <filter id="sig-glow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="3.5" result="blur" />
+                {/* Soft Gold Glow Filter */}
+                <filter id="ink-glow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
                   <feMerge>
                     <feMergeNode in="blur" />
                     <feMergeNode in="SourceGraphic" />
                   </feMerge>
                 </filter>
 
-                {/* Ink Gradient */}
-                <linearGradient id="sig-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                {/* Ink Linear Gradient */}
+                <linearGradient id="ink-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stopColor="#FFFFFF" />
-                  <stop offset="25%" stopColor="#EEE4DA" />
-                  <stop offset="65%" stopColor="#D8C4AC" />
+                  <stop offset="20%" stopColor="#EEE4DA" />
+                  <stop offset="60%" stopColor="#D8C4AC" />
                   <stop offset="100%" stopColor="#C8A49F" />
                 </linearGradient>
 
                 {/* Pen Gold Nib Gradient */}
-                <linearGradient id="pen-nib-gold" x1="0%" y1="100%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#EEE4DA" />
-                  <stop offset="50%" stopColor="#D8C4AC" />
+                <linearGradient id="nib-gold" x1="0%" y1="100%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#FFFFFF" />
+                  <stop offset="40%" stopColor="#EEE4DA" />
+                  <stop offset="70%" stopColor="#D8C4AC" />
                   <stop offset="100%" stopColor="#9C7753" />
                 </linearGradient>
 
                 {/* Pen Body Dark Gradient */}
-                <linearGradient id="pen-body" x1="0%" y1="0%" x2="100%" y2="100%">
+                <linearGradient id="pen-barrel" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#4D0E13" />
                   <stop offset="60%" stopColor="#22080C" />
                   <stop offset="100%" stopColor="#140507" />
                 </linearGradient>
-
-                {/* Progressive Reveal Mask synchronized with the pen */}
-                <mask id="pen-write-mask">
-                  <motion.rect
-                    x="100"
-                    y="40"
-                    height="130"
-                    fill="white"
-                    initial={{ width: 0 }}
-                    animate={{ width: 800 }}
-                    transition={{
-                      duration: 2.1,
-                      ease: [0.35, 0.05, 0.25, 0.95],
-                      delay: 0.2,
-                    }}
-                  />
-                </mask>
               </defs>
 
-              {/* 1. MASKED SIGNATURE TEXT (Writes letter-by-letter) */}
-              <g mask="url(#pen-write-mask)">
-                <text
-                  x="500"
-                  y="130"
-                  textAnchor="middle"
-                  fill="url(#sig-gradient)"
-                  filter="url(#sig-glow)"
-                  className="font-dancing"
-                  style={{
-                    fontSize: "64px",
-                    fontWeight: 600,
-                    letterSpacing: "0.02em",
-                  }}
-                >
-                  {name}
-                </text>
-              </g>
-
-              {/* 2. SIGNATURE UNDERLINE FLOURISH (Draws after the name is written) */}
-              <motion.path
-                d="M 220 178 C 360 190, 580 192, 760 172 C 800 167, 820 156, 795 168 C 740 192, 470 205, 320 198 C 260 195, 230 188, 275 184 C 340 178, 640 180, 740 182"
-                stroke="url(#sig-gradient)"
-                strokeWidth="3"
+              {/* Ambient Glow Trail behind the stroke */}
+              <path
+                ref={glowPathRef}
+                d={SIGNATURE_PATH}
+                stroke="#D8C4AC"
+                strokeWidth="7"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                filter="url(#sig-glow)"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                transition={{
-                  duration: 1.1,
-                  delay: 2.3,
-                  ease: [0.25, 1, 0.5, 1],
-                }}
+                opacity="0.25"
+                filter="url(#ink-glow)"
               />
 
-              {/* 3. FLOURISH SPARKLE */}
-              <motion.circle
-                cx="740"
-                cy="182"
-                r="3.5"
-                fill="#EEE4DA"
-                filter="url(#sig-glow)"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: [0, 1.8, 1], opacity: [0, 1, 0.9] }}
-                transition={{ delay: 3.3, duration: 0.4 }}
+              {/* Main Calligraphy Ink Stroke */}
+              <path
+                ref={pathRef}
+                d={SIGNATURE_PATH}
+                stroke="url(#ink-gradient)"
+                strokeWidth="3.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#ink-glow)"
               />
 
-              {/* 4. THE CALLIGRAPHY PLUMA (Fountain Pen Writing on Screen) */}
-              <motion.g
-                initial={{
-                  x: 160,
-                  y: 125,
+              {/* Wet Ink Contact Point directly beneath the nib tip */}
+              <circle
+                ref={inkPointRef}
+                cx="160"
+                cy="135"
+                r="4.5"
+                fill="#FFFFFF"
+                filter="url(#ink-glow)"
+                opacity="0.8"
+              />
+
+              {/* Final Flourish Star Sparkle */}
+              {showSubtitle && (
+                <motion.g
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <circle cx="800" cy="170" r="3.5" fill="#EEE4DA" filter="url(#ink-glow)" />
+                  <line x1="792" y1="170" x2="808" y2="170" stroke="#EEE4DA" strokeWidth="1" />
+                  <line x1="800" y1="162" x2="800" y2="178" stroke="#EEE4DA" strokeWidth="1" />
+                </motion.g>
+              )}
+
+              {/* THE REAL CALLIGRAPHY FOUNTAIN PEN (Follows the stroke point-by-point) */}
+              <g
+                ref={penRef}
+                style={{
+                  pointerEvents: "none",
                   opacity: 0,
-                  scale: 0.9,
-                }}
-                animate={{
-                  // Moves along the text, then sweeps to underline, then lifts up and fades away
-                  x: [
-                    160, 240, 330, 430, 530, 640, 740, 830, // Writing text (0.2s - 2.3s)
-                    830, 220,                                // Move to underline start (2.3s - 2.4s)
-                    360, 580, 760, 795, 470, 275, 740,       // Tracing underline flourish (2.4s - 3.4s)
-                    760                                      // Lift up
-                  ],
-                  y: [
-                    125, 118, 126, 119, 125, 118, 124, 122, // Oscillates with cursive letters
-                    122, 178,                                // Down to underline
-                    190, 192, 172, 168, 205, 184, 182,       // Underline sweep
-                    145                                      // Pen lifts up
-                  ],
-                  opacity: [
-                    0, 1, 1, 1, 1, 1, 1, 1,
-                    1, 1,
-                    1, 1, 1, 1, 1, 1, 1,
-                    0                                        // Dissolves away cleanly
-                  ],
-                  rotate: [
-                    -32, -28, -34, -29, -33, -28, -32, -30,
-                    -20, -35,
-                    -32, -30, -28, -25, -34, -30, -26,
-                    -15
-                  ],
-                }}
-                transition={{
-                  duration: 3.5,
-                  times: [
-                    0, 0.08, 0.18, 0.28, 0.38, 0.48, 0.58, 0.65,
-                    0.68, 0.71,
-                    0.75, 0.80, 0.84, 0.87, 0.90, 0.93, 0.96,
-                    1.0,
-                  ],
-                  ease: "easeInOut",
-                  delay: 0.1,
+                  transformOrigin: "0px 0px",
                 }}
               >
-                {/* Glowing ink contact point */}
-                <circle cx="0" cy="0" r="5" fill="#EEE4DA" opacity="0.6" filter="url(#sig-glow)" />
+                {/* Wet ink bloom around the tip */}
+                <circle cx="0" cy="0" r="6" fill="#EEE4DA" opacity="0.4" filter="url(#ink-glow)" />
 
-                {/* Nib (Plumilla dorada de caligrafía) */}
+                {/* Golden Calligraphy Nib (Tip anchored exactly at 0, 0) */}
                 <path
                   d="M 0 0 L -4.5 -14 L -6.5 -32 L 6.5 -32 L 4.5 -14 Z"
-                  fill="url(#pen-nib-gold)"
+                  fill="url(#nib-gold)"
                   stroke="#EEE4DA"
                   strokeWidth="0.8"
                 />
-                {/* Ink canal and breather hole */}
-                <line x1="0" y1="0" x2="0" y2="-18" stroke="#3D0B0F" strokeWidth="1" />
+                {/* Nib ink slit and breather hole */}
+                <line x1="0" y1="0" x2="0" y2="-18" stroke="#3D0B0F" strokeWidth="0.9" />
                 <circle cx="0" cy="-18" r="1.3" fill="#3D0B0F" />
 
-                {/* Pen Grip / Collar */}
+                {/* Pen Collar / Grip Band */}
                 <rect
                   x="-6"
                   y="-42"
@@ -246,15 +269,15 @@ export default function SignatureIntro({
                   strokeWidth="0.8"
                 />
 
-                {/* Pen Body (Pluma estilográfica elegante) */}
+                {/* Pen Body / Barrel (Burgundy and gold) */}
                 <path
                   d="M -5.5 -42 L -4 -130 C -4 -145, 4 -145, 4 -130 L 5.5 -42 Z"
-                  fill="url(#pen-body)"
+                  fill="url(#pen-barrel)"
                   stroke="#D8C4AC"
                   strokeWidth="1"
                 />
 
-                {/* Feather Quill / Pluma accents */}
+                {/* Luxury Quill / Feather Flutes */}
                 <path
                   d="M 0 -55 Q 16 -85, 5 -125 Q 1 -80, 0 -55"
                   fill="#D8C4AC"
@@ -266,9 +289,9 @@ export default function SignatureIntro({
                   opacity="0.25"
                 />
 
-                {/* Top Finial Gold Accent */}
-                <circle cx="0" cy="-134" r="3.5" fill="url(#pen-nib-gold)" stroke="#D8C4AC" strokeWidth="0.5" />
-              </motion.g>
+                {/* Pen Top Cap Finial */}
+                <circle cx="0" cy="-134" r="3.5" fill="url(#nib-gold)" stroke="#D8C4AC" strokeWidth="0.5" />
+              </g>
             </svg>
 
             {/* Subtitle & Role Tag */}
@@ -276,7 +299,7 @@ export default function SignatureIntro({
               initial={{ opacity: 0, y: 15 }}
               animate={showSubtitle ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
               transition={{ duration: 0.7, ease: "easeOut" }}
-              className="mt-2 flex items-center justify-center gap-2.5"
+              className="mt-3 flex items-center justify-center gap-2.5"
             >
               <Sparkles className="w-3.5 h-3.5 text-[#D8C4AC]/70" />
               <p className="text-xs sm:text-sm font-mono tracking-[0.25em] text-[#D8C4AC]/90 uppercase font-light">
