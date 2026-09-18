@@ -23,6 +23,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { Experience, defaultExperiences } from "@/data/experience";
+import SignatureIntro from "@/components/SignatureIntro";
 
 // Inline brand SVGs for precision
 function FourPointStar({ className = "w-4 h-4" }: { className?: string }) {
@@ -172,6 +173,7 @@ const projectStars = [
 
 export default function Home() {
   const [copied, setCopied] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
   const [formState, setFormState] = useState({ name: "", email: "", message: "" });
   const [formSent, setFormSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -268,6 +270,14 @@ export default function Home() {
 
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#140507] text-[#EEE4DA] flex flex-col font-sans selection:bg-[#4D0E13] selection:text-[#EEE4DA]">
+      {showIntro && (
+        <SignatureIntro
+          name={liveProfile.name || "Nayssa Chu"}
+          subtitle={liveProfile.title || "Diseño UX/UI · Desarrollo Front-End"}
+          onComplete={() => setShowIntro(false)}
+        />
+      )}
+
       {/* HERO SECTION: Exact layout from user reference with interactive motion */}
       <section className="relative min-h-screen flex flex-col justify-between overflow-hidden bg-gradient-to-b from-[#160407] via-[#20070A] to-[#120305] px-6 sm:px-10 lg:px-16 py-6">
 
