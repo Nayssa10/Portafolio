@@ -13,98 +13,74 @@ interface SignatureIntroProps {
 export default function SignatureIntro({
   onComplete,
   subtitle = "Diseño UX/UI · Desarrollo Front-End",
-  name = "Nayssa Chu Bustamante",
+  name = "Nayssa Kristel",
 }: SignatureIntroProps) {
   const [isDone, setIsDone] = useState(false);
-  const [text1, setText1] = useState("");
-  const [text2, setText2] = useState("");
-  const [currentLine, setCurrentLine] = useState<1 | 2 | 3>(1); // 1 = typing line 1, 2 = typing line 2, 3 = finished typing
+  const [displayedText, setDisplayedText] = useState("");
+  const [isTyping, setIsTyping] = useState(true);
   const [showDetails, setShowDetails] = useState(false);
 
-  // Split name into two balanced lines
-  const { line1Target, line2Target } = useMemo(() => {
-    const rawName = name.trim() || "Nayssa Chu Bustamante";
-    const parts = rawName.split(/\s+/);
-    if (parts.length >= 3) {
-      return {
-        line1Target: parts.slice(0, -1).join(" "),
-        line2Target: parts.slice(-1)[0],
-      };
-    } else if (parts.length === 2) {
-      return {
-        line1Target: parts[0],
-        line2Target: parts[1],
-      };
-    }
-    return {
-      line1Target: rawName,
-      line2Target: "",
-    };
-  }, [name]);
+  const targetText = name.trim() || "Nayssa Kristel";
 
-  // Typewriter effect sequence
+  // Typewriter effect
   useEffect(() => {
-    let index1 = 0;
-    let index2 = 0;
-    let timer: NodeJS.Timeout | null = null;
+    let index = 0;
+    const typeSpeed = 80; // Smooth, rhythmic typewriter speed (ms per char)
+    let detailTimer: NodeJS.Timeout | null = null;
+    let completeTimer: NodeJS.Timeout | null = null;
 
-    const typeSpeed = 75; // ms per character
+    const interval = setInterval(() => {
+      index++;
+      setDisplayedText(targetText.slice(0, index));
 
-    // Start typing line 1
-    const interval1 = setInterval(() => {
-      index1++;
-      setText1(line1Target.slice(0, index1));
+      if (index >= targetText.length) {
+        clearInterval(interval);
+        setIsTyping(false);
 
-      if (index1 >= line1Target.length) {
-        clearInterval(interval1);
-        setCurrentLine(2);
+        // Show underline and subtitle after a short breath
+        detailTimer = setTimeout(() => {
+          setShowDetails(true);
+        }, 280);
 
-        // Pause briefly before line 2
-        timer = setTimeout(() => {
-          if (!line2Target) {
-            setCurrentLine(3);
-            setShowDetails(true);
-            return;
+        // Transition out smoothly
+        completeTimer = setTimeout(() => {
+          setIsDone(true);
+          if (onComplete) {
+            setTimeout(onComplete, 650);
           }
-
-          const interval2 = setInterval(() => {
-            index2++;
-            setText2(line2Target.slice(0, index2));
-
-            if (index2 >= line2Target.length) {
-              clearInterval(interval2);
-              setCurrentLine(3);
-
-              // Show underline & subtitle
-              timer = setTimeout(() => {
-                setShowDetails(true);
-              }, 250);
-
-              // Finish intro smoothly after reading time
-              timer = setTimeout(() => {
-                setIsDone(true);
-                if (onComplete) {
-                  setTimeout(onComplete, 700);
-                }
-              }, 2200);
-            }
-          }, typeSpeed);
-        }, 220);
+        }, 2200);
       }
     }, typeSpeed);
 
     return () => {
-      clearInterval(interval1);
-      if (timer) clearTimeout(timer);
+      clearInterval(interval);
+      if (detailTimer) clearTimeout(detailTimer);
+      if (completeTimer) clearTimeout(completeTimer);
     };
-  }, [line1Target, line2Target, onComplete]);
+  }, [targetText, onComplete]);
 
   const handleSkip = () => {
     setIsDone(true);
     if (onComplete) {
-      setTimeout(onComplete, 300);
+      setTimeout(onComplete, 250);
     }
   };
+
+  // Split displayed text into first and second word for rich gradient accent
+  const { firstWord, secondWord } = useMemo(() => {
+    const spaceIdx = targetText.indexOf(" ");
+    if (spaceIdx === -1) {
+      return { firstWord: displayedText, secondWord: "" };
+    }
+    const boundary = spaceIdx + 1;
+    if (displayedText.length <= boundary) {
+      return { firstWord: displayedText, secondWord: "" };
+    }
+    return {
+      firstWord: displayedText.slice(0, boundary),
+      secondWord: displayedText.slice(boundary),
+    };
+  }, [displayedText, targetText]);
 
   return (
     <AnimatePresence>
@@ -132,13 +108,13 @@ export default function SignatureIntro({
             Saltar
           </button>
 
-          {/* Center Stage Content */}
+          {/* Center Stage */}
           <div className="relative z-10 w-full max-w-3xl flex flex-col items-center justify-center text-center">
             {/* Top decorative badge */}
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5 }}
               className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/[0.04] border border-[#D8C4AC]/20 backdrop-blur-md mb-6"
             >
               <Sparkles className="w-3 h-3 text-[#D8C4AC]" />
@@ -147,62 +123,47 @@ export default function SignatureIntro({
               </span>
             </motion.div>
 
-            {/* Line 1: First Name */}
-            <div className="min-h-[1.25em] flex items-center justify-center">
-              <h1 className="font-dancing text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold text-white tracking-wide drop-shadow-[0_4px_25px_rgba(216,196,172,0.3)] inline-flex items-center">
-                <span>{text1}</span>
-                {currentLine === 1 && (
-                  <motion.span
-                    animate={{ opacity: [1, 0, 1] }}
-                    transition={{ repeat: Infinity, duration: 0.75, ease: "easeInOut" }}
-                    className="inline-block w-[3px] sm:w-[5px] h-[0.75em] bg-[#EEE4DA] ml-2 align-baseline rounded-full shadow-[0_0_12px_#EEE4DA]"
-                  />
+            {/* Typewriter Text (Single Line: Nayssa Kristel) */}
+            <div className="min-h-[1.3em] flex items-center justify-center px-4">
+              <h1 className="font-dancing text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-wide drop-shadow-[0_4px_30px_rgba(216,196,172,0.35)] inline-flex items-center flex-wrap justify-center">
+                <span className="text-white">{firstWord}</span>
+                {secondWord && (
+                  <span className="bg-gradient-to-r from-[#FFFFFF] via-[#EEE4DA] to-[#D8C4AC] bg-clip-text text-transparent">
+                    {secondWord}
+                  </span>
                 )}
+                {/* Blinking Typewriter Cursor */}
+                <motion.span
+                  animate={{ opacity: [1, 0, 1] }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: isTyping ? 0.6 : 0.85,
+                    ease: "easeInOut",
+                  }}
+                  className="inline-block w-[3px] sm:w-[5px] h-[0.72em] bg-[#EEE4DA] ml-2 align-baseline rounded-full shadow-[0_0_12px_#EEE4DA]"
+                />
               </h1>
             </div>
 
-            {/* Line 2: Last Name */}
-            {(line2Target || text2) && (
-              <div className="min-h-[1.25em] flex items-center justify-center mt-1">
-                <h2 className="font-dancing text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-r from-[#FFFFFF] via-[#EEE4DA] to-[#D8C4AC] bg-clip-text text-transparent tracking-wide drop-shadow-[0_4px_25px_rgba(216,196,172,0.3)] inline-flex items-center">
-                  <span>{text2}</span>
-                  {currentLine === 2 && (
-                    <motion.span
-                      animate={{ opacity: [1, 0, 1] }}
-                      transition={{ repeat: Infinity, duration: 0.75, ease: "easeInOut" }}
-                      className="inline-block w-[3px] sm:w-[5px] h-[0.75em] bg-[#D8C4AC] ml-2 align-baseline rounded-full shadow-[0_0_12px_#D8C4AC]"
-                    />
-                  )}
-                  {currentLine === 3 && !showDetails && (
-                    <motion.span
-                      animate={{ opacity: [1, 0, 1] }}
-                      transition={{ repeat: Infinity, duration: 0.75, ease: "easeInOut" }}
-                      className="inline-block w-[3px] sm:w-[5px] h-[0.75em] bg-[#D8C4AC] ml-2 align-baseline rounded-full shadow-[0_0_12px_#D8C4AC]"
-                    />
-                  )}
-                </h2>
-              </div>
-            )}
-
-            {/* Elegant Expanding Underline Divider */}
+            {/* Elegant Underline Divider */}
             <div className="w-full flex justify-center mt-6 h-[2px]">
               {showDetails && (
                 <motion.div
                   initial={{ scaleX: 0, opacity: 0 }}
                   animate={{ scaleX: 1, opacity: 1 }}
-                  transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
                   className="h-[2px] w-48 sm:w-72 bg-gradient-to-r from-transparent via-[#D8C4AC] to-transparent origin-center shadow-[0_0_15px_#D8C4AC]"
                 />
               )}
             </div>
 
-            {/* Subtitle / Role */}
+            {/* Subtitle / Role Tag */}
             <div className="min-h-[2rem] flex items-center justify-center mt-4">
               {showDetails && (
                 <motion.div
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, ease: "easeOut" }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
                   className="flex items-center justify-center gap-2.5"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-[#D8C4AC]/70" />

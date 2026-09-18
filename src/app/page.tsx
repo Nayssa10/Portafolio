@@ -272,7 +272,7 @@ export default function Home() {
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#140507] text-[#EEE4DA] flex flex-col font-sans selection:bg-[#4D0E13] selection:text-[#EEE4DA]">
       {showIntro && (
         <SignatureIntro
-          name={liveProfile.name || "Nayssa Chu"}
+          name="Nayssa Kristel"
           subtitle={liveProfile.title || "Diseño UX/UI · Desarrollo Front-End"}
           onComplete={() => setShowIntro(false)}
         />
