@@ -41,20 +41,11 @@ export default function AdminLoginPage() {
   };
 
   return (
-    // Base: Deep Velvet Burgundy Noir (#160407)
-    <div className="min-h-screen bg-gradient-to-b from-[#160407] via-[#20070A] to-[#120305] text-[#EEE4DA] flex items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-[#4D0E13] selection:text-[#EEE4DA]">
-      {/* Ambient Burgundy & Dusty Pink glow */}
-      <div className="absolute top-1/4 -left-20 w-[450px] h-[450px] bg-[#4D0E13]/40 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-20 w-[450px] h-[450px] bg-[#C8A49F]/15 rounded-full blur-[140px] pointer-events-none" />
-
-      {/* Floating Sparkle accent */}
-      <div className="absolute top-14 right-1/4 text-[#D8C4AC]/60 pointer-events-none">
-        <Sparkles className="w-5 h-5" />
-      </div>
-
+    // Base: Deep Velvet Solid Noir (#0D0304)
+    <div className="min-h-screen bg-[#0D0304] text-[#EEE4DA] flex items-center justify-center p-6 relative overflow-hidden font-sans selection:bg-[#4D0E13] selection:text-[#EEE4DA]">
       <div className="w-full max-w-md relative z-10">
-        {/* Card: Deep Burgundy Surface (#22080C) with Sand (#D8C4AC) border */}
-        <div className="rounded-3xl bg-[#22080C]/90 border border-[#D8C4AC]/25 p-8 sm:p-10 backdrop-blur-2xl shadow-2xl shadow-black/80 relative">
+        {/* Card: Deep Burgundy Surface (#2A0A10) with Sand (#D8C4AC) border */}
+        <div className="rounded-3xl bg-[#2A0A10] border border-[#D8C4AC]/40 p-8 sm:p-10 shadow-2xl shadow-black/80 relative">
           {/* Header */}
           <div className="text-center mb-8">
             <span className="inline-block text-[11px] font-mono uppercase tracking-[0.25em] text-[#D8C4AC] font-semibold mb-3">

@@ -224,17 +224,14 @@ export default function ProyectosPage() {
                       ))}
                     </div>
 
-                    <div className="flex items-center justify-between pt-2">
-                      <span className="text-xs font-semibold text-white/45">
-                        {project.category}
-                      </span>
+                    <div className="flex items-center justify-end pt-2">
                       <a
-                        href={`mailto:nayssa1310@gmail.com?subject=Consulta sobre ${encodeURIComponent(
-                          project.title
-                        )}`}
+                        href={project.link?.trim() || project.github?.trim() || "https://github.com/Nayssa10"}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#D8C4AC] hover:text-[#EEE4DA] transition-colors group/link"
                       >
-                        <span>Solicitar detalles</span>
+                        <span>Ver proyecto</span>
                         <ArrowUpRight className="w-4 h-4 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
                       </a>
                     </div>

@@ -23,6 +23,10 @@ import {
   ArrowUpRight,
   ArrowLeft,
   Eye,
+  EyeOff,
+  Briefcase,
+  Building2,
+  Calendar,
   Upload,
   Image as ImageIcon,
   Loader2,
@@ -59,6 +63,18 @@ interface Skill {
   order: number;
 }
 
+interface Experience {
+  id: string;
+  role: string;
+  company: string;
+  period: string;
+  location?: string | null;
+  description: string;
+  technologies: string[];
+  current: boolean;
+  order: number;
+}
+
 interface Message {
   id: string;
   name: string;
@@ -79,6 +95,7 @@ interface Profile {
   email: string;
   available: boolean;
   availableText: string;
+  showExperience?: boolean;
   location: string;
   linkedin: string;
   github: string;
@@ -87,11 +104,12 @@ interface Profile {
 export default function AdminDashboardPage() {
   const router = useRouter();
   // Perfil is the FIRST tab by default!
-  const [activeTab, setActiveTab] = useState<"profile" | "projects" | "skills" | "messages">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "projects" | "experiences" | "skills" | "messages">("profile");
   const [loading, setLoading] = useState(true);
 
   // Data states
   const [projects, setProjects] = useState<Project[]>([]);
+  const [experiences, setExperiences] = useState<Experience[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -117,6 +135,19 @@ export default function AdminDashboardPage() {
     images: [],
     link: "",
     github: "",
+  });
+
+  const [editingExperience, setEditingExperience] = useState<Experience | null>(null);
+  const [isCreatingExperience, setIsCreatingExperience] = useState(false);
+  const [experienceForm, setExperienceForm] = useState<Partial<Experience>>({
+    role: "",
+    company: "",
+    period: "",
+    location: "Lima, Perú · Remoto",
+    description: "",
+    technologies: [],
+    current: false,
+    order: 0,
   });
 
   const [editingSkill, setEditingSkill] = useState<Skill | null>(null);
@@ -202,9 +233,10 @@ export default function AdminDashboardPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [profRes, projRes, skillRes, msgRes] = await Promise.all([
+      const [profRes, projRes, expRes, skillRes, msgRes] = await Promise.all([
         fetch("/api/admin/profile"),
         fetch("/api/admin/projects"),
+        fetch("/api/admin/experiences"),
         fetch("/api/admin/skills"),
         fetch("/api/admin/messages"),
       ]);
@@ -216,6 +248,7 @@ export default function AdminDashboardPage() {
 
       if (profRes.ok) setProfile(await profRes.json());
       if (projRes.ok) setProjects(await projRes.json());
+      if (expRes.ok) setExperiences(await expRes.json());
       if (skillRes.ok) setSkills(await skillRes.json());
       if (msgRes.ok) setMessages(await msgRes.json());
     } catch (err) {
@@ -238,6 +271,10 @@ export default function AdminDashboardPage() {
   // --- Project Handlers ---
   const handleSaveProject = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (!projectForm.title?.trim()) {
+      alert("Por favor ingresá un título para el proyecto.");
+      return;
+    }
     try {
       const url = editingProject
         ? `/api/admin/projects/${editingProject.id}`
@@ -284,6 +321,73 @@ export default function AdminDashboardPage() {
       fetchData();
     } catch (err) {
       console.error("Error deleting project:", err);
+    }
+  };
+
+  // --- Experience Handlers ---
+  const handleSaveExperience = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!experienceForm.role?.trim() || !experienceForm.company?.trim()) {
+      alert("Por favor ingresá el puesto y la empresa u organización.");
+      return;
+    }
+    try {
+      const url = editingExperience
+        ? `/api/admin/experiences/${editingExperience.id}`
+        : "/api/admin/experiences";
+      const method = editingExperience ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...experienceForm,
+          order: Number(experienceForm.order) || 0,
+          technologies: Array.isArray(experienceForm.technologies)
+            ? experienceForm.technologies
+            : [],
+        }),
+      });
+
+      if (res.ok) {
+        setEditingExperience(null);
+        setIsCreatingExperience(false);
+        fetchData();
+      } else {
+        const err = await res.json();
+        alert(`Error al guardar: ${err.error || "No se pudo guardar la experiencia"}`);
+      }
+    } catch (err) {
+      console.error("Error saving experience:", err);
+    }
+  };
+
+  const handleDeleteExperience = async (id: string) => {
+    if (!confirm("¿Seguro que deseás eliminar esta experiencia?")) return;
+    try {
+      await fetch(`/api/admin/experiences/${id}`, { method: "DELETE" });
+      fetchData();
+    } catch (err) {
+      console.error("Error deleting experience:", err);
+    }
+  };
+
+  const handleToggleShowExperience = async (newVisibility: boolean) => {
+    if (!profile) return;
+    const updated = { ...profile, showExperience: newVisibility };
+    setProfile(updated);
+    try {
+      const res = await fetch("/api/admin/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setProfile(data);
+      }
+    } catch (err) {
+      console.error("Error toggling experience visibility:", err);
     }
   };
 
@@ -379,27 +483,23 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#160407] via-[#20070A] to-[#120305] text-[#EEE4DA] flex flex-col md:flex-row font-sans selection:bg-[#4D0E13] selection:text-[#EEE4DA] relative">
-      {/* Ambient background glows */}
-      <div className="absolute top-0 right-1/4 w-[480px] h-[480px] bg-[#4D0E13]/35 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-1/4 left-64 w-[480px] h-[480px] bg-[#C8A49F]/15 rounded-full blur-[150px] pointer-events-none" />
-
+    <div className="min-h-screen bg-[#F8F5F1] text-[#4D0E13] flex flex-col md:flex-row font-sans selection:bg-[#4D0E13] selection:text-[#EEE4DA] relative">
       {/* FIXED LEFT SIDEBAR */}
-      <aside className="md:fixed md:inset-y-0 md:left-0 md:w-64 w-full bg-[#160407]/95 border-b md:border-b-0 md:border-r border-[#D8C4AC]/20 flex flex-col justify-between z-30 backdrop-blur-xl shadow-2xl shrink-0">
+      <aside className="md:fixed md:inset-y-0 md:left-0 md:w-64 w-full bg-[#EEE4DA] border-b md:border-b-0 md:border-r border-[#D8C4AC] flex flex-col justify-between z-30 shadow-md shrink-0">
         {/* Top: Brand & User Info */}
-        <div className="p-5 sm:p-6 border-b border-[#D8C4AC]/15">
+        <div className="p-5 sm:p-6 border-b border-[#D8C4AC]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#4D0E13] border border-[#D8C4AC]/40 flex items-center justify-center text-[#D8C4AC] font-serif italic text-xl shadow-inner shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-[#4D0E13] border border-[#4D0E13] flex items-center justify-center text-[#EEE4DA] font-serif italic text-xl shadow-md shrink-0">
               N
             </div>
             <div className="min-w-0">
-              <h1 className="font-serif italic text-base leading-tight text-white flex items-center gap-1.5">
+              <h1 className="font-serif italic text-base leading-tight text-[#4D0E13] flex items-center gap-1.5">
                 <span>Panel de Gestión</span>
-                <span className="text-[9px] uppercase font-mono tracking-widest px-2 py-0.5 rounded-full bg-[#4D0E13] text-[#EEE4DA] border border-[#C8A49F]/40 not-italic font-bold">
+                <span className="text-[9px] uppercase font-mono tracking-widest px-2 py-0.5 rounded-full bg-[#4D0E13] text-[#EEE4DA] not-italic font-bold shadow-sm">
                   Admin
                 </span>
               </h1>
-              <p className="text-[11px] font-mono text-[#D8C4AC]/80 font-medium truncate mt-0.5">
+              <p className="text-[11px] font-mono text-[#8C252C] font-medium truncate mt-0.5">
                 {profile?.name || "Nayssa Chu Bustamante"}
               </p>
             </div>
@@ -413,8 +513,8 @@ export default function AdminDashboardPage() {
             onClick={() => setActiveTab("profile")}
             className={`flex-1 md:flex-none flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "profile"
-                ? "bg-[#D8C4AC] text-[#140507] shadow-lg shadow-black/40 font-bold"
-                : "text-[#D8C4AC]/80 hover:text-[#EEE4DA] hover:bg-white/[0.06]"
+                ? "bg-[#4D0E13] text-[#EEE4DA] shadow-md font-bold"
+                : "text-[#4D0E13]/70 hover:text-[#4D0E13] hover:bg-[#D8C4AC]/25"
             }`}
           >
             <User className="w-4 h-4 shrink-0" />
@@ -430,8 +530,8 @@ export default function AdminDashboardPage() {
             }}
             className={`flex-1 md:flex-none flex items-center justify-between gap-2.5 px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "projects"
-                ? "bg-[#D8C4AC] text-[#140507] shadow-lg shadow-black/40 font-bold"
-                : "text-[#D8C4AC]/80 hover:text-[#EEE4DA] hover:bg-white/[0.06]"
+                ? "bg-[#4D0E13] text-[#EEE4DA] shadow-md font-bold"
+                : "text-[#4D0E13]/70 hover:text-[#4D0E13] hover:bg-[#D8C4AC]/25"
             }`}
           >
             <div className="flex items-center gap-2.5">
@@ -441,15 +541,54 @@ export default function AdminDashboardPage() {
             <span
               className={`text-[10px] font-mono px-2 py-0.5 rounded-md font-bold ${
                 activeTab === "projects"
-                  ? "bg-[#140507]/20 text-[#140507]"
-                  : "bg-[#4D0E13]/60 text-[#EEE4DA]"
+                  ? "bg-[#EEE4DA] text-[#4D0E13]"
+                  : "bg-[#D8C4AC]/40 text-[#4D0E13] border border-[#D8C4AC]"
               }`}
             >
               {projects.length}
             </span>
           </button>
 
-          {/* 3. HABILIDADES */}
+          {/* 3. EXPERIENCIA */}
+          <button
+            onClick={() => {
+              setActiveTab("experiences");
+              setIsCreatingExperience(false);
+              setEditingExperience(null);
+            }}
+            className={`flex-1 md:flex-none flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === "experiences"
+                ? "bg-[#4D0E13] text-[#EEE4DA] shadow-md font-bold"
+                : "text-[#4D0E13]/70 hover:text-[#4D0E13] hover:bg-[#D8C4AC]/25"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <Briefcase className="w-4 h-4 shrink-0" />
+              <span>Experiencia</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span
+                className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-bold uppercase tracking-tight ${
+                  profile?.showExperience
+                    ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                    : "bg-[#D8C4AC]/40 text-[#8C252C]"
+                }`}
+              >
+                {profile?.showExperience ? "On" : "Off"}
+              </span>
+              <span
+                className={`text-[10px] font-mono px-2 py-0.5 rounded-md font-bold ${
+                  activeTab === "experiences"
+                    ? "bg-[#EEE4DA] text-[#4D0E13]"
+                    : "bg-[#D8C4AC]/40 text-[#4D0E13] border border-[#D8C4AC]"
+                }`}
+              >
+                {experiences.length}
+              </span>
+            </div>
+          </button>
+
+          {/* 4. HABILIDADES */}
           <button
             onClick={() => {
               setActiveTab("skills");
@@ -458,8 +597,8 @@ export default function AdminDashboardPage() {
             }}
             className={`flex-1 md:flex-none flex items-center justify-between gap-2.5 px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "skills"
-                ? "bg-[#D8C4AC] text-[#140507] shadow-lg shadow-black/40 font-bold"
-                : "text-[#D8C4AC]/80 hover:text-[#EEE4DA] hover:bg-white/[0.06]"
+                ? "bg-[#4D0E13] text-[#EEE4DA] shadow-md font-bold"
+                : "text-[#4D0E13]/70 hover:text-[#4D0E13] hover:bg-[#D8C4AC]/25"
             }`}
           >
             <div className="flex items-center gap-2.5">
@@ -469,8 +608,8 @@ export default function AdminDashboardPage() {
             <span
               className={`text-[10px] font-mono px-2 py-0.5 rounded-md font-bold ${
                 activeTab === "skills"
-                  ? "bg-[#140507]/20 text-[#140507]"
-                  : "bg-[#4D0E13]/60 text-[#EEE4DA]"
+                  ? "bg-[#EEE4DA] text-[#4D0E13]"
+                  : "bg-[#D8C4AC]/40 text-[#4D0E13] border border-[#D8C4AC]"
               }`}
             >
               {skills.length}
@@ -482,8 +621,8 @@ export default function AdminDashboardPage() {
             onClick={() => setActiveTab("messages")}
             className={`flex-1 md:flex-none flex items-center justify-between gap-2.5 px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "messages"
-                ? "bg-[#D8C4AC] text-[#140507] shadow-lg shadow-black/40 font-bold"
-                : "text-[#D8C4AC]/80 hover:text-[#EEE4DA] hover:bg-white/[0.06]"
+                ? "bg-[#4D0E13] text-[#EEE4DA] shadow-md font-bold"
+                : "text-[#4D0E13]/70 hover:text-[#4D0E13] hover:bg-[#D8C4AC]/25"
             }`}
           >
             <div className="flex items-center gap-2.5">
@@ -491,7 +630,7 @@ export default function AdminDashboardPage() {
               <span>Mensajes</span>
             </div>
             {unreadMessagesCount > 0 && (
-              <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#4D0E13] text-[#EEE4DA] border border-[#C8A49F]/30 shadow-sm">
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#4D0E13] text-[#EEE4DA] shadow-sm">
                 {unreadMessagesCount}
               </span>
             )}
@@ -499,19 +638,19 @@ export default function AdminDashboardPage() {
         </nav>
 
         {/* Bottom: External link & Logout */}
-        <div className="p-4 border-t border-[#D8C4AC]/15 flex flex-row md:flex-col gap-2">
+        <div className="p-4 border-t border-[#D8C4AC] flex flex-row md:flex-col gap-2">
           <Link
             href="/"
             target="_blank"
-            className="flex-1 flex items-center justify-center gap-2 text-xs text-[#EEE4DA] hover:text-white px-3.5 py-2 rounded-xl bg-[#24090D] hover:bg-[#340E14] transition-all border border-[#D8C4AC]/25 font-medium shadow-sm"
+            className="flex-1 flex items-center justify-center gap-2 text-xs text-[#4D0E13] hover:text-[#66151B] px-3.5 py-2 rounded-xl bg-[#FFFFFF] hover:bg-[#FAF7F3] transition-all border border-[#D8C4AC] font-semibold shadow-sm"
           >
-            <Eye className="w-3.5 h-3.5 text-[#D8C4AC]" />
+            <Eye className="w-3.5 h-3.5 text-[#4D0E13]" />
             <span>Ver Portafolio</span>
             <ExternalLink className="w-3.5 h-3.5 opacity-60" />
           </Link>
           <button
             onClick={handleLogout}
-            className="flex items-center justify-center gap-2 text-xs text-[#C8A49F] hover:text-[#EEE4DA] px-3.5 py-2 rounded-xl bg-[#4D0E13]/40 hover:bg-[#4D0E13]/80 transition-all border border-[#C8A49F]/30 cursor-pointer font-medium"
+            className="flex items-center justify-center gap-2 text-xs text-[#8C252C] hover:text-[#EEE4DA] px-3.5 py-2 rounded-xl bg-[#C8A49F]/20 hover:bg-[#4D0E13] transition-all border border-[#C8A49F]/40 cursor-pointer font-semibold"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Salir</span>
@@ -520,22 +659,22 @@ export default function AdminDashboardPage() {
       </aside>
 
       {/* Main Content Area (offset by left sidebar on desktop) */}
-      <div className="flex-1 md:ml-64 p-6 sm:p-10 max-w-5xl w-full relative z-10 min-h-screen">
+      <div className="flex-1 md:ml-64 p-6 sm:p-10 max-w-6xl xl:max-w-7xl w-full relative z-10 min-h-screen">
         <main className="w-full">
           {/* TAB 1: PERFIL & BIO (FIRST!) */}
           {activeTab === "profile" && profile && (
             <div className="space-y-6">
               <div>
-                <h2 className="font-serif italic text-2xl sm:text-3xl text-white font-normal">
+                <h2 className="font-serif italic text-2xl sm:text-3xl text-[#4D0E13] font-semibold">
                   Perfil, Hero & Sobre Mí
                 </h2>
-                <p className="text-xs text-[#D8C4AC] mt-1 font-medium">
+                <p className="text-xs text-[#8C252C] mt-1 font-medium">
                   Administra todos los textos, títulos y enlaces mostrados en la cabecera y sección principal
                 </p>
               </div>
 
               {profileSuccessMsg && (
-                <div className="p-4 rounded-2xl bg-[#4D0E13] border border-[#D8C4AC]/50 text-[#EEE4DA] text-xs flex items-center gap-2.5 shadow-md font-medium">
+                <div className="p-4 rounded-2xl bg-[#4D0E13] border border-[#4D0E13] text-[#EEE4DA] text-xs flex items-center gap-2.5 shadow-md font-medium">
                   <CheckCircle className="w-4 h-4 text-[#D8C4AC]" />
                   <span>{profileSuccessMsg}</span>
                 </div>
@@ -543,12 +682,12 @@ export default function AdminDashboardPage() {
 
               <form
                 onSubmit={handleSaveProfile}
-                className="bg-[#22080C]/90 border border-[#D8C4AC]/25 rounded-3xl p-6 sm:p-8 space-y-6 backdrop-blur-xl shadow-2xl shadow-black/40"
+                className="bg-[#FFFFFF] border border-[#D8C4AC] rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm"
               >
                 {/* 1. Basic Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
+                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-1.5">
                       Nombre
                     </label>
                     <input
@@ -557,11 +696,11 @@ export default function AdminDashboardPage() {
                       onChange={(e) =>
                         setProfile({ ...profile, name: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-xs font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
+                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-1.5">
                       Título
                     </label>
                     <input
@@ -570,14 +709,14 @@ export default function AdminDashboardPage() {
                       onChange={(e) =>
                         setProfile({ ...profile, title: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-xs font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF]"
                     />
                   </div>
                 </div>
 
                 {/* 2. Hero Subtitle */}
                 <div>
-                  <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
+                  <label className="block text-[11px] font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-1.5">
                     Bajada del Hero
                   </label>
                   <textarea
@@ -587,13 +726,13 @@ export default function AdminDashboardPage() {
                       setProfile({ ...profile, heroSubtitle: e.target.value, bio: e.target.value })
                     }
                     placeholder="Diseño UX/UI & Desarrollo Front-End..."
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC] leading-relaxed"
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-xs font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] leading-relaxed"
                   />
                 </div>
 
                 {/* 3. Sobre Mí */}
                 <div>
-                  <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
+                  <label className="block text-[11px] font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-1.5">
                     Sobre Mí
                   </label>
                   <textarea
@@ -603,15 +742,15 @@ export default function AdminDashboardPage() {
                       setProfile({ ...profile, aboutText: e.target.value })
                     }
                     placeholder="Estudiante de 8vo ciclo de Ingeniería de Sistemas e Informática..."
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC] leading-relaxed"
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-xs font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] leading-relaxed"
                   />
                 </div>
 
                 {/* 4. Availability Status */}
-                <div className="p-5 rounded-2xl bg-[#140406]/90 border border-[#D8C4AC]/20 space-y-4">
+                <div className="p-5 rounded-2xl bg-[#FAF7F3] border border-[#D8C4AC]/60 space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-serif italic text-base text-white font-medium">
+                      <h4 className="font-serif italic text-base text-[#4D0E13] font-semibold">
                         Estado de Disponibilidad
                       </h4>
                     </div>
@@ -624,12 +763,12 @@ export default function AdminDashboardPage() {
                         }
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-[#4D0E13] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#D8C4AC]"></div>
+                      <div className="w-11 h-6 bg-[#D8C4AC] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#4D0E13]"></div>
                     </label>
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC]/90 font-medium mb-1">
+                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#4D0E13]/80 font-medium mb-1">
                       Texto de disponibilidad
                     </label>
                     <input
@@ -639,15 +778,42 @@ export default function AdminDashboardPage() {
                         setProfile({ ...profile, availableText: e.target.value })
                       }
                       placeholder="Disponible para proyectos & prácticas"
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#180508] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#D8C4AC] text-[#4D0E13] text-xs font-medium focus:outline-none focus:border-[#4D0E13]"
                     />
                   </div>
                 </div>
 
-                {/* 5. Contact & Location */}
+                {/* 5. Sección de Experiencia en Portafolio */}
+                <div className="p-5 rounded-2xl bg-[#FAF7F3] border border-[#D8C4AC]/60 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-serif italic text-base text-[#4D0E13] font-semibold">
+                        Sección de Experiencia en el Portafolio
+                      </h4>
+                      <p className="text-xs text-[#8C252C] mt-0.5 font-medium">
+                        {profile.showExperience
+                          ? "Visible en tu sitio público (ubicada entre Proyectos y Habilidades)."
+                          : "Oculta temporalmente (ideal si aún no tenés experiencia formal para mostrar)."}
+                      </p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                      <input
+                        type="checkbox"
+                        checked={profile.showExperience ?? false}
+                        onChange={(e) =>
+                          setProfile({ ...profile, showExperience: e.target.checked })
+                        }
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-[#D8C4AC] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#4D0E13]"></div>
+                    </label>
+                  </div>
+                </div>
+
+                {/* 6. Contact & Location */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
+                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-1.5">
                       Email de Contacto
                     </label>
                     <input
@@ -656,11 +822,11 @@ export default function AdminDashboardPage() {
                       onChange={(e) =>
                         setProfile({ ...profile, email: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-xs font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
+                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-1.5">
                       Ubicación
                     </label>
                     <input
@@ -669,7 +835,7 @@ export default function AdminDashboardPage() {
                       onChange={(e) =>
                         setProfile({ ...profile, location: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-xs font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF]"
                     />
                   </div>
                 </div>
@@ -677,7 +843,7 @@ export default function AdminDashboardPage() {
                 {/* 6. Social Links */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
+                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-1.5">
                       LinkedIn
                     </label>
                     <input
@@ -686,11 +852,11 @@ export default function AdminDashboardPage() {
                       onChange={(e) =>
                         setProfile({ ...profile, linkedin: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-xs font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
+                    <label className="block text-[11px] font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-1.5">
                       GitHub
                     </label>
                     <input
@@ -699,15 +865,15 @@ export default function AdminDashboardPage() {
                       onChange={(e) =>
                         setProfile({ ...profile, github: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-xs font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF]"
                     />
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-4 border-t border-[#D8C4AC]/20">
+                <div className="flex justify-end pt-4 border-t border-[#D8C4AC]">
                   <button
                     type="submit"
-                    className="flex items-center gap-1.5 px-7 py-3 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                    className="flex items-center gap-1.5 px-7 py-3 rounded-xl bg-[#4D0E13] hover:bg-[#66151B] text-[#EEE4DA] text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
                   >
                     <Save className="w-4 h-4" />
                     <span>Guardar Cambios del Perfil</span>
@@ -722,7 +888,7 @@ export default function AdminDashboardPage() {
             isCreatingProject || editingProject ? (
               /* DEDICATED FULL VIEW (Clean dedicated window/screen without modal) */
               <div className="space-y-6 animate-in fade-in duration-200">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#D8C4AC]/20">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#D8C4AC]">
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
@@ -730,12 +896,13 @@ export default function AdminDashboardPage() {
                         setIsCreatingProject(false);
                         setEditingProject(null);
                       }}
-                      className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#D8C4AC] hover:text-white px-3.5 py-2 rounded-xl bg-[#22080C] hover:bg-[#2E0A0F] border border-[#D8C4AC]/30 transition-all cursor-pointer shadow-sm"
+                      aria-label="Volver a proyectos"
+                      title="Volver a proyectos"
+                      className="w-10 h-10 rounded-xl bg-[#FFFFFF] hover:bg-[#FAF7F3] border border-[#D8C4AC] flex items-center justify-center text-[#4D0E13] hover:text-[#66151B] transition-all cursor-pointer shadow-sm shrink-0"
                     >
-                      <ArrowLeft className="w-4 h-4" />
-                      <span>Volver a proyectos</span>
+                      <ArrowLeft className="w-5 h-5" />
                     </button>
-                    <h2 className="font-serif italic text-2xl text-white">
+                    <h2 className="font-serif italic text-2xl text-[#4D0E13] font-semibold">
                       {editingProject ? "Editar Proyecto" : "Nuevo Proyecto"}
                     </h2>
                   </div>
@@ -747,202 +914,89 @@ export default function AdminDashboardPage() {
                         setIsCreatingProject(false);
                         setEditingProject(null);
                       }}
-                      className="px-4 py-2 rounded-xl text-[#D8C4AC] hover:text-white text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                      className="px-4 py-2 rounded-xl text-[#8C252C] hover:text-[#4D0E13] text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer font-medium"
                     >
                       Cancelar
                     </button>
                     <button
-                      type="button"
-                      onClick={() => handleSaveProject()}
-                      className="px-5 py-2.5 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
+                      type="submit"
+                      form="project-form"
+                      className="px-5 py-2.5 rounded-xl bg-[#4D0E13] hover:bg-[#66151B] text-[#EEE4DA] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
                     >
                       <Save className="w-3.5 h-3.5" />
-                      <span>Guardar Proyecto</span>
+                      <span>Guardar</span>
                     </button>
                   </div>
                 </div>
 
-                <div className="bg-[#22080C]/90 border border-[#D8C4AC]/25 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-sm">
-                  <form onSubmit={handleSaveProject} className="space-y-6">
-                    {/* Row 1: Título & Subtítulo */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="bg-[#FFFFFF] border border-[#D8C4AC] rounded-3xl p-7 sm:p-10 shadow-sm">
+                  <form id="project-form" onSubmit={handleSaveProject} className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+                    {/* COLUMNA IZQUIERDA: Textos y Datos */}
+                    <div className="lg:col-span-7 space-y-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                          <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                            Título *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={projectForm.title || ""}
+                            onChange={(e) =>
+                              setProjectForm({
+                                ...projectForm,
+                                title: e.target.value,
+                                slug:
+                                  projectForm.slug ||
+                                  e.target.value
+                                    .toLowerCase()
+                                    .replace(/[^a-z0-9]+/g, "-")
+                                    .replace(/(^-|-$)/g, ""),
+                              })
+                            }
+                            placeholder="App de Productividad y Bienestar Estudiantil"
+                            className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                            Subtítulo
+                          </label>
+                          <input
+                            type="text"
+                            value={projectForm.subtitle || ""}
+                            onChange={(e) =>
+                              setProjectForm({ ...projectForm, subtitle: e.target.value })
+                            }
+                            placeholder="CASO DE ESTUDIO UX/UI · MOBILE"
+                            className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
+                          />
+                        </div>
+                      </div>
+
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
-                          Título *
+                        <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                          Descripción *
                         </label>
-                        <input
-                          type="text"
+                        <textarea
+                          rows={5}
                           required
-                          value={projectForm.title || ""}
+                          value={projectForm.description || ""}
                           onChange={(e) =>
                             setProjectForm({
                               ...projectForm,
-                              title: e.target.value,
-                              slug:
-                                projectForm.slug ||
-                                e.target.value
-                                  .toLowerCase()
-                                  .replace(/[^a-z0-9]+/g, "-")
-                                  .replace(/(^-|-$)/g, ""),
+                              description: e.target.value,
                             })
                           }
-                          placeholder="App de Productividad"
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
+                          placeholder="Investigación con usuarios y prototipado interactivo de alta fidelidad para reducir la sobrecarga cognitiva en universitarios..."
+                          className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] leading-relaxed transition-all"
                         />
                       </div>
-                      <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
-                          Subtítulo
-                        </label>
-                        <input
-                          type="text"
-                          value={projectForm.subtitle || ""}
-                          onChange={(e) =>
-                            setProjectForm({ ...projectForm, subtitle: e.target.value })
-                          }
-                          placeholder="Caso de Estudio UX/UI · Mobile"
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
-                        />
-                      </div>
-                    </div>
 
-                    {/* Row 2: Categoría, Highlight & Orden/Destacado */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
-                          Categoría
-                        </label>
-                        <select
-                          value={projectForm.category || "UX/UI Design"}
-                          onChange={(e) =>
-                            setProjectForm({ ...projectForm, category: e.target.value })
-                          }
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
-                        >
-                          <option value="UX/UI Design">UX/UI Design</option>
-                          <option value="Product Design">Product Design</option>
-                          <option value="Design Engineering">Design Engineering</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
-                          Highlight
-                        </label>
-                        <input
-                          type="text"
-                          value={projectForm.highlight || ""}
-                          onChange={(e) =>
-                            setProjectForm({ ...projectForm, highlight: e.target.value })
-                          }
-                          placeholder="8 entrevistas · 3 iteraciones"
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
-                        />
-                      </div>
-                      <div className="flex items-center gap-5">
-                        <div className="flex-1">
-                          <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
-                            Orden
-                          </label>
-                          <input
-                            type="number"
-                            value={projectForm.order ?? 0}
-                            onChange={(e) =>
-                              setProjectForm({
-                                ...projectForm,
-                                order: Number(e.target.value),
-                              })
-                            }
-                            className="w-full px-3 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium"
-                          />
-                        </div>
-                        <label className="flex items-center gap-2 cursor-pointer text-xs text-[#EEE4DA] font-medium mt-6 shrink-0">
-                          <input
-                            type="checkbox"
-                            checked={projectForm.featured ?? true}
-                            onChange={(e) =>
-                              setProjectForm({
-                                ...projectForm,
-                                featured: e.target.checked,
-                              })
-                            }
-                            className="accent-[#D8C4AC] w-4 h-4 cursor-pointer"
-                          />
-                          <span>Destacado</span>
-                        </label>
-                      </div>
-                    </div>
-
-                    {/* Row 3: Descripción */}
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
-                        Descripción *
-                      </label>
-                      <textarea
-                        rows={3}
-                        required
-                        value={projectForm.description || ""}
-                        onChange={(e) =>
-                          setProjectForm({
-                            ...projectForm,
-                            description: e.target.value,
-                          })
-                        }
-                        placeholder="Descripción breve del proyecto..."
-                        className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC] leading-relaxed"
-                      />
-                    </div>
-
-                    {/* Row 4: Caso de estudio (Problema, Solución, Impacto) */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                      <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
-                          Problema
-                        </label>
-                        <textarea
-                          rows={3}
-                          value={projectForm.problem || ""}
-                          onChange={(e) =>
-                            setProjectForm({ ...projectForm, problem: e.target.value })
-                          }
-                          placeholder="El desafío o fricción..."
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
-                          Solución
-                        </label>
-                        <textarea
-                          rows={3}
-                          value={projectForm.solution || ""}
-                          onChange={(e) =>
-                            setProjectForm({ ...projectForm, solution: e.target.value })
-                          }
-                          placeholder="La propuesta de diseño..."
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
-                          Impacto
-                        </label>
-                        <textarea
-                          rows={3}
-                          value={projectForm.impact || ""}
-                          onChange={(e) =>
-                            setProjectForm({ ...projectForm, impact: e.target.value })
-                          }
-                          placeholder="Resultados métricos..."
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Row 5: Etiquetas & Herramientas */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
-                          Etiquetas
+                        <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                          Etiquetas (Tags)
                         </label>
                         <input
                           type="text"
@@ -956,152 +1010,167 @@ export default function AdminDashboardPage() {
                                 .filter(Boolean),
                             })
                           }
-                          placeholder="UX Research, Figma, Design System"
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
-                          Herramientas
-                        </label>
-                        <input
-                          type="text"
-                          value={projectForm.tools?.join(", ") || ""}
-                          onChange={(e) =>
-                            setProjectForm({
-                              ...projectForm,
-                              tools: e.target.value
-                                .split(",")
-                                .map((s) => s.trim())
-                                .filter(Boolean),
-                            })
-                          }
-                          placeholder="Figma, Tailwind, Next.js"
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
+                          placeholder="UX Research, Figma, Wireframes, Design System"
+                          className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
                         />
                       </div>
                     </div>
 
-                    {/* Row 6: Imágenes (Real local file upload) */}
-                    <div>
-                      <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
-                        Imágenes
-                      </label>
+                    {/* COLUMNA DERECHA: Multimedia y Configuración */}
+                    <div className="lg:col-span-5 space-y-6 lg:pl-8 lg:border-l lg:border-[#D8C4AC]/60">
+                      <div>
+                        <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                          Imágenes del Proyecto ({projectForm.images?.length || 0})
+                        </label>
 
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleImageFilesSelected}
-                        accept="image/*"
-                        multiple
-                        className="hidden"
-                      />
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          onChange={handleImageFilesSelected}
+                          accept="image/*"
+                          multiple
+                          className="hidden"
+                        />
 
-                      <div
-                        onClick={() => fileInputRef.current?.click()}
-                        className="border-2 border-dashed border-[#D8C4AC]/30 hover:border-[#D8C4AC]/70 bg-[#140406]/80 hover:bg-[#140406] rounded-2xl p-6 text-center cursor-pointer transition-all flex items-center justify-center gap-4 group"
-                      >
-                        <div className="w-11 h-11 rounded-xl bg-[#4D0E13] border border-[#D8C4AC]/30 flex items-center justify-center text-[#D8C4AC] group-hover:scale-105 transition-transform shrink-0">
-                          {isUploadingImages ? (
-                            <Loader2 className="w-5 h-5 animate-spin text-[#D8C4AC]" />
-                          ) : (
-                            <Upload className="w-5 h-5 text-[#D8C4AC]" />
-                          )}
+                        <div
+                          onClick={() => fileInputRef.current?.click()}
+                          className="border-2 border-dashed border-[#D8C4AC] hover:border-[#4D0E13]/60 bg-[#FAF7F3] hover:bg-[#FFFFFF] rounded-2xl p-5 text-center cursor-pointer transition-all flex items-center justify-center gap-3.5 group shadow-sm"
+                        >
+                          <div className="w-10 h-10 rounded-xl bg-[#4D0E13] flex items-center justify-center text-[#EEE4DA] group-hover:scale-105 transition-transform shadow-sm shrink-0">
+                            {isUploadingImages ? (
+                              <Loader2 className="w-5 h-5 animate-spin text-[#EEE4DA]" />
+                            ) : (
+                              <Upload className="w-5 h-5 text-[#EEE4DA]" />
+                            )}
+                          </div>
+                          <div className="text-left">
+                            <p className="text-sm font-semibold text-[#4D0E13]">
+                              {isUploadingImages ? "Subiendo imágenes..." : "Subir capturas o mockups"}
+                            </p>
+                            <p className="text-[11px] text-[#8C252C] font-mono mt-0.5">
+                              PNG, JPG, SVG o WebP
+                            </p>
+                          </div>
                         </div>
-                        <div className="text-left">
-                          <p className="text-sm font-semibold text-white">
-                            {isUploadingImages ? "Subiendo imágenes..." : "Subir imágenes locales"}
-                          </p>
-                          <p className="text-xs text-[#D8C4AC]/70 font-mono">
-                            PNG, JPG, SVG, WebP (se guardan directamente en el servidor local)
-                          </p>
-                        </div>
-                      </div>
 
-                      {uploadError && (
-                        <p className="text-xs text-rose-400 mt-1.5 font-mono">{uploadError}</p>
-                      )}
+                        {uploadError && (
+                          <p className="text-xs text-rose-600 font-mono mt-1.5">{uploadError}</p>
+                        )}
 
-                      {/* Thumbnails */}
-                      {projectForm.images && projectForm.images.length > 0 && (
-                        <div className="mt-4 flex flex-wrap gap-3">
-                          {projectForm.images.map((imgUrl, index) => (
-                            <div
-                              key={index}
-                              className="relative group rounded-xl overflow-hidden border border-[#D8C4AC]/30 bg-[#140406] w-24 h-20 flex items-center justify-center shadow-md shrink-0"
-                            >
-                              <img
-                                src={imgUrl}
-                                alt={`Imagen ${index + 1}`}
-                                className="w-full h-full object-cover"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveImage(index)}
-                                className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-rose-300 hover:text-rose-100 cursor-pointer"
-                                title="Eliminar imagen"
+                        {/* Thumbnails */}
+                        {projectForm.images && projectForm.images.length > 0 && (
+                          <div className="grid grid-cols-3 gap-3 pt-3">
+                            {projectForm.images.map((imgUrl, index) => (
+                              <div
+                                key={index}
+                                className="relative group rounded-xl overflow-hidden border border-[#D8C4AC] bg-[#FAF7F3] aspect-video flex items-center justify-center shadow-sm"
                               >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                              <span className="absolute bottom-1 left-1.5 text-[9px] font-mono text-white/80 bg-black/60 px-1.5 py-0.5 rounded">
-                                #{index + 1}
-                              </span>
-                            </div>
-                          ))}
+                                <img
+                                  src={imgUrl}
+                                  alt={`Imagen ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveImage(index)}
+                                  className="absolute inset-0 bg-[#4D0E13]/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-rose-200 hover:text-white cursor-pointer"
+                                  title="Eliminar imagen"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                                <span className="absolute bottom-1 left-1.5 text-[9px] font-mono text-[#EEE4DA] bg-[#4D0E13]/80 px-1.5 py-0.5 rounded">
+                                  #{index + 1}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Enlaces de Proyecto */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                            Enlace Web / Desplegado
+                          </label>
+                          <input
+                            type="url"
+                            placeholder="https://mi-proyecto.com"
+                            value={projectForm.link || ""}
+                            onChange={(e) =>
+                              setProjectForm({ ...projectForm, link: e.target.value })
+                            }
+                            className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
+                          />
                         </div>
-                      )}
-                    </div>
-
-                    {/* Row 7: Enlaces */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
-                          Enlace en vivo
-                        </label>
-                        <input
-                          type="url"
-                          value={projectForm.link || ""}
-                          onChange={(e) =>
-                            setProjectForm({ ...projectForm, link: e.target.value })
-                          }
-                          placeholder="https://..."
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
-                        />
+                        <div>
+                          <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                            Repositorio GitHub
+                          </label>
+                          <input
+                            type="url"
+                            placeholder="https://github.com/usuario/repo"
+                            value={projectForm.github || ""}
+                            onChange={(e) =>
+                              setProjectForm({ ...projectForm, github: e.target.value })
+                            }
+                            className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
-                          GitHub
-                        </label>
-                        <input
-                          type="url"
-                          value={projectForm.github || ""}
-                          onChange={(e) =>
-                            setProjectForm({ ...projectForm, github: e.target.value })
-                          }
-                          placeholder="https://github.com/..."
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
-                        />
-                      </div>
-                    </div>
 
-                    <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#D8C4AC]/20">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsCreatingProject(false);
-                          setEditingProject(null);
-                        }}
-                        className="px-4 py-2.5 rounded-xl text-[#D8C4AC] hover:text-white text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
-                      >
-                        Cancelar
-                      </button>
-                      <button
-                        type="submit"
-                        className="px-6 py-2.5 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-md cursor-pointer"
-                      >
-                        <Save className="w-4 h-4" />
-                        <span>Guardar Proyecto</span>
-                      </button>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end pt-1">
+                        <div>
+                          <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                            Categoría
+                          </label>
+                          <select
+                            value={projectForm.category || "UX/UI Design"}
+                            onChange={(e) =>
+                              setProjectForm({ ...projectForm, category: e.target.value })
+                            }
+                            className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
+                          >
+                            <option value="UX/UI Design">UX/UI Design</option>
+                            <option value="Product Design">Product Design</option>
+                            <option value="Design Engineering">Design Engineering</option>
+                          </select>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                          <div className="flex-1">
+                            <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                              Orden
+                            </label>
+                            <input
+                              type="number"
+                              value={projectForm.order ?? 0}
+                              onChange={(e) =>
+                                setProjectForm({
+                                  ...projectForm,
+                                  order: Number(e.target.value),
+                                })
+                              }
+                              className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
+                            />
+                          </div>
+
+                          <label className="flex items-center gap-2.5 cursor-pointer text-sm font-medium text-[#4D0E13] mb-3 shrink-0">
+                            <input
+                              type="checkbox"
+                              checked={projectForm.featured ?? true}
+                              onChange={(e) =>
+                                setProjectForm({
+                                  ...projectForm,
+                                  featured: e.target.checked,
+                                })
+                              }
+                              className="accent-[#4D0E13] w-4 h-4 cursor-pointer"
+                            />
+                            <span>Destacado</span>
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </form>
                 </div>
@@ -1111,10 +1180,10 @@ export default function AdminDashboardPage() {
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="font-serif italic text-2xl sm:text-3xl text-white font-normal">
+                    <h2 className="font-serif italic text-2xl sm:text-3xl text-[#4D0E13] font-semibold">
                       Proyectos
                     </h2>
-                    <p className="text-xs text-[#D8C4AC] mt-1 font-medium">
+                    <p className="text-xs text-[#8C252C] mt-1 font-medium">
                       Todos los proyectos mostrados en el portafolio
                     </p>
                   </div>
@@ -1142,7 +1211,7 @@ export default function AdminDashboardPage() {
                         github: "",
                       });
                     }}
-                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#4D0E13] hover:bg-[#66151B] text-[#EEE4DA] text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Nuevo Proyecto</span>
@@ -1153,55 +1222,56 @@ export default function AdminDashboardPage() {
                   {projects.map((proj) => (
                     <div
                       key={proj.id}
-                      className="bg-[#22080C]/90 border border-[#D8C4AC]/25 rounded-3xl p-6 flex flex-col justify-between hover:border-[#D8C4AC]/60 transition-all backdrop-blur-sm group shadow-xl shadow-black/40"
+                      className="bg-[#FFFFFF] border border-[#D8C4AC] rounded-3xl p-6 flex flex-col justify-between hover:border-[#8C252C]/50 transition-all group shadow-sm hover:shadow-md"
                     >
                       <div>
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <span className="text-[10px] font-mono font-bold text-[#D8C4AC] uppercase tracking-widest">
+                        <div className="flex items-start justify-between gap-2 mb-2.5">
+                          <span className="text-[10px] font-mono font-bold text-[#8C252C] uppercase tracking-widest">
                             {proj.subtitle || proj.category}
                           </span>
                           <div className="flex items-center gap-2">
                             {proj.featured && (
-                              <span className="text-[9px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#4D0E13] text-[#EEE4DA] border border-[#C8A49F]/40 font-bold">
+                              <span className="text-[9px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#4D0E13] text-[#EEE4DA] border border-[#4D0E13] font-bold shadow-sm">
                                 Destacado
                               </span>
                             )}
-                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#140406]/80 text-[#C8A49F] font-bold border border-[#D8C4AC]/20">
+                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#FAF7F3] text-[#4D0E13] font-bold border border-[#D8C4AC]">
                               #{proj.order}
                             </span>
                           </div>
                         </div>
 
-                        <h3 className="font-serif italic text-xl text-white mb-1.5 group-hover:text-[#D8C4AC] transition-colors font-medium">
+                        <h3 className="font-serif italic text-xl text-[#4D0E13] mb-2 group-hover:text-[#66151B] transition-colors font-semibold">
                           {proj.title}
                         </h3>
 
-                        {proj.highlight && (
-                          <div className="mb-2">
-                            <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-md bg-[#4D0E13]/40 text-[#EEE4DA] border border-[#C8A49F]/40">
-                              ✨ {proj.highlight}
-                            </span>
-                          </div>
-                        )}
-
-                        <p className="text-xs text-[#D8C4AC]/80 line-clamp-2 mb-4 leading-relaxed font-normal">
+                        <p className="text-xs text-[#4D0E13]/80 line-clamp-2 mb-4 leading-relaxed font-normal">
                           {proj.description}
                         </p>
 
                         <div className="flex flex-wrap gap-1.5 mb-5">
-                          {proj.tags.slice(0, 4).map((tag, i) => (
-                            <span
-                              key={i}
-                              className="text-[10px] px-2.5 py-1 rounded-lg bg-[#C8A49F]/15 text-[#EEE4DA] border border-[#C8A49F]/30 font-mono font-medium"
-                            >
-                              {tag}
-                            </span>
-                          ))}
+                          {proj.tags.slice(0, 4).map((tag, i) => {
+                            const tagStyles = [
+                              "bg-[#D8C4AC]/30 text-[#4D0E13] border-[#D8C4AC]",
+                              "bg-[#C8A49F]/25 text-[#66151B] border-[#C8A49F]/60",
+                              "bg-[#FAF7F3] text-[#8C252C] border-[#D8C4AC]",
+                              "bg-[#4D0E13]/10 text-[#4D0E13] border-[#4D0E13]/20",
+                            ];
+                            const currentStyle = tagStyles[i % tagStyles.length];
+                            return (
+                              <span
+                                key={i}
+                                className={`text-[10px] px-2.5 py-1 rounded-lg border font-mono font-medium transition-all ${currentStyle}`}
+                              >
+                                {tag}
+                              </span>
+                            );
+                          })}
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-[#D8C4AC]/20">
-                        <span className="text-[11px] font-mono text-[#D8C4AC]/80 font-medium">
+                      <div className="flex items-center justify-between pt-4 border-t border-[#D8C4AC]">
+                        <span className="text-[11px] font-mono text-[#8C252C] font-medium">
                           /{proj.slug}
                         </span>
                         <div className="flex items-center gap-2">
@@ -1210,14 +1280,14 @@ export default function AdminDashboardPage() {
                               setEditingProject(proj);
                               setProjectForm(proj);
                             }}
-                            className="p-2 rounded-xl bg-[#24090D] hover:bg-[#D8C4AC] hover:text-[#140507] text-[#EEE4DA] border border-[#D8C4AC]/25 transition-all cursor-pointer"
+                            className="p-2 rounded-xl bg-[#FAF7F3] hover:bg-[#D8C4AC]/40 text-[#4D0E13] border border-[#D8C4AC] transition-all cursor-pointer shadow-sm"
                             title="Editar"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => handleDeleteProject(proj.id)}
-                            className="p-2 rounded-xl bg-[#4D0E13]/40 text-[#C8A49F] hover:bg-[#4D0E13] hover:text-[#EEE4DA] border border-[#4D0E13] transition-all cursor-pointer"
+                            className="p-2 rounded-xl bg-[#C8A49F]/20 text-[#8C252C] hover:bg-[#4D0E13] hover:text-[#EEE4DA] border border-[#C8A49F]/40 transition-all cursor-pointer shadow-sm"
                             title="Eliminar"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -1231,12 +1301,397 @@ export default function AdminDashboardPage() {
             )
           )}
 
+          {/* TAB: EXPERIENCIA */}
+          {activeTab === "experiences" && (
+            isCreatingExperience || editingExperience ? (
+              <div className="space-y-6 animate-in fade-in duration-200">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#D8C4AC]">
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsCreatingExperience(false);
+                        setEditingExperience(null);
+                      }}
+                      aria-label="Volver a experiencias"
+                      title="Volver a experiencias"
+                      className="w-10 h-10 rounded-xl bg-[#FFFFFF] hover:bg-[#FAF7F3] border border-[#D8C4AC] flex items-center justify-center text-[#4D0E13] hover:text-[#66151B] transition-all cursor-pointer shadow-sm shrink-0"
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                    </button>
+                    <h2 className="font-serif italic text-2xl text-[#4D0E13] font-semibold">
+                      {editingExperience ? "Editar Experiencia" : "Nueva Experiencia"}
+                    </h2>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsCreatingExperience(false);
+                        setEditingExperience(null);
+                      }}
+                      className="px-4 py-2 rounded-xl text-[#8C252C] hover:text-[#4D0E13] text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer font-medium"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      form="experience-form"
+                      className="px-5 py-2.5 rounded-xl bg-[#4D0E13] hover:bg-[#66151B] text-[#EEE4DA] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Guardar</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-[#FFFFFF] border border-[#D8C4AC] rounded-3xl p-7 sm:p-10 shadow-sm">
+                  <form id="experience-form" onSubmit={handleSaveExperience} className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <div>
+                        <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                          Puesto / Rol *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={experienceForm.role || ""}
+                          onChange={(e) =>
+                            setExperienceForm({ ...experienceForm, role: e.target.value })
+                          }
+                          placeholder="ej. Diseñadora UX/UI & Desarrolladora Frontend"
+                          className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                          Empresa u Organización *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={experienceForm.company || ""}
+                          onChange={(e) =>
+                            setExperienceForm({ ...experienceForm, company: e.target.value })
+                          }
+                          placeholder="ej. Empresa, Startup o Proyectos Freelance"
+                          className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                      <div>
+                        <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                          Período *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={experienceForm.period || ""}
+                          onChange={(e) =>
+                            setExperienceForm({ ...experienceForm, period: e.target.value })
+                          }
+                          placeholder="ej. 2024 - Presente o Ene 2024 - Jul 2024"
+                          className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                          Ubicación / Modalidad
+                        </label>
+                        <input
+                          type="text"
+                          value={experienceForm.location || ""}
+                          onChange={(e) =>
+                            setExperienceForm({ ...experienceForm, location: e.target.value })
+                          }
+                          placeholder="ej. Lima, Perú · Remoto"
+                          className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                          Orden
+                        </label>
+                        <input
+                          type="number"
+                          value={experienceForm.order ?? 0}
+                          onChange={(e) =>
+                            setExperienceForm({ ...experienceForm, order: Number(e.target.value) })
+                          }
+                          className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#FAF7F3] border border-[#D8C4AC]/70">
+                      <input
+                        type="checkbox"
+                        id="current-job"
+                        checked={experienceForm.current ?? false}
+                        onChange={(e) =>
+                          setExperienceForm({ ...experienceForm, current: e.target.checked })
+                        }
+                        className="accent-[#4D0E13] w-4 h-4 cursor-pointer"
+                      />
+                      <label htmlFor="current-job" className="text-sm font-medium text-[#4D0E13] cursor-pointer select-none">
+                        Actualmente me desempeño en este rol (mostrar badge "Actual")
+                      </label>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                        Descripción de responsabilidades y aportes *
+                      </label>
+                      <textarea
+                        rows={4}
+                        required
+                        value={experienceForm.description || ""}
+                        onChange={(e) =>
+                          setExperienceForm({ ...experienceForm, description: e.target.value })
+                        }
+                        placeholder="Detallá los desafíos abordados, tus principales responsabilidades y el impacto logrado..."
+                        className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all leading-relaxed"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                        Tecnologías & Herramientas (Separadas por comas)
+                      </label>
+                      <input
+                        type="text"
+                        value={experienceForm.technologies?.join(", ") || ""}
+                        onChange={(e) =>
+                          setExperienceForm({
+                            ...experienceForm,
+                            technologies: e.target.value
+                              .split(",")
+                              .map((t) => t.trim())
+                              .filter(Boolean),
+                          })
+                        }
+                        placeholder="Figma, Next.js, React, Tailwind CSS, TypeScript"
+                        className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
+                      />
+                    </div>
+                  </form>
+                </div>
+              </div>
+            ) : (
+              /* EXPERIENCES LIST VIEW */
+              <div className="space-y-6">
+                {/* Visibility Toggle Banner */}
+                <div className="bg-[#FFFFFF] border border-[#D8C4AC] rounded-3xl p-6 sm:p-7 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex items-start sm:items-center gap-4">
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border transition-all ${
+                      profile?.showExperience
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-300"
+                        : "bg-[#FAF7F3] text-[#8C252C] border-[#D8C4AC]"
+                    }`}>
+                      <Briefcase className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2.5">
+                        <h3 className="font-serif italic text-lg text-[#4D0E13] font-semibold">
+                          Visibilidad de la Sección en el Portafolio
+                        </h3>
+                        <span className={`text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full font-bold border ${
+                          profile?.showExperience
+                            ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                            : "bg-[#D8C4AC]/40 text-[#8C252C] border-[#D8C4AC]"
+                        }`}>
+                          {profile?.showExperience ? "Visible en la Web" : "Oculta"}
+                        </span>
+                      </div>
+                      <p className="text-xs text-[#8C252C] mt-1 font-medium leading-relaxed">
+                        {profile?.showExperience
+                          ? "La sección está activa y se muestra en tu sitio público (entre Proyectos y Habilidades)."
+                          : "La sección está oculta en tu sitio público. Podés activarla en cualquier momento cuando desees mostrarla."}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleToggleShowExperience(!profile?.showExperience)}
+                    className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer shrink-0 font-mono ${
+                      profile?.showExperience
+                        ? "bg-[#FAF7F3] hover:bg-[#D8C4AC]/30 text-[#8C252C] border border-[#D8C4AC]"
+                        : "bg-[#4D0E13] hover:bg-[#66151B] text-[#EEE4DA]"
+                    }`}
+                  >
+                    {profile?.showExperience ? (
+                      <>
+                        <EyeOff className="w-4 h-4" />
+                        <span>Ocultar sección</span>
+                      </>
+                    ) : (
+                      <>
+                        <Eye className="w-4 h-4" />
+                        <span>Hacer visible</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Section Header */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="font-serif italic text-2xl sm:text-3xl text-[#4D0E13] font-semibold">
+                      Experiencias ({experiences.length})
+                    </h2>
+                    <p className="text-xs text-[#8C252C] mt-1 font-medium">
+                      Roles laborales, prácticas y proyectos profesionales
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setIsCreatingExperience(true);
+                      setEditingExperience(null);
+                      setExperienceForm({
+                        role: "",
+                        company: "",
+                        period: "",
+                        location: "Lima, Perú · Remoto",
+                        description: "",
+                        technologies: ["Figma", "React", "Next.js", "Tailwind CSS"],
+                        current: false,
+                        order: experiences.length,
+                      });
+                    }}
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#4D0E13] hover:bg-[#66151B] text-[#EEE4DA] text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Nueva Experiencia</span>
+                  </button>
+                </div>
+
+                {/* Experiences List */}
+                {experiences.length === 0 ? (
+                  <div className="text-center py-16 bg-[#FFFFFF] rounded-3xl border border-[#D8C4AC] shadow-sm">
+                    <Briefcase className="w-8 h-8 text-[#8C252C]/60 mx-auto mb-3" />
+                    <p className="font-serif italic text-base text-[#4D0E13] font-semibold">
+                      Aún no tenés experiencias registradas
+                    </p>
+                    <p className="text-xs text-[#8C252C] mt-1 mb-5">
+                      Podés agregar tu primer rol cuando estés lista. Recordá que podés mantener la sección oculta hasta entonces.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setIsCreatingExperience(true);
+                        setEditingExperience(null);
+                        setExperienceForm({
+                          role: "",
+                          company: "",
+                          period: "",
+                          location: "Lima, Perú · Remoto",
+                          description: "",
+                          technologies: ["Figma", "React", "Next.js", "Tailwind CSS"],
+                          current: false,
+                          order: 0,
+                        });
+                      }}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#4D0E13] text-[#EEE4DA] text-xs font-bold uppercase tracking-wider hover:bg-[#66151B] transition-all cursor-pointer shadow-sm"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Agregar primera experiencia</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {experiences.map((exp) => (
+                      <div
+                        key={exp.id}
+                        className="bg-[#FFFFFF] border border-[#D8C4AC] rounded-3xl p-6 hover:border-[#8C252C]/50 transition-all shadow-sm hover:shadow-md"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
+                          <div>
+                            <div className="flex items-center gap-2.5 flex-wrap">
+                              <h3 className="font-serif italic text-lg text-[#4D0E13] font-semibold">
+                                {exp.role}
+                              </h3>
+                              {exp.current && (
+                                <span className="text-[9px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#4D0E13] text-[#EEE4DA] font-bold shadow-sm">
+                                  Actual
+                                </span>
+                              )}
+                              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#FAF7F3] text-[#4D0E13] font-bold border border-[#D8C4AC]">
+                                #{exp.order}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-xs text-[#8C252C] mt-1 font-medium">
+                              <Building2 className="w-3.5 h-3.5" />
+                              <span>{exp.company}</span>
+                              {exp.location && (
+                                <>
+                                  <span>·</span>
+                                  <span>{exp.location}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <span className="text-[11px] font-mono px-3 py-1 rounded-xl bg-[#FAF7F3] text-[#4D0E13] border border-[#D8C4AC] font-semibold">
+                              {exp.period}
+                            </span>
+                            <button
+                              onClick={() => {
+                                setEditingExperience(exp);
+                                setIsCreatingExperience(false);
+                                setExperienceForm({ ...exp });
+                              }}
+                              className="p-2 rounded-xl bg-[#FAF7F3] text-[#4D0E13] hover:bg-[#D8C4AC]/30 border border-[#D8C4AC] transition-all cursor-pointer shadow-sm"
+                              title="Editar"
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteExperience(exp.id)}
+                              className="p-2 rounded-xl bg-[#C8A49F]/20 text-[#8C252C] hover:bg-[#4D0E13] hover:text-[#EEE4DA] border border-[#C8A49F]/40 transition-all cursor-pointer shadow-sm"
+                              title="Eliminar"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <p className="text-xs text-[#4D0E13]/85 leading-relaxed font-normal mb-4 whitespace-pre-line">
+                          {exp.description}
+                        </p>
+
+                        {exp.technologies && exp.technologies.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 pt-3 border-t border-[#D8C4AC]/50">
+                            {exp.technologies.map((tech, i) => (
+                              <span
+                                key={i}
+                                className="text-[10px] font-mono px-2.5 py-0.5 rounded-lg bg-[#FAF7F3] text-[#4D0E13] border border-[#D8C4AC] font-medium"
+                              >
+                                {tech}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          )}
+
           {/* TAB 3: HABILIDADES */}
           {activeTab === "skills" && (
             isCreatingSkill || editingSkill ? (
               /* DEDICATED FULL VIEW (Clean view without modal) */
               <div className="space-y-6 animate-in fade-in duration-200">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#D8C4AC]/20">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#D8C4AC]">
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
@@ -1244,12 +1699,12 @@ export default function AdminDashboardPage() {
                         setIsCreatingSkill(false);
                         setEditingSkill(null);
                       }}
-                      className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#D8C4AC] hover:text-white px-3.5 py-2 rounded-xl bg-[#22080C] hover:bg-[#2E0A0F] border border-[#D8C4AC]/30 transition-all cursor-pointer shadow-sm"
+                      className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#4D0E13] hover:text-[#66151B] px-3.5 py-2 rounded-xl bg-[#FFFFFF] hover:bg-[#FAF7F3] border border-[#D8C4AC] transition-all cursor-pointer shadow-sm font-semibold"
                     >
                       <ArrowLeft className="w-4 h-4" />
                       <span>Volver a habilidades</span>
                     </button>
-                    <h2 className="font-serif italic text-2xl text-white">
+                    <h2 className="font-serif italic text-2xl text-[#4D0E13] font-semibold">
                       {editingSkill ? "Editar Habilidad" : "Nueva Habilidad"}
                     </h2>
                   </div>
@@ -1261,14 +1716,14 @@ export default function AdminDashboardPage() {
                         setIsCreatingSkill(false);
                         setEditingSkill(null);
                       }}
-                      className="px-4 py-2 rounded-xl text-[#D8C4AC] hover:text-white text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                      className="px-4 py-2 rounded-xl text-[#8C252C] hover:text-[#4D0E13] text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer font-medium"
                     >
                       Cancelar
                     </button>
                     <button
                       type="button"
                       onClick={() => handleSaveSkill()}
-                      className="px-5 py-2.5 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
+                      className="px-5 py-2.5 rounded-xl bg-[#4D0E13] hover:bg-[#66151B] text-[#EEE4DA] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
                     >
                       <Save className="w-3.5 h-3.5" />
                       <span>Guardar Habilidad</span>
@@ -1276,11 +1731,11 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
 
-                <div className="bg-[#22080C]/90 border border-[#D8C4AC]/25 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-sm">
+                <div className="bg-[#FFFFFF] border border-[#D8C4AC] rounded-3xl p-6 sm:p-8 shadow-sm">
                   <form onSubmit={handleSaveSkill} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-1.5">
                           Badge
                         </label>
                         <input
@@ -1291,11 +1746,11 @@ export default function AdminDashboardPage() {
                             setSkillForm({ ...skillForm, badge: e.target.value })
                           }
                           placeholder="01 · Experiencia"
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-xs font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF]"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-1.5">
                           Título *
                         </label>
                         <input
@@ -1306,11 +1761,11 @@ export default function AdminDashboardPage() {
                             setSkillForm({ ...skillForm, title: e.target.value })
                           }
                           placeholder="Diseño UX/UI"
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-xs font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF]"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
+                        <label className="block text-[11px] font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-1.5">
                           Categoría
                         </label>
                         <input
@@ -1320,13 +1775,13 @@ export default function AdminDashboardPage() {
                             setSkillForm({ ...skillForm, category: e.target.value })
                           }
                           placeholder="UX/UI Design"
-                          className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
+                          className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-xs font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF]"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
+                      <label className="block text-[11px] font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-1.5">
                         Descripción *
                       </label>
                       <textarea
@@ -1339,12 +1794,12 @@ export default function AdminDashboardPage() {
                             description: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC] leading-relaxed"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-xs font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] leading-relaxed"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-semibold mb-1.5">
+                      <label className="block text-[11px] font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-1.5">
                         Tecnologías
                       </label>
                       <input
@@ -1360,24 +1815,24 @@ export default function AdminDashboardPage() {
                           })
                         }
                         placeholder="Next.js, React, Tailwind CSS, TypeScript"
-                        className="w-full px-4 py-2.5 rounded-xl bg-[#140406] border border-[#D8C4AC]/25 text-[#EEE4DA] text-xs font-medium focus:outline-none focus:border-[#D8C4AC]"
+                        className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-xs font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF]"
                       />
                     </div>
 
-                    <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#D8C4AC]/20">
+                    <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#D8C4AC]">
                       <button
                         type="button"
                         onClick={() => {
                           setIsCreatingSkill(false);
                           setEditingSkill(null);
                         }}
-                        className="px-4 py-2.5 rounded-xl text-[#D8C4AC] hover:text-white text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
+                        className="px-4 py-2.5 rounded-xl text-[#8C252C] hover:text-[#4D0E13] text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer font-medium"
                       >
                         Cancelar
                       </button>
                       <button
                         type="submit"
-                        className="px-6 py-2.5 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-md cursor-pointer"
+                        className="px-6 py-2.5 rounded-xl bg-[#4D0E13] hover:bg-[#66151B] text-[#EEE4DA] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-md cursor-pointer"
                       >
                         <Save className="w-4 h-4" />
                         <span>Guardar Habilidad</span>
@@ -1391,10 +1846,10 @@ export default function AdminDashboardPage() {
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="font-serif italic text-2xl sm:text-3xl text-white font-normal">
+                    <h2 className="font-serif italic text-2xl sm:text-3xl text-[#4D0E13] font-semibold">
                       Habilidades
                     </h2>
-                    <p className="text-xs text-[#D8C4AC] mt-1 font-medium">
+                    <p className="text-xs text-[#8C252C] mt-1 font-medium">
                       Administra las 3 columnas y tecnologías exhibidas en la sección de habilidades
                     </p>
                   </div>
@@ -1411,7 +1866,7 @@ export default function AdminDashboardPage() {
                         order: skills.length,
                       });
                     }}
-                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#4D0E13] hover:bg-[#66151B] text-[#EEE4DA] text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Nueva Habilidad</span>
@@ -1419,44 +1874,57 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                  {skills.map((s) => (
-                    <div
-                      key={s.id}
-                      className="bg-[#22080C]/90 border border-[#D8C4AC]/25 rounded-3xl p-6 flex flex-col justify-between backdrop-blur-sm shadow-xl shadow-black/40 text-center"
-                    >
-                      <div>
-                        <span className="text-[11px] font-mono uppercase tracking-widest text-[#D8C4AC] font-bold block mb-1">
-                          {s.badge || s.category}
-                        </span>
-                        <h3 className="font-serif italic text-lg text-white font-medium mb-2">
-                          {s.title}
-                        </h3>
-                        <p className="text-xs text-[#D8C4AC]/80 mb-4 leading-relaxed font-normal">
-                          {s.description}
-                        </p>
-                        <div className="text-[11px] font-mono text-[#C8A49F] font-medium">
-                          {s.tags.join(" · ")}
+                  {skills.map((s, idx) => {
+                    const badgeStyles = [
+                      "bg-[#D8C4AC]/30 text-[#4D0E13] border-[#D8C4AC]",
+                      "bg-[#C8A49F]/30 text-[#66151B] border-[#C8A49F]/70",
+                      "bg-[#4D0E13] text-[#EEE4DA] border-[#4D0E13]",
+                    ];
+                    return (
+                      <div
+                        key={s.id}
+                        className="bg-[#FFFFFF] border border-[#D8C4AC] rounded-3xl p-6 flex flex-col justify-between shadow-sm hover:shadow-md text-center hover:border-[#8C252C]/50 transition-all"
+                      >
+                        <div>
+                          <span
+                            className={`text-[11px] font-mono uppercase tracking-widest font-bold inline-block px-3 py-1 rounded-full border mb-3 ${
+                              badgeStyles[idx % badgeStyles.length]
+                            }`}
+                          >
+                            {s.badge || s.category}
+                          </span>
+                          <h3 className="font-serif italic text-lg text-[#4D0E13] font-semibold mb-2">
+                            {s.title}
+                          </h3>
+                          <p className="text-xs text-[#4D0E13]/80 mb-4 leading-relaxed font-normal">
+                            {s.description}
+                          </p>
+                          <div className="text-[11px] font-mono text-[#8C252C] font-medium">
+                            {s.tags.join(" · ")}
+                          </div>
+                        </div>
+                        <div className="flex justify-center gap-2 pt-4 border-t border-[#D8C4AC] mt-5">
+                          <button
+                            onClick={() => {
+                              setEditingSkill(s);
+                              setSkillForm(s);
+                            }}
+                            className="p-2 rounded-xl bg-[#FAF7F3] hover:bg-[#D8C4AC]/40 text-[#4D0E13] border border-[#D8C4AC] transition-all cursor-pointer shadow-sm"
+                            title="Editar"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteSkill(s.id)}
+                            className="p-2 rounded-xl bg-[#C8A49F]/20 text-[#8C252C] hover:bg-[#4D0E13] hover:text-[#EEE4DA] border border-[#C8A49F]/40 transition-all cursor-pointer shadow-sm"
+                            title="Eliminar"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </div>
-                      <div className="flex justify-center gap-2 pt-4 border-t border-[#D8C4AC]/20 mt-5">
-                        <button
-                          onClick={() => {
-                            setEditingSkill(s);
-                            setSkillForm(s);
-                          }}
-                          className="p-2 rounded-xl bg-[#24090D] text-[#EEE4DA] hover:bg-[#D8C4AC] hover:text-[#140507] border border-[#D8C4AC]/25 transition-colors cursor-pointer"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteSkill(s.id)}
-                          className="p-2 rounded-xl bg-[#4D0E13]/40 text-[#C8A49F] hover:bg-[#4D0E13] hover:text-[#EEE4DA] border border-[#4D0E13] transition-colors cursor-pointer"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )
@@ -1467,40 +1935,40 @@ export default function AdminDashboardPage() {
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="font-serif italic text-2xl sm:text-3xl text-white font-normal flex items-center gap-3">
+                  <h2 className="font-serif italic text-2xl sm:text-3xl text-[#4D0E13] font-semibold flex items-center gap-3">
                     Bandeja de Mensajes
                     {unreadMessagesCount > 0 && (
-                      <span className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#4D0E13] text-[#EEE4DA] border border-[#C8A49F]/40 not-italic shadow-sm font-bold">
+                      <span className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#4D0E13] text-[#EEE4DA] not-italic shadow-sm font-bold">
                         {unreadMessagesCount} nuevos
                       </span>
                     )}
                   </h2>
-                  <p className="text-xs text-[#D8C4AC] mt-1 font-medium">
+                  <p className="text-xs text-[#8C252C] mt-1 font-medium">
                     Mensajes enviados directamente desde tu sitio
                   </p>
                 </div>
               </div>
 
               {/* Status banner */}
-              <div className="p-5 rounded-3xl bg-[#22080C]/90 border border-[#D8C4AC]/25 flex items-start gap-3.5 backdrop-blur-md shadow-lg shadow-black/20">
-                <Mail className="w-4 h-4 text-[#D8C4AC] shrink-0 mt-0.5" />
+              <div className="p-5 rounded-3xl bg-[#FFFFFF] border border-[#D8C4AC] flex items-start gap-3.5 shadow-sm">
+                <Mail className="w-4 h-4 text-[#4D0E13] shrink-0 mt-0.5" />
                 <div className="text-xs space-y-1">
-                  <p className="font-semibold text-white font-serif italic text-sm">
+                  <p className="font-semibold text-[#4D0E13] font-serif italic text-sm">
                     Recepción en Base de Datos & Gmail
                   </p>
-                  <p className="text-[#D8C4AC]/80 font-normal leading-relaxed">
-                    Cada mensaje queda registrado de forma permanente en tu base de datos PostgreSQL. Para recibirlos también al instante en tu correo (<strong>nayssa1310@gmail.com</strong>), configurá tu Contraseña de Aplicación de 16 caracteres en <code className="bg-[#140406] px-1.5 py-0.5 rounded text-[#D8C4AC] font-mono text-[11px] border border-[#D8C4AC]/25">.env.local</code>.
+                  <p className="text-[#8C252C] font-normal leading-relaxed">
+                    Cada mensaje queda registrado de forma permanente en tu base de datos PostgreSQL. Para recibirlos también al instante en tu correo (<strong>nayssa1310@gmail.com</strong>), configurá tu Contraseña de Aplicación de 16 caracteres en <code className="bg-[#FAF7F3] px-1.5 py-0.5 rounded text-[#4D0E13] font-mono text-[11px] border border-[#D8C4AC]">.env.local</code>.
                   </p>
                 </div>
               </div>
 
               {messages.length === 0 ? (
-                <div className="text-center py-16 bg-[#22080C]/60 rounded-3xl border border-[#D8C4AC]/20 backdrop-blur-sm">
-                  <Inbox className="w-8 h-8 text-[#D8C4AC]/60 mx-auto mb-3" />
-                  <p className="font-serif italic text-base text-white">
+                <div className="text-center py-16 bg-[#FFFFFF] rounded-3xl border border-[#D8C4AC] shadow-sm">
+                  <Inbox className="w-8 h-8 text-[#8C252C]/60 mx-auto mb-3" />
+                  <p className="font-serif italic text-base text-[#4D0E13] font-semibold">
                     Bandeja limpia por ahora
                   </p>
-                  <p className="text-xs text-[#D8C4AC]/70 mt-1">
+                  <p className="text-xs text-[#8C252C] mt-1">
                     Los mensajes que te envíen aparecerán organizados aquí.
                   </p>
                 </div>
@@ -1511,23 +1979,23 @@ export default function AdminDashboardPage() {
                       key={msg.id}
                       className={`p-6 rounded-3xl border transition-all ${
                         msg.read
-                          ? "bg-[#22080C]/60 border-[#D8C4AC]/20"
-                          : "bg-[#22080C] border-[#D8C4AC]/50 shadow-xl shadow-black/40"
+                          ? "bg-[#FAF7F3] border-[#D8C4AC] opacity-80"
+                          : "bg-[#FFFFFF] border-[#D8C4AC] shadow-sm ring-1 ring-[#4D0E13]/10"
                       }`}
                     >
                       <div className="flex items-start justify-between gap-4 mb-3">
                         <div className="flex items-center gap-2.5">
                           {!msg.read && (
-                            <span className="w-2 h-2 rounded-full bg-[#D8C4AC] shrink-0 animate-pulse" />
+                            <span className="w-2 h-2 rounded-full bg-[#4D0E13] shrink-0 animate-pulse" />
                           )}
-                          <h4 className="font-serif italic text-base text-white font-medium">
+                          <h4 className="font-serif italic text-base text-[#4D0E13] font-semibold">
                             {msg.name}
                           </h4>
-                          <span className="text-xs text-[#D8C4AC] font-mono font-medium">
+                          <span className="text-xs text-[#8C252C] font-mono font-medium">
                             &lt;{msg.email}&gt;
                           </span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#D8C4AC]/70">
+                        <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#8C252C]">
                           <Clock className="w-3 h-3" />
                           <span>
                             {new Date(msg.createdAt).toLocaleString("es-PE", {
@@ -1541,14 +2009,14 @@ export default function AdminDashboardPage() {
                         </div>
                       </div>
 
-                      <p className="text-xs text-[#EEE4DA] bg-[#140406] p-4 rounded-2xl border border-[#D8C4AC]/25 whitespace-pre-wrap leading-relaxed my-3 font-normal">
+                      <p className="text-xs text-[#4D0E13] bg-[#FAF7F3] p-4 rounded-2xl border border-[#D8C4AC] whitespace-pre-wrap leading-relaxed my-3 font-normal">
                         {msg.message}
                       </p>
 
                       <div className="flex items-center justify-between pt-2">
                         <a
                           href={`mailto:${msg.email}?subject=Respuesta a tu mensaje desde mi portafolio`}
-                          className="inline-flex items-center gap-1.5 text-xs text-[#D8C4AC] hover:text-white font-mono font-medium transition-colors"
+                          className="inline-flex items-center gap-1.5 text-xs text-[#4D0E13] hover:text-[#66151B] font-mono font-medium transition-colors"
                         >
                           <Mail className="w-3.5 h-3.5" />
                           <span>Responder por correo</span>
@@ -1560,10 +2028,10 @@ export default function AdminDashboardPage() {
                             onClick={() =>
                               handleToggleReadMessage(msg.id, msg.read)
                             }
-                            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl border transition-all cursor-pointer font-medium ${
+                            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl border transition-all cursor-pointer font-medium shadow-sm ${
                               msg.read
-                                ? "text-[#D8C4AC] border-[#D8C4AC]/20 hover:text-white"
-                                : "text-[#140507] border-[#D8C4AC] bg-[#D8C4AC] hover:bg-[#EEE4DA]"
+                                ? "text-[#8C252C] border-[#D8C4AC] bg-[#FAF7F3] hover:bg-[#D8C4AC]/30"
+                                : "text-[#EEE4DA] border-[#4D0E13] bg-[#4D0E13] hover:bg-[#66151B]"
                             }`}
                           >
                             <Check className="w-3 h-3" />
@@ -1571,7 +2039,7 @@ export default function AdminDashboardPage() {
                           </button>
                           <button
                             onClick={() => handleDeleteMessage(msg.id)}
-                            className="p-2 rounded-xl bg-[#4D0E13]/40 text-[#C8A49F] hover:bg-[#4D0E13] hover:text-[#EEE4DA] border border-[#4D0E13] transition-colors cursor-pointer"
+                            className="p-2 rounded-xl bg-[#C8A49F]/20 text-[#8C252C] hover:bg-[#4D0E13] hover:text-[#EEE4DA] border border-[#C8A49F]/40 transition-colors cursor-pointer shadow-sm"
                             title="Eliminar mensaje"
                           >
                             <Trash2 className="w-3.5 h-3.5" />

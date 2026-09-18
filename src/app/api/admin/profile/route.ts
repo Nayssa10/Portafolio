@@ -47,6 +47,7 @@ export async function PUT(request: Request) {
         location: body.location,
         linkedin: body.linkedin,
         github: body.github,
+        showExperience: body.showExperience ?? false,
       },
       create: {
         id: "profile",
@@ -59,6 +60,7 @@ export async function PUT(request: Request) {
         email: body.email || "nayssa1310@gmail.com",
         available: body.available ?? true,
         availableText: body.availableText || "Disponible para proyectos & prácticas",
+        showExperience: body.showExperience ?? false,
         location: body.location || "Lima, Perú",
         linkedin: body.linkedin || "https://www.linkedin.com/in/nayssa",
         github: body.github || "https://github.com/Nayssa10",

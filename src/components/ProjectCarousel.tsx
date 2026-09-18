@@ -113,16 +113,7 @@ export default function ProjectCarousel({
             </span>
           )}
         </div>
-        {highlight && (
-          <div className="py-4">
-            <div className="p-4 rounded-2xl bg-black/35 backdrop-blur-sm border border-white/10">
-              <span className="text-xs sm:text-sm font-semibold text-[#D8C4AC] flex items-center gap-2">
-                ✦ {highlight}
-              </span>
-            </div>
-          </div>
-        )}
-        <div className="text-xs text-white/50">
+        <div className="text-xs text-white/50 pt-2">
           <span>Estudio de caso UX/UI & Front-End</span>
         </div>
       </div>
@@ -251,13 +242,8 @@ export default function ProjectCarousel({
         </>
       )}
 
-      {/* Bottom Indicators & Highlight */}
+      {/* Bottom Indicators */}
       <div className="absolute bottom-3 inset-x-0 z-20 flex flex-col items-center gap-2 px-4 pointer-events-none">
-        {highlight && (
-          <span className="hidden sm:inline-block text-[11px] font-medium text-[#D8C4AC] bg-black/70 px-3 py-0.5 rounded-full border border-white/10 backdrop-blur-md max-w-[90%] truncate">
-            ✦ {highlight}
-          </span>
-        )}
 
         {isMultiple && (
           <div className="flex items-center gap-1.5 pointer-events-auto bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/15">

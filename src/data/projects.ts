@@ -9,6 +9,9 @@ export interface Project {
   color: string;
   images: string[];
   featured: boolean;
+  tools?: string[];
+  link?: string;
+  github?: string;
 }
 
 export const allProjects: Project[] = [

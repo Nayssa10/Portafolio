@@ -72,8 +72,23 @@ model Profile {
   email         String   @default("nayssa1310@gmail.com")
   available     Boolean  @default(true)
   availableText String   @default("Disponible para proyectos & prácticas")
+  showExperience Boolean @default(false)
   location      String   @default("Lima, Perú")
   linkedin      String   @default("https://www.linkedin.com/in/nayssa")
   github        String   @default("https://github.com/Nayssa10")
   updatedAt     DateTime @updatedAt
+}
+
+model Experience {
+  id           String   @id @default(cuid())
+  role         String
+  company      String
+  period       String
+  location     String?  @default("Lima, Perú · Remoto")
+  description  String
+  technologies String[]
+  current      Boolean  @default(false)
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

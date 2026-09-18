@@ -18,7 +18,11 @@ import {
   Palette,
   Send,
   Loader2,
+  Briefcase,
+  Building2,
+  Calendar,
 } from "lucide-react";
+import { Experience, defaultExperiences } from "@/data/experience";
 
 // Inline brand SVGs for precision
 function FourPointStar({ className = "w-4 h-4" }: { className?: string }) {
@@ -172,6 +176,7 @@ export default function Home() {
   const [formSent, setFormSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [liveProjects, setLiveProjects] = useState(featuredProjects);
+  const [liveExperiences, setLiveExperiences] = useState<Experience[]>(defaultExperiences);
   const [liveProfile, setLiveProfile] = useState({
     name: "Nayssa Chu Bustamante",
     title: "Diseño UX/UI & Desarrollo Front-End",
@@ -182,6 +187,7 @@ export default function Home() {
     email: "nayssa1310@gmail.com",
     available: true,
     availableText: "Disponible para proyectos & prácticas",
+    showExperience: false,
     location: "Lima, Perú",
     linkedin: "https://www.linkedin.com/in/nayssa",
     github: "https://github.com/Nayssa10",
@@ -196,6 +202,15 @@ export default function Home() {
           if (featured.length > 0) {
             setLiveProjects(featured);
           }
+        }
+      })
+      .catch(() => {});
+
+    fetch("/api/experiences")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setLiveExperiences(data);
         }
       })
       .catch(() => {});
@@ -290,45 +305,49 @@ export default function Home() {
             N
           </motion.a>
 
-          {/* Right Navigation & Action Icons */}
-          <div className="flex items-center gap-4">
-            <nav className="hidden md:flex items-center gap-6 px-7 py-2.5 rounded-full bg-white/10 hover:bg-white/[0.14] backdrop-blur-md border border-[#D8C4AC]/25 text-sm font-medium text-white/90 shadow-lg transition-all">
-              <a href="#perfil" className="hover:text-[#D8C4AC] transition-colors">
-                Perfil
+          {/* Center Navigation Pill (Centered in header) */}
+          <nav className="hidden md:flex items-center gap-6 px-7 py-2.5 rounded-full bg-white/10 hover:bg-white/[0.14] backdrop-blur-md border border-[#D8C4AC]/25 text-sm font-medium text-white/90 shadow-lg transition-all absolute left-1/2 -translate-x-1/2">
+            <a href="#perfil" className="hover:text-[#D8C4AC] transition-colors">
+              Perfil
+            </a>
+            <Link
+              href="/proyectos"
+              className="hover:text-[#D8C4AC] transition-colors"
+            >
+              Proyectos
+            </Link>
+            {liveProfile.showExperience && (
+              <a href="#experiencia" className="hover:text-[#D8C4AC] transition-colors">
+                Experiencia
               </a>
-              <Link
-                href="/proyectos"
-                className="hover:text-[#D8C4AC] transition-colors"
-              >
-                Proyectos
-              </Link>
-              <a href="#habilidades" className="hover:text-[#D8C4AC] transition-colors">
-                Habilidades
-              </a>
-              <a href="#contacto" className="hover:text-[#D8C4AC] transition-colors">
-                Contacto
-              </a>
-            </nav>
+            )}
+            <a href="#habilidades" className="hover:text-[#D8C4AC] transition-colors">
+              Habilidades
+            </a>
+            <a href="#contacto" className="hover:text-[#D8C4AC] transition-colors">
+              Contacto
+            </a>
+          </nav>
 
-            <div className="flex items-center gap-3">
-              <motion.button
-                whileHover={{ scale: 1.08 }}
-                whileTap={{ scale: 0.92 }}
-                onClick={copyEmail}
-                title="Copiar correo"
-                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-[#D8C4AC]/25 flex items-center justify-center text-white/90 hover:text-white transition-all shadow-md"
-              >
-                {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Mail className="w-4 h-4" />}
-              </motion.button>
-              <motion.a
-                whileHover={{ scale: 1.08 }}
-                whileTap={{ scale: 0.92 }}
-                href="#proyectos"
-                className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-[#D8C4AC]/25 flex items-center justify-center text-white/90 hover:text-white transition-all shadow-md"
-              >
-                <Menu className="w-4 h-4" />
-              </motion.a>
-            </div>
+          {/* Right Action Icons */}
+          <div className="flex items-center gap-3">
+            <motion.button
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92 }}
+              onClick={copyEmail}
+              title="Copiar correo"
+              className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-[#D8C4AC]/25 flex items-center justify-center text-white/90 hover:text-white transition-all shadow-md"
+            >
+              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Mail className="w-4 h-4" />}
+            </motion.button>
+            <motion.a
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92 }}
+              href="#proyectos"
+              className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-[#D8C4AC]/25 flex items-center justify-center text-white/90 hover:text-white transition-all shadow-md"
+            >
+              <Menu className="w-4 h-4" />
+            </motion.a>
           </div>
         </motion.header>
 
@@ -588,15 +607,14 @@ export default function Home() {
                       ))}
                     </div>
 
-                    <div className="flex items-center justify-between pt-2">
-                      <span className="text-xs font-semibold text-white/45">
-                        Figma & Next.js
-                      </span>
+                    <div className="flex items-center justify-end pt-2">
                       <a
-                        href="mailto:nayssa1310@gmail.com?subject=Consulta sobre caso de estudio"
+                        href={project.link?.trim() || project.github?.trim() || "https://github.com/Nayssa10"}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#D8C4AC] hover:text-white transition-colors group/link"
                       >
-                        <span>Solicitar detalles</span>
+                        <span>Ver proyecto</span>
                         <ArrowUpRight className="w-4 h-4 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
                       </a>
                     </div>
@@ -621,6 +639,92 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* EXPERIENCE / EXPERIENCIA (Conditionally rendered from Admin panel) */}
+      {liveProfile.showExperience && (
+        <section id="experiencia" className="relative w-full max-w-full py-24 sm:py-28 px-6 bg-gradient-to-b from-[#140507] via-[#20070A] to-[#140507] border-t border-[#D8C4AC]/20 overflow-hidden overflow-x-clip [contain:paint]">
+          {/* Ambient Background Glows */}
+          <div className="absolute top-1/3 -left-20 w-80 h-80 bg-[#4D0E13]/25 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-[#C8A49F]/15 rounded-full blur-[100px] pointer-events-none" />
+
+          <div className="max-w-5xl mx-auto relative z-10">
+            {/* Section Header */}
+            <div className="text-center max-w-2xl mx-auto mb-16 sm:mb-20">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-[#D8C4AC]/25 text-[#D8C4AC] text-xs font-mono tracking-widest uppercase mb-4 backdrop-blur-md">
+                <Briefcase className="w-3.5 h-3.5" />
+                <span>Trayectoria & Práctica</span>
+              </div>
+              <h2 className="font-serif italic text-3xl sm:text-4xl lg:text-5xl text-white font-normal mb-4">
+                Experiencia Laboral
+              </h2>
+              <p className="text-sm sm:text-base text-[#D8C4AC]/80 font-light leading-relaxed">
+                Roles y proyectos donde he aportado valor en diseño de interfaces y desarrollo front-end.
+              </p>
+            </div>
+
+            {/* Experiences List */}
+            <div className="space-y-6 sm:space-y-8">
+              {liveExperiences.map((exp, idx) => (
+                <motion.div
+                  key={exp.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  className="p-6 sm:p-8 rounded-3xl bg-white/[0.03] hover:bg-white/[0.05] border border-[#D8C4AC]/20 hover:border-[#D8C4AC]/40 transition-all duration-300 backdrop-blur-md shadow-lg group relative"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+                    <div>
+                      <div className="flex items-center gap-2.5 flex-wrap">
+                        <h3 className="font-serif italic text-xl sm:text-2xl text-white font-medium group-hover:text-[#EEE4DA] transition-colors">
+                          {exp.role}
+                        </h3>
+                        {exp.current && (
+                          <span className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#4D0E13] text-[#EEE4DA] border border-[#C8A49F]/40 font-bold shadow-sm">
+                            Actual
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-[#D8C4AC] mt-1.5 font-medium">
+                        <Building2 className="w-3.5 h-3.5 opacity-80" />
+                        <span>{exp.company}</span>
+                        {exp.location && (
+                          <>
+                            <span className="opacity-40">·</span>
+                            <span className="text-xs text-[#D8C4AC]/70">{exp.location}</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/5 border border-[#D8C4AC]/20 text-xs font-mono text-[#D8C4AC] shrink-0 self-start">
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span>{exp.period}</span>
+                    </div>
+                  </div>
+
+                  <p className="text-xs sm:text-sm text-[#EEE4DA]/80 leading-relaxed font-light mb-5 whitespace-pre-line">
+                    {exp.description}
+                  </p>
+
+                  {exp.technologies && exp.technologies.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-2 border-t border-[#D8C4AC]/10">
+                      {exp.technologies.map((tech, i) => (
+                        <span
+                          key={i}
+                          className="px-2.5 py-1 rounded-lg bg-[#C8A49F]/10 text-[#EEE4DA] text-xs font-mono border border-[#C8A49F]/20"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* SKILLS TIMELINE / HABILIDADES */}
       <section id="habilidades" className="w-full max-w-full py-24 px-6 bg-gradient-to-b from-[#140507] via-[#22080C] to-[#160407] border-t border-[#D8C4AC]/20 relative overflow-hidden overflow-x-clip [contain:paint]">
