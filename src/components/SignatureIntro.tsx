@@ -128,20 +128,27 @@ export default function SignatureIntro({
               <h1 className="font-dancing text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-wide drop-shadow-[0_4px_30px_rgba(216,196,172,0.35)] inline-flex items-center flex-wrap justify-center">
                 <span className="text-white">{firstWord}</span>
                 {secondWord && (
-                  <span className="bg-gradient-to-r from-[#FFFFFF] via-[#EEE4DA] to-[#D8C4AC] bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-[#FFFFFF] via-[#EEE4DA] to-[#D8C4AC] bg-clip-text text-transparent pr-4 sm:pr-6 inline-block">
                     {secondWord}
                   </span>
                 )}
-                {/* Blinking Typewriter Cursor */}
-                <motion.span
-                  animate={{ opacity: [1, 0, 1] }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: isTyping ? 0.6 : 0.85,
-                    ease: "easeInOut",
-                  }}
-                  className="inline-block w-[3px] sm:w-[5px] h-[0.72em] bg-[#EEE4DA] ml-2 align-baseline rounded-full shadow-[0_0_12px_#EEE4DA]"
-                />
+                {/* Blinking Typewriter Cursor (only during typing) */}
+                <AnimatePresence>
+                  {isTyping && (
+                    <motion.span
+                      key="typing-cursor"
+                      initial={{ opacity: 1 }}
+                      animate={{ opacity: [1, 0, 1] }}
+                      exit={{ opacity: 0, transition: { duration: 0.2 } }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 0.6,
+                        ease: "easeInOut",
+                      }}
+                      className="inline-block w-[3px] sm:w-[4px] h-[0.72em] bg-[#EEE4DA] ml-2 align-baseline rounded-full shadow-[0_0_12px_#EEE4DA]"
+                    />
+                  )}
+                </AnimatePresence>
               </h1>
             </div>
 
