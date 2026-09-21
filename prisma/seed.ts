@@ -5,7 +5,13 @@ import { allProjects } from "../src/data/projects";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Starting database seeding...");
+  console.log("🌱 Checking database state...");
+  const userCount = await prisma.user.count().catch(() => 0);
+  if (userCount > 0) {
+    console.log("Database already initialized, skipping seed.");
+    return;
+  }
+  console.log("🌱 Database is empty, seeding initial admin and content...");
 
   // 1. Seed Admin User
   const username = process.env.ADMIN_USER || "Nayssa";
