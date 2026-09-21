@@ -188,7 +188,7 @@ export default function ProyectosPage() {
 
                 {/* Content Side */}
                 <div
-                  className={`lg:col-span-7 p-8 sm:p-10 flex flex-col justify-between gap-6 ${
+                  className={`lg:col-span-7 p-5 sm:p-8 lg:p-10 flex flex-col justify-between gap-6 ${
                     idx % 2 === 1 ? "lg:order-1" : ""
                   }`}
                 >

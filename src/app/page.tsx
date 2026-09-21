@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import ProjectCarousel from "@/components/ProjectCarousel";
 import { featuredProjects } from "@/data/projects";
 import {
@@ -24,6 +24,7 @@ import {
   Award,
   ExternalLink,
   ChevronDown,
+  X,
 } from "lucide-react";
 import { Experience, defaultExperiences } from "@/data/experience";
 import { Certificate, defaultCertificates } from "@/data/certificates";
@@ -177,6 +178,7 @@ const projectStars = [
 
 export default function Home() {
   const [copied, setCopied] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showIntro, setShowIntro] = useState(false);
   const [formState, setFormState] = useState({ name: "", email: "", message: "" });
   const [formSent, setFormSent] = useState(false);
@@ -384,30 +386,92 @@ export default function Home() {
             >
               {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Mail className="w-4 h-4" />}
             </motion.button>
-            <motion.a
+            <motion.button
               whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.92 }}
-              href="#proyectos"
-              className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-[#D8C4AC]/25 flex items-center justify-center text-white/90 hover:text-white transition-all shadow-md"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              title="Menú"
+              aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+              className="md:hidden w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-[#D8C4AC]/25 flex items-center justify-center text-white/90 hover:text-white transition-all shadow-md cursor-pointer"
             >
-              <Menu className="w-4 h-4" />
-            </motion.a>
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </motion.button>
           </div>
         </motion.header>
 
+        {/* Mobile Navigation Drawer */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.25 }}
+              className="md:hidden relative z-40 w-full max-w-sm mx-auto my-3 p-5 rounded-2xl bg-[#22080C]/95 backdrop-blur-xl border border-[#D8C4AC]/30 shadow-2xl flex flex-col gap-3"
+            >
+              <a
+                href="#perfil"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-4 py-2.5 rounded-xl hover:bg-white/10 text-white/90 hover:text-white text-sm font-medium transition-colors"
+              >
+                Perfil
+              </a>
+              <Link
+                href="/proyectos"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-4 py-2.5 rounded-xl hover:bg-white/10 text-white/90 hover:text-white text-sm font-medium transition-colors"
+              >
+                Proyectos
+              </Link>
+              {liveProfile.showExperience && (
+                <a
+                  href="#experiencia"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-4 py-2.5 rounded-xl hover:bg-white/10 text-white/90 hover:text-white text-sm font-medium transition-colors"
+                >
+                  Experiencia
+                </a>
+              )}
+              {liveProfile.showCertificates !== false && liveCertificates.length > 0 && (
+                <a
+                  href="#certificados"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-4 py-2.5 rounded-xl hover:bg-white/10 text-white/90 hover:text-white text-sm font-medium transition-colors"
+                >
+                  Certificados
+                </a>
+              )}
+              <a
+                href="#habilidades"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-4 py-2.5 rounded-xl hover:bg-white/10 text-white/90 hover:text-white text-sm font-medium transition-colors"
+              >
+                Habilidades
+              </a>
+              <a
+                href="#contacto"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-4 py-2.5 rounded-xl bg-[#D8C4AC] text-[#140507] text-center text-sm font-bold shadow-md"
+              >
+                Contacto
+              </a>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Hero 3-Column Split Content (Perfil section first, at top) */}
-        <div id="perfil" className="relative z-20 w-full max-w-7xl mx-auto flex-1 grid grid-cols-1 lg:grid-cols-12 items-center gap-6 py-4 lg:py-0">
+        <div id="perfil" className="relative z-20 w-full max-w-7xl mx-auto flex-1 grid grid-cols-1 lg:grid-cols-12 items-center gap-6 sm:gap-8 py-6 lg:py-0">
           {/* Left Column: Welcome */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="lg:col-span-4 flex flex-col items-start text-left gap-5 order-2 lg:order-1"
+            className="lg:col-span-4 flex flex-col items-center lg:items-start text-center lg:text-left gap-4 sm:gap-5 order-2 lg:order-1"
           >
-            <h1 className="font-dancing text-5xl sm:text-6xl lg:text-[66px] font-bold text-white leading-[1.12] tracking-wide">
+            <h1 className="font-dancing text-4xl sm:text-6xl lg:text-[66px] font-bold text-white leading-[1.15] tracking-wide">
               {liveProfile.name.split(" ").length > 1 ? (
                 <>
-                  {liveProfile.name.split(" ").slice(0, -1).join(" ")} <br />
+                  {liveProfile.name.split(" ").slice(0, -1).join(" ")} <br className="hidden sm:inline" />{" "}
                   <span className="font-semibold bg-gradient-to-r from-[#EEE4DA] via-[#D8C4AC] to-[#C8A49F] bg-clip-text text-transparent">
                     {liveProfile.name.split(" ").slice(-1)[0]}
                   </span>
@@ -424,13 +488,13 @@ export default function Home() {
               </span>
             )}
 
-            <p className="text-xs sm:text-sm text-white/75 leading-relaxed max-w-xs font-light">
+            <p className="text-xs sm:text-sm text-white/75 leading-relaxed max-w-xs sm:max-w-sm font-light">
               {liveProfile.heroSubtitle}
             </p>
           </motion.div>
 
           {/* Center Column: Big Beautiful Avatar with Floating Motion */}
-          <div className="lg:col-span-4 flex justify-center items-end relative order-1 lg:order-2 self-end h-full min-h-[420px] sm:min-h-[500px] lg:min-h-[600px]">
+          <div className="lg:col-span-4 flex justify-center items-end relative order-1 lg:order-2 self-end h-full min-h-[300px] sm:min-h-[460px] lg:min-h-[580px]">
 
             {/* Floating Main Avatar */}
             <motion.div
@@ -451,7 +515,7 @@ export default function Home() {
                   width={420}
                   height={630}
                   priority
-                  className="w-auto h-[440px] sm:h-[500px] lg:h-[560px] object-contain select-none pointer-events-none drop-shadow-[0_20px_45px_rgba(0,0,0,0.85)] [mask-image:linear-gradient(to_bottom,black_85%,transparent_100%)]"
+                  className="w-auto h-[320px] sm:h-[460px] lg:h-[560px] max-w-[85vw] sm:max-w-none object-contain select-none pointer-events-none drop-shadow-[0_20px_45px_rgba(0,0,0,0.85)] [mask-image:linear-gradient(to_bottom,black_85%,transparent_100%)]"
                 />
               </motion.div>
             </motion.div>
@@ -462,22 +526,22 @@ export default function Home() {
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="lg:col-span-4 flex flex-col items-center text-center gap-6 order-3"
+            className="lg:col-span-4 flex flex-col items-center text-center gap-5 sm:gap-6 order-3"
           >
-            <h2 className="font-serif text-4xl sm:text-5xl lg:text-[50px] font-semibold text-white tracking-tight w-full text-center">
+            <h2 className="font-serif text-3xl sm:text-5xl lg:text-[50px] font-semibold text-white tracking-tight w-full text-center">
               Sobre mí
             </h2>
 
-            <p className="text-sm sm:text-[15px] text-white/80 leading-relaxed max-w-sm sm:max-w-md font-light text-center whitespace-pre-line">
+            <p className="text-xs sm:text-[15px] text-white/80 leading-relaxed max-w-sm sm:max-w-md font-light text-center whitespace-pre-line">
               {liveProfile.aboutText}
             </p>
 
-            <div className="pt-3 w-full flex justify-end">
+            <div className="pt-2 sm:pt-3 w-full flex justify-center lg:justify-end">
               <motion.a
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 href="#proyectos"
-                className="inline-flex items-center justify-center px-7 py-3 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] font-bold text-xs sm:text-sm shadow-[0_0_20px_rgba(216,196,172,0.3)] hover:shadow-[0_0_30px_rgba(216,196,172,0.5)] transition-all"
+                className="inline-flex items-center justify-center px-6 sm:px-7 py-2.5 sm:py-3 rounded-xl bg-[#D8C4AC] hover:bg-[#EEE4DA] text-[#140507] font-bold text-xs sm:text-sm shadow-[0_0_20px_rgba(216,196,172,0.3)] hover:shadow-[0_0_30px_rgba(216,196,172,0.5)] transition-all"
               >
                 Ver Proyectos
               </motion.a>
@@ -622,7 +686,7 @@ export default function Home() {
 
                 {/* Content Side */}
                 <div
-                  className={`lg:col-span-7 p-8 sm:p-10 flex flex-col justify-between gap-6 ${
+                  className={`lg:col-span-7 p-5 sm:p-8 lg:p-10 flex flex-col justify-between gap-6 ${
                     idx % 2 === 1 ? "lg:order-1" : ""
                   }`}
                 >
