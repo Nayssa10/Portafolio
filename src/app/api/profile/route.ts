@@ -12,6 +12,8 @@ const defaultProfile = {
   email: "nayssa1310@gmail.com",
   available: true,
   availableText: "Disponible para proyectos & prácticas",
+  showExperience: false,
+  showCertificates: true,
   location: "Lima, Perú",
   linkedin: "https://www.linkedin.com/in/nayssa",
   github: "https://github.com/Nayssa10",

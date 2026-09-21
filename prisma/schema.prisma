@@ -73,6 +73,7 @@ model Profile {
   available     Boolean  @default(true)
   availableText String   @default("Disponible para proyectos & prácticas")
   showExperience Boolean @default(false)
+  showCertificates Boolean @default(true)
   location      String   @default("Lima, Perú")
   linkedin      String   @default("https://www.linkedin.com/in/nayssa")
   github        String   @default("https://github.com/Nayssa10")
@@ -91,4 +92,17 @@ model Experience {
   order        Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model Certificate {
+  id          String   @id @default(cuid())
+  title       String
+  issuer      String
+  date        String
+  url         String?  @default("")
+  image       String?  @default("")
+  description String?  @default("")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

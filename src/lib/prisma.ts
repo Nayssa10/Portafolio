@@ -1,9 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
+const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
+
+const hasAllModels = (client?: PrismaClient) => {
+  return Boolean(client && "certificate" in client);
+};
 
 export const prisma =
-  globalForPrisma.prisma ||
+  (hasAllModels(globalForPrisma.prisma) ? globalForPrisma.prisma! : null) ||
   new PrismaClient({
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });

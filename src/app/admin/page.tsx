@@ -30,6 +30,7 @@ import {
   Upload,
   Image as ImageIcon,
   Loader2,
+  Award,
 } from "lucide-react";
 
 interface Project {
@@ -75,6 +76,17 @@ interface Experience {
   order: number;
 }
 
+interface Certificate {
+  id: string;
+  title: string;
+  issuer: string;
+  date: string;
+  url?: string | null;
+  image?: string | null;
+  description?: string | null;
+  order: number;
+}
+
 interface Message {
   id: string;
   name: string;
@@ -96,6 +108,7 @@ interface Profile {
   available: boolean;
   availableText: string;
   showExperience?: boolean;
+  showCertificates?: boolean;
   location: string;
   linkedin: string;
   github: string;
@@ -104,12 +117,13 @@ interface Profile {
 export default function AdminDashboardPage() {
   const router = useRouter();
   // Perfil is the FIRST tab by default!
-  const [activeTab, setActiveTab] = useState<"profile" | "projects" | "experiences" | "skills" | "messages">("profile");
+  const [activeTab, setActiveTab] = useState<"profile" | "projects" | "experiences" | "certificates" | "skills" | "messages">("profile");
   const [loading, setLoading] = useState(true);
 
   // Data states
   const [projects, setProjects] = useState<Project[]>([]);
   const [experiences, setExperiences] = useState<Experience[]>([]);
+  const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [skills, setSkills] = useState<Skill[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -149,6 +163,20 @@ export default function AdminDashboardPage() {
     current: false,
     order: 0,
   });
+
+  const [editingCertificate, setEditingCertificate] = useState<Certificate | null>(null);
+  const [isCreatingCertificate, setIsCreatingCertificate] = useState(false);
+  const [certificateForm, setCertificateForm] = useState<Partial<Certificate>>({
+    title: "",
+    issuer: "",
+    date: "",
+    url: "",
+    image: "",
+    description: "",
+    order: 0,
+  });
+  const [isUploadingCertImage, setIsUploadingCertImage] = useState(false);
+  const certFileInputRef = useRef<HTMLInputElement>(null);
 
   const [editingSkill, setEditingSkill] = useState<Skill | null>(null);
   const [isCreatingSkill, setIsCreatingSkill] = useState(false);
@@ -233,10 +261,11 @@ export default function AdminDashboardPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [profRes, projRes, expRes, skillRes, msgRes] = await Promise.all([
+      const [profRes, projRes, expRes, certRes, skillRes, msgRes] = await Promise.all([
         fetch("/api/admin/profile"),
         fetch("/api/admin/projects"),
         fetch("/api/admin/experiences"),
+        fetch("/api/admin/certificates"),
         fetch("/api/admin/skills"),
         fetch("/api/admin/messages"),
       ]);
@@ -249,6 +278,7 @@ export default function AdminDashboardPage() {
       if (profRes.ok) setProfile(await profRes.json());
       if (projRes.ok) setProjects(await projRes.json());
       if (expRes.ok) setExperiences(await expRes.json());
+      if (certRes.ok) setCertificates(await certRes.json());
       if (skillRes.ok) setSkills(await skillRes.json());
       if (msgRes.ok) setMessages(await msgRes.json());
     } catch (err) {
@@ -388,6 +418,107 @@ export default function AdminDashboardPage() {
       }
     } catch (err) {
       console.error("Error toggling experience visibility:", err);
+    }
+  };
+
+  // --- Certificate Handlers ---
+  const handleSaveCertificate = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!certificateForm.title?.trim() || !certificateForm.issuer?.trim() || !certificateForm.date?.trim()) {
+      alert("Por favor completá el título, la institución emisora y la fecha.");
+      return;
+    }
+    try {
+      const url = editingCertificate
+        ? `/api/admin/certificates/${editingCertificate.id}`
+        : "/api/admin/certificates";
+      const method = editingCertificate ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...certificateForm,
+          order: Number(certificateForm.order) || 0,
+        }),
+      });
+
+      if (res.ok) {
+        setEditingCertificate(null);
+        setIsCreatingCertificate(false);
+        fetchData();
+      } else {
+        const err = await res.json();
+        alert(`Error al guardar: ${err.error || "No se pudo guardar el certificado"}`);
+      }
+    } catch (err) {
+      console.error("Error saving certificate:", err);
+    }
+  };
+
+  const handleDeleteCertificate = async (id: string) => {
+    if (!confirm("¿Seguro que deseás eliminar este certificado o logro?")) return;
+    try {
+      await fetch(`/api/admin/certificates/${id}`, { method: "DELETE" });
+      fetchData();
+    } catch (err) {
+      console.error("Error deleting certificate:", err);
+    }
+  };
+
+  const handleToggleShowCertificates = async (newVisibility: boolean) => {
+    if (!profile) return;
+    const updated = { ...profile, showCertificates: newVisibility };
+    setProfile(updated);
+    try {
+      const res = await fetch("/api/admin/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setProfile(data);
+      }
+    } catch (err) {
+      console.error("Error toggling certificates visibility:", err);
+    }
+  };
+
+  const handleCertImageSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setIsUploadingCertImage(true);
+    const formData = new FormData();
+    formData.append("files", files[0]);
+
+    try {
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Error al subir imagen");
+      }
+
+      const data = await res.json();
+      if (data.urls && data.urls.length > 0) {
+        setCertificateForm((prev) => ({
+          ...prev,
+          image: data.urls[0],
+        }));
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || "Error al subir la imagen del certificado");
+    } finally {
+      setIsUploadingCertImage(false);
+      if (certFileInputRef.current) {
+        certFileInputRef.current.value = "";
+      }
     }
   };
 
@@ -588,7 +719,46 @@ export default function AdminDashboardPage() {
             </div>
           </button>
 
-          {/* 4. HABILIDADES */}
+          {/* 4. CERTIFICADOS */}
+          <button
+            onClick={() => {
+              setActiveTab("certificates");
+              setIsCreatingCertificate(false);
+              setEditingCertificate(null);
+            }}
+            className={`flex-1 md:flex-none flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === "certificates"
+                ? "bg-[#4D0E13] text-[#EEE4DA] shadow-md font-bold"
+                : "text-[#4D0E13]/70 hover:text-[#4D0E13] hover:bg-[#D8C4AC]/25"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <Award className="w-4 h-4 shrink-0" />
+              <span>Certificados</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span
+                className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-bold uppercase tracking-tight ${
+                  profile?.showCertificates !== false
+                    ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                    : "bg-[#D8C4AC]/40 text-[#8C252C]"
+                }`}
+              >
+                {profile?.showCertificates !== false ? "On" : "Off"}
+              </span>
+              <span
+                className={`text-[10px] font-mono px-2 py-0.5 rounded-md font-bold ${
+                  activeTab === "certificates"
+                    ? "bg-[#EEE4DA] text-[#4D0E13]"
+                    : "bg-[#D8C4AC]/40 text-[#4D0E13] border border-[#D8C4AC]"
+                }`}
+              >
+                {certificates.length}
+              </span>
+            </div>
+          </button>
+
+          {/* 5. HABILIDADES */}
           <button
             onClick={() => {
               setActiveTab("skills");
@@ -1676,6 +1846,403 @@ export default function AdminDashboardPage() {
                                 {tech}
                               </span>
                             ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          )}
+
+          {/* TAB: CERTIFICADOS */}
+          {activeTab === "certificates" && (
+            isCreatingCertificate || editingCertificate ? (
+              <div className="space-y-6 animate-in fade-in duration-200">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#D8C4AC]">
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsCreatingCertificate(false);
+                        setEditingCertificate(null);
+                      }}
+                      aria-label="Volver a certificados"
+                      title="Volver a certificados"
+                      className="w-10 h-10 rounded-xl bg-[#FFFFFF] hover:bg-[#FAF7F3] border border-[#D8C4AC] flex items-center justify-center text-[#4D0E13] hover:text-[#66151B] transition-all cursor-pointer shadow-sm shrink-0"
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                    </button>
+                    <h2 className="font-serif italic text-2xl text-[#4D0E13] font-semibold">
+                      {editingCertificate ? "Editar Certificado o Logro" : "Nuevo Certificado o Logro"}
+                    </h2>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsCreatingCertificate(false);
+                        setEditingCertificate(null);
+                      }}
+                      className="px-4 py-2 rounded-xl text-[#8C252C] hover:text-[#4D0E13] text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer font-medium"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      form="certificate-form"
+                      className="px-5 py-2.5 rounded-xl bg-[#4D0E13] hover:bg-[#66151B] text-[#EEE4DA] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Guardar</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-[#FFFFFF] border border-[#D8C4AC] rounded-3xl p-7 sm:p-10 shadow-sm">
+                  <form id="certificate-form" onSubmit={handleSaveCertificate} className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <div>
+                        <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                          Título de la certificación o logro *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={certificateForm.title || ""}
+                          onChange={(e) =>
+                            setCertificateForm({ ...certificateForm, title: e.target.value })
+                          }
+                          placeholder="ej. Diseño UX/UI & Design Systems"
+                          className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                          Institución u Organización Emisora *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={certificateForm.issuer || ""}
+                          onChange={(e) =>
+                            setCertificateForm({ ...certificateForm, issuer: e.target.value })
+                          }
+                          placeholder="ej. Google, Coursera, Platzi, Universidad"
+                          className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                      <div>
+                        <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                          Fecha *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={certificateForm.date || ""}
+                          onChange={(e) =>
+                            setCertificateForm({ ...certificateForm, date: e.target.value })
+                          }
+                          placeholder="ej. 2024 o Octubre 2024"
+                          className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                          URL de Verificación / Credencial
+                        </label>
+                        <input
+                          type="url"
+                          value={certificateForm.url || ""}
+                          onChange={(e) =>
+                            setCertificateForm({ ...certificateForm, url: e.target.value })
+                          }
+                          placeholder="https://..."
+                          className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                          Orden
+                        </label>
+                        <input
+                          type="number"
+                          value={certificateForm.order ?? 0}
+                          onChange={(e) =>
+                            setCertificateForm({ ...certificateForm, order: Number(e.target.value) })
+                          }
+                          className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Image / Badge upload */}
+                    <div>
+                      <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                        Foto o Insignia del Certificado (Opcional)
+                      </label>
+                      <input
+                        ref={certFileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleCertImageSelected}
+                        className="hidden"
+                      />
+                      <div className="flex flex-wrap items-center gap-4">
+                        {certificateForm.image ? (
+                          <div className="relative group w-28 h-20 rounded-2xl overflow-hidden border border-[#D8C4AC] bg-[#FAF7F3] shadow-sm">
+                            <img
+                              src={certificateForm.image}
+                              alt="Vista previa del certificado"
+                              className="w-full h-full object-contain p-1"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setCertificateForm({ ...certificateForm, image: "" })}
+                              className="absolute top-1 right-1 p-1 rounded-full bg-[#4D0E13] text-white hover:bg-red-700 transition-colors"
+                              title="Quitar imagen"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ) : null}
+
+                        <button
+                          type="button"
+                          disabled={isUploadingCertImage}
+                          onClick={() => certFileInputRef.current?.click()}
+                          className="px-4 py-2.5 rounded-xl bg-[#FAF7F3] hover:bg-[#D8C4AC]/30 border border-[#D8C4AC] text-[#4D0E13] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                        >
+                          {isUploadingCertImage ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              <span>Subiendo imagen...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-4 h-4" />
+                              <span>{certificateForm.image ? "Cambiar Imagen" : "Subir Imagen / Badge"}</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
+                        Descripción o Aprendizajes Clave (Opcional)
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={certificateForm.description || ""}
+                        onChange={(e) =>
+                          setCertificateForm({ ...certificateForm, description: e.target.value })
+                        }
+                        placeholder="Breve resumen de las competencias, herramientas o logros acreditados..."
+                        className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all resize-y"
+                      />
+                    </div>
+                  </form>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {/* Visibility Toggle Card */}
+                <div className="bg-[#FFFFFF] border border-[#D8C4AC] rounded-3xl p-6 sm:p-7 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex items-start sm:items-center gap-4">
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border transition-all ${
+                      profile?.showCertificates !== false
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-300"
+                        : "bg-[#FAF7F3] text-[#8C252C] border-[#D8C4AC]"
+                    }`}>
+                      <Award className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2.5">
+                        <h3 className="font-serif italic text-lg text-[#4D0E13] font-semibold">
+                          Visibilidad de la Sección en el Portafolio
+                        </h3>
+                        <span className={`text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full font-bold border ${
+                          profile?.showCertificates !== false
+                            ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                            : "bg-[#D8C4AC]/40 text-[#8C252C] border-[#D8C4AC]"
+                        }`}>
+                          {profile?.showCertificates !== false ? "Visible en la Web" : "Oculta"}
+                        </span>
+                      </div>
+                      <p className="text-xs text-[#8C252C] mt-1 font-medium leading-relaxed">
+                        {profile?.showCertificates !== false
+                          ? "La sección está activa y se muestra en tu sitio público."
+                          : "La sección está oculta en tu sitio público. Podés activarla en cualquier momento."}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleToggleShowCertificates(profile?.showCertificates === false)}
+                    className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer shrink-0 font-mono ${
+                      profile?.showCertificates !== false
+                        ? "bg-[#FAF7F3] hover:bg-[#D8C4AC]/30 text-[#8C252C] border border-[#D8C4AC]"
+                        : "bg-[#4D0E13] hover:bg-[#66151B] text-[#EEE4DA]"
+                    }`}
+                  >
+                    {profile?.showCertificates !== false ? (
+                      <>
+                        <EyeOff className="w-4 h-4" />
+                        <span>Ocultar sección</span>
+                      </>
+                    ) : (
+                      <>
+                        <Eye className="w-4 h-4" />
+                        <span>Hacer visible</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Section Header */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="font-serif italic text-2xl sm:text-3xl text-[#4D0E13] font-semibold">
+                      Certificados & Logros ({certificates.length})
+                    </h2>
+                    <p className="text-xs text-[#8C252C] mt-1 font-medium">
+                      Diplomas, certificaciones oficiales, premios y logros académicos o profesionales
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setIsCreatingCertificate(true);
+                      setEditingCertificate(null);
+                      setCertificateForm({
+                        title: "",
+                        issuer: "",
+                        date: "",
+                        url: "",
+                        image: "",
+                        description: "",
+                        order: certificates.length,
+                      });
+                    }}
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#4D0E13] hover:bg-[#66151B] text-[#EEE4DA] text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Nuevo Certificado</span>
+                  </button>
+                </div>
+
+                {/* Certificates List */}
+                {certificates.length === 0 ? (
+                  <div className="bg-[#FFFFFF] border border-[#D8C4AC] rounded-3xl p-12 text-center shadow-sm">
+                    <Award className="w-12 h-12 text-[#D8C4AC] mx-auto mb-3" />
+                    <h3 className="font-serif italic text-xl text-[#4D0E13] font-semibold">
+                      No hay certificados registrados
+                    </h3>
+                    <p className="text-xs text-[#8C252C] mt-1.5 max-w-sm mx-auto font-medium">
+                      Agregá tus certificaciones de cursos, talleres o logros para dar evidencia de tus competencias técnicas.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setIsCreatingCertificate(true);
+                        setEditingCertificate(null);
+                        setCertificateForm({
+                          title: "",
+                          issuer: "",
+                          date: "",
+                          url: "",
+                          image: "",
+                          description: "",
+                          order: 0,
+                        });
+                      }}
+                      className="mt-5 inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#4D0E13] text-[#EEE4DA] text-xs font-bold uppercase tracking-wider shadow-md hover:bg-[#66151B] transition-all cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Agregar Primer Certificado</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {certificates.map((cert) => (
+                      <div
+                        key={cert.id}
+                        className="bg-[#FFFFFF] border border-[#D8C4AC] rounded-2xl p-6 shadow-sm hover:border-[#4D0E13]/50 transition-all flex flex-col justify-between group"
+                      >
+                        <div className="space-y-3">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#4D0E13]/10 text-[#4D0E13] font-bold">
+                                {cert.issuer}
+                              </span>
+                              <span className="text-[10px] font-mono text-[#8C252C] font-semibold">
+                                {cert.date}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                onClick={() => {
+                                  setEditingCertificate(cert);
+                                  setCertificateForm(cert);
+                                }}
+                                title="Editar"
+                                className="w-8 h-8 rounded-lg bg-[#FAF7F3] hover:bg-[#D8C4AC]/40 text-[#4D0E13] flex items-center justify-center transition-colors cursor-pointer"
+                              >
+                                <Edit2 className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteCertificate(cert.id)}
+                                title="Eliminar"
+                                className="w-8 h-8 rounded-lg bg-[#FAF7F3] hover:bg-red-100 text-red-600 flex items-center justify-center transition-colors cursor-pointer"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="flex items-start gap-4">
+                            {cert.image && (
+                              <div className="w-16 h-12 rounded-xl overflow-hidden border border-[#D8C4AC] bg-[#FAF7F3] shrink-0">
+                                <img
+                                  src={cert.image}
+                                  alt={cert.title}
+                                  className="w-full h-full object-contain p-1"
+                                />
+                              </div>
+                            )}
+                            <div>
+                              <h4 className="font-serif italic text-lg text-[#4D0E13] font-semibold leading-tight">
+                                {cert.title}
+                              </h4>
+                              {cert.description && (
+                                <p className="text-xs text-[#8C252C] mt-1.5 line-clamp-2 font-light leading-relaxed">
+                                  {cert.description}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {cert.url && (
+                          <div className="pt-3 mt-3 border-t border-[#D8C4AC]/40 flex justify-end">
+                            <a
+                              href={cert.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-[11px] font-mono text-[#4D0E13] hover:text-[#8C252C] font-semibold"
+                            >
+                              <span>Ver credencial</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
                           </div>
                         )}
                       </div>

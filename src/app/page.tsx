@@ -21,8 +21,12 @@ import {
   Briefcase,
   Building2,
   Calendar,
+  Award,
+  ExternalLink,
+  ChevronDown,
 } from "lucide-react";
 import { Experience, defaultExperiences } from "@/data/experience";
+import { Certificate, defaultCertificates } from "@/data/certificates";
 import SignatureIntro from "@/components/SignatureIntro";
 
 // Inline brand SVGs for precision
@@ -179,6 +183,9 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [liveProjects, setLiveProjects] = useState(featuredProjects);
   const [liveExperiences, setLiveExperiences] = useState<Experience[]>(defaultExperiences);
+  const [liveCertificates, setLiveCertificates] = useState<Certificate[]>(defaultCertificates);
+  const [selectedCertImage, setSelectedCertImage] = useState<string | null>(null);
+  const [showAllCertificates, setShowAllCertificates] = useState(false);
   const [liveProfile, setLiveProfile] = useState({
     name: "Nayssa Chu Bustamante",
     title: "Diseño UX/UI & Desarrollo Front-End",
@@ -190,6 +197,7 @@ export default function Home() {
     available: true,
     availableText: "Disponible para proyectos & prácticas",
     showExperience: false,
+    showCertificates: true,
     location: "Lima, Perú",
     linkedin: "https://www.linkedin.com/in/nayssa",
     github: "https://github.com/Nayssa10",
@@ -222,6 +230,15 @@ export default function Home() {
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
           setLiveExperiences(data);
+        }
+      })
+      .catch(() => {});
+
+    fetch("/api/certificates")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setLiveCertificates(data);
         }
       })
       .catch(() => {});
@@ -276,6 +293,9 @@ export default function Home() {
   };
 
   const projects = liveProjects;
+  const displayedCertificates = showAllCertificates
+    ? liveCertificates
+    : liveCertificates.slice(0, 3);
 
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#140507] text-[#EEE4DA] flex flex-col font-sans selection:bg-[#4D0E13] selection:text-[#EEE4DA]">
@@ -338,6 +358,11 @@ export default function Home() {
             {liveProfile.showExperience && (
               <a href="#experiencia" className="hover:text-[#D8C4AC] transition-colors">
                 Experiencia
+              </a>
+            )}
+            {liveProfile.showCertificates !== false && liveCertificates.length > 0 && (
+              <a href="#certificados" className="hover:text-[#D8C4AC] transition-colors">
+                Certificados
               </a>
             )}
             <a href="#habilidades" className="hover:text-[#D8C4AC] transition-colors">
@@ -567,8 +592,7 @@ export default function Home() {
                 Proyectos
               </h2>
               <p className="text-sm sm:text-base text-white/70 mt-2 max-w-xl">
-                Estudios de caso diseñados desde el problema y la investigación hasta la solución
-                visual y la arquitectura de componentes.
+                Una selección de los proyectos que he desarrollado, enfocados en crear soluciones web funcionales, atractivas y bien construidas.
               </p>
             </div>
           </div>
@@ -603,13 +627,15 @@ export default function Home() {
                   }`}
                 >
                   <div>
-                    <p className="text-xs font-bold text-[#D8C4AC] uppercase tracking-wider mb-2">
-                      {project.subtitle}
-                    </p>
                     <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white group-hover:text-[#D8C4AC] transition-colors">
                       {project.title}
                     </h3>
-                    <p className="text-sm sm:text-base text-white/75 mt-3 leading-relaxed font-light">
+                    {project.subtitle && (
+                      <p className="text-xs font-semibold text-[#D8C4AC] uppercase tracking-wider mt-2">
+                        {project.subtitle}
+                      </p>
+                    )}
+                    <p className="text-sm sm:text-base text-white/75 mt-4 leading-relaxed font-light">
                       {project.description}
                     </p>
                   </div>
@@ -742,6 +768,165 @@ export default function Home() {
               ))}
             </div>
           </div>
+        </section>
+      )}
+
+      {/* CERTIFICATES / CERTIFICADOS & LOGROS */}
+      {liveProfile.showCertificates !== false && liveCertificates.length > 0 && (
+        <section id="certificados" className="relative w-full max-w-full py-24 sm:py-28 px-6 bg-gradient-to-b from-[#140507] via-[#1C060A] to-[#140507] border-t border-[#D8C4AC]/20 overflow-hidden overflow-x-clip [contain:paint]">
+          {/* Ambient Background Glows */}
+          <div className="absolute top-1/4 -left-20 w-80 h-80 bg-[#4D0E13]/25 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute bottom-1/3 -right-20 w-80 h-80 bg-[#C8A49F]/15 rounded-full blur-[100px] pointer-events-none" />
+
+          <div className="max-w-6xl mx-auto relative z-10">
+            {/* Section Header */}
+            <div className="text-center max-w-2xl mx-auto mb-16 sm:mb-20">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-[#D8C4AC]/25 text-[#D8C4AC] text-xs font-mono tracking-widest uppercase mb-4 backdrop-blur-md">
+                <Award className="w-3.5 h-3.5" />
+                <span>Validación & Credenciales</span>
+              </div>
+              <h2 className="font-serif italic text-3xl sm:text-4xl lg:text-5xl text-white font-normal mb-4">
+                Certificados & Logros
+              </h2>
+              <p className="text-sm sm:text-base text-[#D8C4AC]/80 font-light leading-relaxed">
+                Certificaciones, cursos y reconocimientos que respaldan mi aprendizaje continuo, preparación técnica y desarrollo profesional.
+              </p>
+            </div>
+
+            {/* Certificates Grid */}
+            <div
+              className={`grid grid-cols-1 ${
+                displayedCertificates.length === 1
+                  ? "max-w-md mx-auto"
+                  : displayedCertificates.length === 2
+                  ? "md:grid-cols-2 max-w-3xl mx-auto"
+                  : "md:grid-cols-2 lg:grid-cols-3"
+              } gap-6 sm:gap-8`}
+            >
+              {displayedCertificates.map((cert, idx) => (
+                <motion.div
+                  key={cert.id || idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: idx * 0.08 }}
+                  whileHover={{ y: -4 }}
+                  className="p-6 sm:p-7 rounded-3xl bg-white/[0.03] hover:bg-white/[0.06] border border-[#D8C4AC]/20 hover:border-[#D8C4AC]/50 transition-all duration-300 backdrop-blur-md shadow-lg flex flex-col justify-between group relative"
+                >
+                  <div className="space-y-4">
+                    {/* Header tags: Issuer & Date */}
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[11px] font-mono uppercase tracking-wider px-2.5 py-1 rounded-lg bg-[#4D0E13]/60 text-[#EEE4DA] border border-[#C8A49F]/30 font-semibold shadow-sm">
+                        {cert.issuer}
+                      </span>
+                      <div className="flex items-center gap-1.5 text-xs font-mono text-[#D8C4AC]/75">
+                        <Calendar className="w-3 h-3 opacity-70" />
+                        <span>{cert.date}</span>
+                      </div>
+                    </div>
+
+                    {/* Certificate Image preview if exists */}
+                    {cert.image && (
+                      <div
+                        onClick={() => setSelectedCertImage(cert.image || null)}
+                        className="relative w-full flex items-center justify-center py-2 cursor-pointer group/img"
+                        title="Clic para ver en tamaño completo"
+                      >
+                        <div className="relative rounded-2xl overflow-hidden border border-[#D8C4AC]/30 shadow-[0_10px_30px_rgba(0,0,0,0.5)] group-hover/img:border-[#D8C4AC]/60 group-hover/img:shadow-[0_15px_35px_rgba(216,196,172,0.15)] transition-all duration-300">
+                          <img
+                            src={cert.image}
+                            alt={cert.title}
+                            className="max-h-56 sm:max-h-60 w-auto max-w-full object-contain rounded-2xl group-hover/img:scale-[1.02] transition-transform duration-300 block"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity flex items-end justify-center p-2.5">
+                            <span className="text-[11px] font-mono text-[#EEE4DA] bg-black/80 border border-[#D8C4AC]/30 px-2.5 py-1 rounded-lg backdrop-blur-sm">
+                              Ampliar certificado
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Title & Description */}
+                    <div>
+                      <h3 className="font-serif italic text-xl sm:text-2xl text-white font-medium group-hover:text-[#EEE4DA] transition-colors leading-snug">
+                        {cert.title}
+                      </h3>
+                      {cert.description && (
+                        <p className="text-xs sm:text-sm text-[#EEE4DA]/75 leading-relaxed font-light mt-2.5 whitespace-pre-line">
+                          {cert.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Verification Link */}
+                  {cert.url && (
+                    <div className="pt-4 mt-4 border-t border-[#D8C4AC]/15 flex items-center justify-end">
+                      <a
+                        href={cert.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-[#D8C4AC] hover:text-white transition-colors group/link"
+                      >
+                        <span>Ver credencial</span>
+                        <ArrowUpRight className="w-3.5 h-3.5 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+                      </a>
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+
+            {/* View More Certificates Action Button (shown when more than 3) */}
+            {liveCertificates.length > 3 && (
+              <div className="mt-14 sm:mt-16 flex justify-center">
+                <motion.button
+                  whileHover={{ scale: 1.04, y: -2 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => setShowAllCertificates(!showAllCertificates)}
+                  className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl bg-white/10 hover:bg-[#D8C4AC] border border-[#D8C4AC]/35 hover:border-[#D8C4AC] backdrop-blur-md text-sm font-bold text-white hover:text-[#140507] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_0_30px_rgba(216,196,172,0.45)] transition-all duration-300 cursor-pointer"
+                >
+                  <span>
+                    {showAllCertificates
+                      ? "Ver menos certificados"
+                      : `Ver más certificados (${liveCertificates.length - 3})`}
+                  </span>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-300 ${
+                      showAllCertificates ? "rotate-180" : "group-hover:translate-y-0.5"
+                    }`}
+                  />
+                </motion.button>
+              </div>
+            )}
+          </div>
+
+          {/* Certificate Image Lightbox Modal */}
+          {selectedCertImage && (
+            <div
+              onClick={() => setSelectedCertImage(null)}
+              className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer animate-in fade-in duration-200"
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="relative max-w-4xl max-h-[90vh] bg-[#140507] border border-[#D8C4AC]/40 rounded-3xl overflow-hidden p-2 shadow-2xl"
+              >
+                <img
+                  src={selectedCertImage}
+                  alt="Certificado ampliado"
+                  className="w-auto h-auto max-h-[82vh] rounded-2xl object-contain mx-auto"
+                />
+                <button
+                  type="button"
+                  onClick={() => setSelectedCertImage(null)}
+                  className="absolute top-4 right-4 px-3 py-1.5 rounded-xl bg-black/70 hover:bg-[#4D0E13] text-[#EEE4DA] text-xs font-mono uppercase tracking-wider border border-[#D8C4AC]/30 transition-colors"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          )}
         </section>
       )}
 

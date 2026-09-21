@@ -130,8 +130,7 @@ export default function ProyectosPage() {
             transition={{ delay: 0.2 }}
             className="text-sm sm:text-base text-[#D8C4AC]/80 mt-4 leading-relaxed font-light"
           >
-            Explora todos los casos de estudio, investigaciones de usuario, arquitecturas de diseño
-            y desarrollos interactivos creados para producción.
+            Colección de proyectos, aplicaciones y experiencias web que he diseñado y desarrollado.
           </motion.p>
 
           {/* Category Filter Tabs */}
@@ -194,20 +193,22 @@ export default function ProyectosPage() {
                   }`}
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-xs font-bold text-[#D8C4AC] uppercase tracking-wider">
-                        {project.subtitle}
-                      </p>
+                    <div className="flex items-center justify-between gap-3 mb-2">
+                      <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white group-hover:text-[#D8C4AC] transition-colors">
+                        {project.title}
+                      </h2>
                       {project.featured && (
-                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#4D0E13] text-[#EEE4DA] border border-[#C8A49F]/40">
+                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#4D0E13] text-[#EEE4DA] border border-[#C8A49F]/40 shrink-0">
                           ★ Destacado
                         </span>
                       )}
                     </div>
-                    <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white group-hover:text-[#D8C4AC] transition-colors">
-                      {project.title}
-                    </h2>
-                    <p className="text-sm sm:text-base text-[#D8C4AC]/80 mt-3 leading-relaxed font-light">
+                    {project.subtitle && (
+                      <p className="text-xs font-semibold text-[#D8C4AC] uppercase tracking-wider mb-3">
+                        {project.subtitle}
+                      </p>
+                    )}
+                    <p className="text-sm sm:text-base text-[#D8C4AC]/80 mt-2 leading-relaxed font-light">
                       {project.description}
                     </p>
                   </div>

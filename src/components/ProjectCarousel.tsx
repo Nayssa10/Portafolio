@@ -148,8 +148,10 @@ export default function ProjectCarousel({
         </div>
       )}
 
-      {/* Background visual blur layer */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none z-10" />
+      {/* Subtle bottom gradient only for controls readability */}
+      {isMultiple && (
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/50 to-transparent pointer-events-none z-10" />
+      )}
 
       {/* Main Image Viewport with Animated Transitions and Drag / Swipe */}
       <div className="relative w-full h-full min-h-[260px] sm:min-h-[320px] lg:min-h-[360px] flex items-center justify-center overflow-hidden">
@@ -172,7 +174,7 @@ export default function ProjectCarousel({
                 paginate(-1);
               }
             }}
-            className="absolute inset-0 flex items-center justify-center cursor-grab active:cursor-grabbing p-2"
+            className="absolute inset-0 flex items-center justify-center cursor-grab active:cursor-grabbing"
           >
             <div className="relative w-full h-full">
               <Image
@@ -180,7 +182,7 @@ export default function ProjectCarousel({
                 alt={`${title} - Imagen ${currentIndex + 1} de ${images.length}`}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
-                className="object-contain drop-shadow-2xl select-none"
+                className="object-cover object-top select-none"
                 priority={currentIndex === 0}
               />
             </div>
