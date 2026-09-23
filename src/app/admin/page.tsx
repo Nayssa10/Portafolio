@@ -118,7 +118,19 @@ export default function AdminDashboardPage() {
   const router = useRouter();
   // Perfil is the FIRST tab by default!
   const [activeTab, setActiveTab] = useState<"profile" | "projects" | "experiences" | "certificates" | "skills" | "messages">("profile");
-  const [loading, setLoading] = useState(true);
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => Promise<void> | void;
+    isDeleting: boolean;
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+    onConfirm: () => {},
+    isDeleting: false,
+  });
 
   // Data states
   const [projects, setProjects] = useState<Project[]>([]);
@@ -252,6 +264,9 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
+        if (deleteModal.isOpen) {
+          setDeleteModal((prev) => ({ ...prev, isOpen: false }));
+        }
         if (isCreatingProject || editingProject) {
           setIsCreatingProject(false);
           setEditingProject(null);
@@ -271,10 +286,9 @@ export default function AdminDashboardPage() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isCreatingProject, editingProject, isCreatingExperience, editingExperience, isCreatingSkill, editingSkill]);
+  }, [deleteModal.isOpen, isCreatingProject, editingProject, isCreatingExperience, editingExperience, isCreatingSkill, editingSkill]);
 
-  const fetchData = async (showLoading = false) => {
-    if (showLoading) setLoading(true);
+  const fetchData = async () => {
     try {
       const [profRes, projRes, expRes, certRes, skillRes, msgRes] = await Promise.all([
         fetch("/api/admin/profile"),
@@ -298,13 +312,11 @@ export default function AdminDashboardPage() {
       if (msgRes.ok) setMessages(await msgRes.json());
     } catch (err) {
       console.error("Error loading admin data:", err);
-    } finally {
-      if (showLoading) setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchData(true);
+    fetchData();
   }, []);
 
   const handleLogout = async () => {
@@ -360,7 +372,7 @@ export default function AdminDashboardPage() {
         setEditingProject(null);
         setIsCreatingProject(false);
         setProjectTagsInput("");
-        await fetchData(false);
+        await fetchData();
       } else {
         const err = await res.json().catch(() => ({}));
         alert(`Error al guardar: ${err.error || "No se pudo guardar el proyecto"}`);
@@ -373,14 +385,23 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleDeleteProject = async (id: string) => {
-    if (!confirm("¿Eliminar este proyecto?")) return;
-    try {
-      await fetch(`/api/admin/projects/${id}`, { method: "DELETE" });
-      fetchData();
-    } catch (err) {
-      console.error("Error deleting project:", err);
-    }
+  const requestDeleteProject = (id: string, title?: string) => {
+    setDeleteModal({
+      isOpen: true,
+      title: "¿Eliminar este proyecto?",
+      description: title
+        ? `Se eliminará "${title}" permanentemente de tu portafolio.`
+        : "Esta acción no se puede deshacer. ¿Seguro que deseás continuar?",
+      onConfirm: async () => {
+        try {
+          await fetch(`/api/admin/projects/${id}`, { method: "DELETE" });
+          await fetchData();
+        } catch (err) {
+          console.error("Error deleting project:", err);
+        }
+      },
+      isDeleting: false,
+    });
   };
 
   // --- Experience Handlers ---
@@ -425,14 +446,24 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleDeleteExperience = async (id: string) => {
-    if (!confirm("¿Seguro que deseás eliminar esta experiencia?")) return;
-    try {
-      await fetch(`/api/admin/experiences/${id}`, { method: "DELETE" });
-      fetchData();
-    } catch (err) {
-      console.error("Error deleting experience:", err);
-    }
+  const requestDeleteExperience = (id: string, role?: string, company?: string) => {
+    const label = role && company ? `${role} en ${company}` : role;
+    setDeleteModal({
+      isOpen: true,
+      title: "¿Eliminar experiencia laboral?",
+      description: label
+        ? `Se eliminará "${label}" permanentemente de tu historial.`
+        : "Esta acción no se puede deshacer. ¿Seguro que deseás continuar?",
+      onConfirm: async () => {
+        try {
+          await fetch(`/api/admin/experiences/${id}`, { method: "DELETE" });
+          await fetchData();
+        } catch (err) {
+          console.error("Error deleting experience:", err);
+        }
+      },
+      isDeleting: false,
+    });
   };
 
   const handleToggleShowExperience = async (newVisibility: boolean) => {
@@ -489,14 +520,23 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleDeleteCertificate = async (id: string) => {
-    if (!confirm("¿Seguro que deseás eliminar este certificado o logro?")) return;
-    try {
-      await fetch(`/api/admin/certificates/${id}`, { method: "DELETE" });
-      fetchData();
-    } catch (err) {
-      console.error("Error deleting certificate:", err);
-    }
+  const requestDeleteCertificate = (id: string, title?: string) => {
+    setDeleteModal({
+      isOpen: true,
+      title: "¿Eliminar certificado o logro?",
+      description: title
+        ? `Se eliminará "${title}" permanentemente de tu lista.`
+        : "Esta acción no se puede deshacer. ¿Seguro que deseás continuar?",
+      onConfirm: async () => {
+        try {
+          await fetch(`/api/admin/certificates/${id}`, { method: "DELETE" });
+          await fetchData();
+        } catch (err) {
+          console.error("Error deleting certificate:", err);
+        }
+      },
+      isDeleting: false,
+    });
   };
 
   const handleToggleShowCertificates = async (newVisibility: boolean) => {
@@ -589,14 +629,23 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleDeleteSkill = async (id: string) => {
-    if (!confirm("¿Eliminar esta habilidad?")) return;
-    try {
-      await fetch(`/api/admin/skills/${id}`, { method: "DELETE" });
-      fetchData();
-    } catch (err) {
-      console.error("Error deleting skill:", err);
-    }
+  const requestDeleteSkill = (id: string, title?: string) => {
+    setDeleteModal({
+      isOpen: true,
+      title: "¿Eliminar habilidad?",
+      description: title
+        ? `Se eliminará la habilidad "${title}" permanentemente de tu lista.`
+        : "Esta acción no se puede deshacer. ¿Seguro que deseás continuar?",
+      onConfirm: async () => {
+        try {
+          await fetch(`/api/admin/skills/${id}`, { method: "DELETE" });
+          await fetchData();
+        } catch (err) {
+          console.error("Error deleting skill:", err);
+        }
+      },
+      isDeleting: false,
+    });
   };
 
   // --- Message Handlers ---
@@ -613,14 +662,23 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleDeleteMessage = async (id: string) => {
-    if (!confirm("¿Eliminar este mensaje?")) return;
-    try {
-      await fetch(`/api/admin/messages/${id}`, { method: "DELETE" });
-      fetchData();
-    } catch (err) {
-      console.error("Error deleting message:", err);
-    }
+  const requestDeleteMessage = (id: string, name?: string) => {
+    setDeleteModal({
+      isOpen: true,
+      title: "¿Eliminar mensaje?",
+      description: name
+        ? `Se eliminará el mensaje de ${name} permanentemente.`
+        : "Esta acción no se puede deshacer.",
+      onConfirm: async () => {
+        try {
+          await fetch(`/api/admin/messages/${id}`, { method: "DELETE" });
+          await fetchData();
+        } catch (err) {
+          console.error("Error deleting message:", err);
+        }
+      },
+      isDeleting: false,
+    });
   };
 
   // --- Profile Handlers ---
@@ -643,17 +701,6 @@ export default function AdminDashboardPage() {
   };
 
   const unreadMessagesCount = messages.filter((m) => !m.read).length;
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#160407] text-[#EEE4DA] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-[#D8C4AC] border-t-transparent rounded-full animate-spin" />
-          <p className="font-serif italic text-sm text-[#D8C4AC]">Cargando panel de gestión...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-[#F8F5F1] text-[#4D0E13] flex flex-col md:flex-row font-sans selection:bg-[#4D0E13] selection:text-[#EEE4DA] relative">
@@ -877,8 +924,14 @@ export default function AdminDashboardPage() {
       <div className="flex-1 md:ml-64 p-6 sm:p-10 max-w-6xl xl:max-w-7xl w-full relative z-10 min-h-screen">
         <main className="w-full">
           {/* TAB 1: PERFIL & BIO (FIRST!) */}
-          {activeTab === "profile" && profile && (
-            <div className="space-y-6">
+          {activeTab === "profile" && (
+            !profile ? (
+              <div className="bg-[#FFFFFF] border border-[#D8C4AC] rounded-3xl p-12 flex flex-col items-center justify-center gap-3 shadow-sm">
+                <div className="w-7 h-7 border-2 border-[#4D0E13] border-t-transparent rounded-full animate-spin" />
+                <p className="text-xs font-mono text-[#8C252C] font-medium">Cargando perfil...</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
               <div>
                 <h2 className="font-serif italic text-2xl sm:text-3xl text-[#4D0E13] font-semibold">
                   Perfil, Hero & Sobre Mí
@@ -1096,7 +1149,8 @@ export default function AdminDashboardPage() {
                 </div>
               </form>
             </div>
-          )}
+          )
+        )}
 
           {/* TAB 2: PROYECTOS */}
           {activeTab === "projects" && (
@@ -1510,7 +1564,7 @@ export default function AdminDashboardPage() {
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
                           <button
-                            onClick={() => handleDeleteProject(proj.id)}
+                            onClick={() => requestDeleteProject(proj.id, proj.title)}
                             className="p-2 rounded-xl bg-[#C8A49F]/20 text-[#8C252C] hover:bg-[#4D0E13] hover:text-[#EEE4DA] border border-[#C8A49F]/40 transition-all cursor-pointer shadow-sm"
                             title="Eliminar"
                           >
@@ -1877,7 +1931,7 @@ export default function AdminDashboardPage() {
                               <Edit2 className="w-3.5 h-3.5" />
                             </button>
                             <button
-                              onClick={() => handleDeleteExperience(exp.id)}
+                              onClick={() => requestDeleteExperience(exp.id, exp.role, exp.company)}
                               className="p-2 rounded-xl bg-[#C8A49F]/20 text-[#8C252C] hover:bg-[#4D0E13] hover:text-[#EEE4DA] border border-[#C8A49F]/40 transition-all cursor-pointer shadow-sm"
                               title="Eliminar"
                             >
@@ -2254,7 +2308,7 @@ export default function AdminDashboardPage() {
                                 <Edit2 className="w-3.5 h-3.5" />
                               </button>
                               <button
-                                onClick={() => handleDeleteCertificate(cert.id)}
+                                onClick={() => requestDeleteCertificate(cert.id, cert.title)}
                                 title="Eliminar"
                                 className="w-8 h-8 rounded-lg bg-[#FAF7F3] hover:bg-red-100 text-red-600 flex items-center justify-center transition-colors cursor-pointer"
                               >
@@ -2536,7 +2590,7 @@ export default function AdminDashboardPage() {
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
                           <button
-                            onClick={() => handleDeleteSkill(s.id)}
+                            onClick={() => requestDeleteSkill(s.id, s.title)}
                             className="p-2 rounded-xl bg-[#C8A49F]/20 text-[#8C252C] hover:bg-[#4D0E13] hover:text-[#EEE4DA] border border-[#C8A49F]/40 transition-all cursor-pointer shadow-sm"
                             title="Eliminar"
                           >
@@ -2659,7 +2713,7 @@ export default function AdminDashboardPage() {
                             <span>{msg.read ? "Marcar no leído" : "Marcar leído"}</span>
                           </button>
                           <button
-                            onClick={() => handleDeleteMessage(msg.id)}
+                            onClick={() => requestDeleteMessage(msg.id, msg.name)}
                             className="p-2 rounded-xl bg-[#C8A49F]/20 text-[#8C252C] hover:bg-[#4D0E13] hover:text-[#EEE4DA] border border-[#C8A49F]/40 transition-colors cursor-pointer shadow-sm"
                             title="Eliminar mensaje"
                           >
@@ -2675,6 +2729,63 @@ export default function AdminDashboardPage() {
           )}
         </main>
       </div>
+
+      {/* MODAL DE CONFIRMACIÓN DE ELIMINACIÓN */}
+      {deleteModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#160407]/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-[#FFFFFF] border border-[#D8C4AC] rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl space-y-5 animate-in zoom-in-95 duration-150">
+            <div className="flex items-start gap-4">
+              <div className="w-11 h-11 rounded-2xl bg-[#C8A49F]/25 border border-[#C8A49F]/50 flex items-center justify-center text-[#8C252C] shrink-0 mt-0.5">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-serif italic text-lg sm:text-xl text-[#4D0E13] font-semibold leading-tight">
+                  {deleteModal.title}
+                </h3>
+                <p className="text-xs text-[#4D0E13]/80 mt-1.5 font-sans leading-relaxed">
+                  {deleteModal.description}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#D8C4AC]/40">
+              <button
+                type="button"
+                disabled={deleteModal.isDeleting}
+                onClick={() => setDeleteModal((prev) => ({ ...prev, isOpen: false }))}
+                className="px-4 py-2.5 rounded-xl text-xs font-mono uppercase tracking-wider text-[#8C252C] hover:text-[#4D0E13] hover:bg-[#FAF7F3] border border-transparent hover:border-[#D8C4AC] transition-all cursor-pointer font-medium disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={deleteModal.isDeleting}
+                onClick={async () => {
+                  setDeleteModal((prev) => ({ ...prev, isDeleting: true }));
+                  try {
+                    await deleteModal.onConfirm();
+                  } finally {
+                    setDeleteModal((prev) => ({ ...prev, isOpen: false, isDeleting: false }));
+                  }
+                }}
+                className="px-5 py-2.5 rounded-xl bg-[#8C252C] hover:bg-[#4D0E13] text-[#EEE4DA] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 shadow-md cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {deleteModal.isDeleting ? (
+                  <>
+                    <div className="w-3.5 h-3.5 border-2 border-[#EEE4DA] border-t-transparent rounded-full animate-spin" />
+                    <span>Eliminando...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Eliminar</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
