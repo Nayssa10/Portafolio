@@ -131,6 +131,8 @@ export default function AdminDashboardPage() {
   // Form states
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [projectTagsInput, setProjectTagsInput] = useState("");
+  const [isSavingProject, setIsSavingProject] = useState(false);
   const [projectForm, setProjectForm] = useState<Partial<Project>>({
     title: "",
     subtitle: "",
@@ -153,6 +155,7 @@ export default function AdminDashboardPage() {
 
   const [editingExperience, setEditingExperience] = useState<Experience | null>(null);
   const [isCreatingExperience, setIsCreatingExperience] = useState(false);
+  const [experienceTechInput, setExperienceTechInput] = useState("");
   const [experienceForm, setExperienceForm] = useState<Partial<Experience>>({
     role: "",
     company: "",
@@ -180,6 +183,7 @@ export default function AdminDashboardPage() {
 
   const [editingSkill, setEditingSkill] = useState<Skill | null>(null);
   const [isCreatingSkill, setIsCreatingSkill] = useState(false);
+  const [skillTagsInput, setSkillTagsInput] = useState("");
   const [skillForm, setSkillForm] = useState<Partial<Skill>>({
     badge: "01 · Experiencia",
     category: "UX/UI Design",
@@ -251,15 +255,26 @@ export default function AdminDashboardPage() {
         if (isCreatingProject || editingProject) {
           setIsCreatingProject(false);
           setEditingProject(null);
+          setProjectTagsInput("");
+        }
+        if (isCreatingExperience || editingExperience) {
+          setIsCreatingExperience(false);
+          setEditingExperience(null);
+          setExperienceTechInput("");
+        }
+        if (isCreatingSkill || editingSkill) {
+          setIsCreatingSkill(false);
+          setEditingSkill(null);
+          setSkillTagsInput("");
         }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isCreatingProject, editingProject]);
+  }, [isCreatingProject, editingProject, isCreatingExperience, editingExperience, isCreatingSkill, editingSkill]);
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (showLoading = false) => {
+    if (showLoading) setLoading(true);
     try {
       const [profRes, projRes, expRes, certRes, skillRes, msgRes] = await Promise.all([
         fetch("/api/admin/profile"),
@@ -284,12 +299,12 @@ export default function AdminDashboardPage() {
     } catch (err) {
       console.error("Error loading admin data:", err);
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(true);
   }, []);
 
   const handleLogout = async () => {
@@ -305,6 +320,7 @@ export default function AdminDashboardPage() {
       alert("Por favor ingresá un título para el proyecto.");
       return;
     }
+    setIsSavingProject(true);
     try {
       const url = editingProject
         ? `/api/admin/projects/${editingProject.id}`
@@ -320,8 +336,14 @@ export default function AdminDashboardPage() {
           .replace(/(^-|-$)/g, "") ||
         `proyecto-${Date.now()}`;
 
+      const tags = projectTagsInput
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+
       const payload = {
         ...projectForm,
+        tags,
         slug: autoSlug,
         color:
           projectForm.color ||
@@ -337,10 +359,17 @@ export default function AdminDashboardPage() {
       if (res.ok) {
         setEditingProject(null);
         setIsCreatingProject(false);
-        fetchData();
+        setProjectTagsInput("");
+        await fetchData(false);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert(`Error al guardar: ${err.error || "No se pudo guardar el proyecto"}`);
       }
     } catch (err) {
       console.error("Error saving project:", err);
+      alert("Ocurrió un error al guardar el proyecto.");
+    } finally {
+      setIsSavingProject(false);
     }
   };
 
@@ -367,21 +396,25 @@ export default function AdminDashboardPage() {
         : "/api/admin/experiences";
       const method = editingExperience ? "PUT" : "POST";
 
+      const technologies = experienceTechInput
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
+
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...experienceForm,
           order: Number(experienceForm.order) || 0,
-          technologies: Array.isArray(experienceForm.technologies)
-            ? experienceForm.technologies
-            : [],
+          technologies,
         }),
       });
 
       if (res.ok) {
         setEditingExperience(null);
         setIsCreatingExperience(false);
+        setExperienceTechInput("");
         fetchData();
       } else {
         const err = await res.json();
@@ -531,15 +564,24 @@ export default function AdminDashboardPage() {
         : "/api/admin/skills";
       const method = editingSkill ? "PUT" : "POST";
 
+      const tags = skillTagsInput
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(skillForm),
+        body: JSON.stringify({
+          ...skillForm,
+          tags,
+        }),
       });
 
       if (res.ok) {
         setEditingSkill(null);
         setIsCreatingSkill(false);
+        setSkillTagsInput("");
         fetchData();
       }
     } catch (err) {
@@ -658,6 +700,7 @@ export default function AdminDashboardPage() {
               setActiveTab("projects");
               setIsCreatingProject(false);
               setEditingProject(null);
+              setProjectTagsInput("");
             }}
             className={`flex-1 md:flex-none flex items-center justify-between gap-2.5 px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "projects"
@@ -686,6 +729,7 @@ export default function AdminDashboardPage() {
               setActiveTab("experiences");
               setIsCreatingExperience(false);
               setEditingExperience(null);
+              setExperienceTechInput("");
             }}
             className={`flex-1 md:flex-none flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "experiences"
@@ -764,6 +808,7 @@ export default function AdminDashboardPage() {
               setActiveTab("skills");
               setIsCreatingSkill(false);
               setEditingSkill(null);
+              setSkillTagsInput("");
             }}
             className={`flex-1 md:flex-none flex items-center justify-between gap-2.5 px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "skills"
@@ -1065,6 +1110,7 @@ export default function AdminDashboardPage() {
                       onClick={() => {
                         setIsCreatingProject(false);
                         setEditingProject(null);
+                        setProjectTagsInput("");
                       }}
                       aria-label="Volver a proyectos"
                       title="Volver a proyectos"
@@ -1083,6 +1129,7 @@ export default function AdminDashboardPage() {
                       onClick={() => {
                         setIsCreatingProject(false);
                         setEditingProject(null);
+                        setProjectTagsInput("");
                       }}
                       className="px-4 py-2 rounded-xl text-[#8C252C] hover:text-[#4D0E13] text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer font-medium"
                     >
@@ -1091,10 +1138,20 @@ export default function AdminDashboardPage() {
                     <button
                       type="submit"
                       form="project-form"
-                      className="px-5 py-2.5 rounded-xl bg-[#4D0E13] hover:bg-[#66151B] text-[#EEE4DA] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
+                      disabled={isSavingProject}
+                      className="px-5 py-2.5 rounded-xl bg-[#4D0E13] hover:bg-[#66151B] disabled:opacity-50 text-[#EEE4DA] text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md cursor-pointer disabled:cursor-not-allowed"
                     >
-                      <Save className="w-3.5 h-3.5" />
-                      <span>Guardar</span>
+                      {isSavingProject ? (
+                        <>
+                          <div className="w-3.5 h-3.5 border-2 border-[#EEE4DA] border-t-transparent rounded-full animate-spin" />
+                          <span>Guardando...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-3.5 h-3.5" />
+                          <span>Guardar</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
@@ -1170,19 +1227,14 @@ export default function AdminDashboardPage() {
                         </label>
                         <input
                           type="text"
-                          value={projectForm.tags?.join(", ") || ""}
-                          onChange={(e) =>
-                            setProjectForm({
-                              ...projectForm,
-                              tags: e.target.value
-                                .split(",")
-                                .map((s) => s.trim())
-                                .filter(Boolean),
-                            })
-                          }
+                          value={projectTagsInput}
+                          onChange={(e) => setProjectTagsInput(e.target.value)}
                           placeholder="UX Research, Figma, Wireframes, Design System"
                           className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
                         />
+                        <p className="text-[11px] text-[#4D0E13]/60 mt-1.5 font-mono">
+                          Separadas por comas (ej. UX Research, Figma, Design System)
+                        </p>
                       </div>
                     </div>
 
@@ -1361,6 +1413,7 @@ export default function AdminDashboardPage() {
                     onClick={() => {
                       setIsCreatingProject(true);
                       setEditingProject(null);
+                      setProjectTagsInput("UX Research, Figma, Design System");
                       setProjectForm({
                         title: "",
                         subtitle: "Caso de Estudio UX/UI · Mobile",
@@ -1449,6 +1502,7 @@ export default function AdminDashboardPage() {
                             onClick={() => {
                               setEditingProject(proj);
                               setProjectForm(proj);
+                              setProjectTagsInput(proj.tags?.join(", ") || "");
                             }}
                             className="p-2 rounded-xl bg-[#FAF7F3] hover:bg-[#D8C4AC]/40 text-[#4D0E13] border border-[#D8C4AC] transition-all cursor-pointer shadow-sm"
                             title="Editar"
@@ -1482,6 +1536,7 @@ export default function AdminDashboardPage() {
                       onClick={() => {
                         setIsCreatingExperience(false);
                         setEditingExperience(null);
+                        setExperienceTechInput("");
                       }}
                       aria-label="Volver a experiencias"
                       title="Volver a experiencias"
@@ -1500,6 +1555,7 @@ export default function AdminDashboardPage() {
                       onClick={() => {
                         setIsCreatingExperience(false);
                         setEditingExperience(null);
+                        setExperienceTechInput("");
                       }}
                       className="px-4 py-2 rounded-xl text-[#8C252C] hover:text-[#4D0E13] text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer font-medium"
                     >
@@ -1636,19 +1692,14 @@ export default function AdminDashboardPage() {
                       </label>
                       <input
                         type="text"
-                        value={experienceForm.technologies?.join(", ") || ""}
-                        onChange={(e) =>
-                          setExperienceForm({
-                            ...experienceForm,
-                            technologies: e.target.value
-                              .split(",")
-                              .map((t) => t.trim())
-                              .filter(Boolean),
-                          })
-                        }
+                        value={experienceTechInput}
+                        onChange={(e) => setExperienceTechInput(e.target.value)}
                         placeholder="Figma, Next.js, React, Tailwind CSS, TypeScript"
                         className="w-full px-4 py-3 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] text-sm font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF] transition-all"
                       />
+                      <p className="text-[11px] text-[#4D0E13]/60 mt-1.5 font-mono">
+                        Separadas por comas (ej. Figma, Next.js, React, Tailwind CSS)
+                      </p>
                     </div>
                   </form>
                 </div>
@@ -1724,6 +1775,7 @@ export default function AdminDashboardPage() {
                     onClick={() => {
                       setIsCreatingExperience(true);
                       setEditingExperience(null);
+                      setExperienceTechInput("Figma, React, Next.js, Tailwind CSS");
                       setExperienceForm({
                         role: "",
                         company: "",
@@ -1756,6 +1808,7 @@ export default function AdminDashboardPage() {
                       onClick={() => {
                         setIsCreatingExperience(true);
                         setEditingExperience(null);
+                        setExperienceTechInput("Figma, React, Next.js, Tailwind CSS");
                         setExperienceForm({
                           role: "",
                           company: "",
@@ -1815,6 +1868,7 @@ export default function AdminDashboardPage() {
                               onClick={() => {
                                 setEditingExperience(exp);
                                 setIsCreatingExperience(false);
+                                setExperienceTechInput(exp.technologies ? exp.technologies.join(", ") : "");
                                 setExperienceForm({ ...exp });
                               }}
                               className="p-2 rounded-xl bg-[#FAF7F3] text-[#4D0E13] hover:bg-[#D8C4AC]/30 border border-[#D8C4AC] transition-all cursor-pointer shadow-sm"
@@ -2265,6 +2319,7 @@ export default function AdminDashboardPage() {
                       onClick={() => {
                         setIsCreatingSkill(false);
                         setEditingSkill(null);
+                        setSkillTagsInput("");
                       }}
                       className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#4D0E13] hover:text-[#66151B] px-3.5 py-2 rounded-xl bg-[#FFFFFF] hover:bg-[#FAF7F3] border border-[#D8C4AC] transition-all cursor-pointer shadow-sm font-semibold"
                     >
@@ -2282,6 +2337,7 @@ export default function AdminDashboardPage() {
                       onClick={() => {
                         setIsCreatingSkill(false);
                         setEditingSkill(null);
+                        setSkillTagsInput("");
                       }}
                       className="px-4 py-2 rounded-xl text-[#8C252C] hover:text-[#4D0E13] text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer font-medium"
                     >
@@ -2371,19 +2427,14 @@ export default function AdminDashboardPage() {
                       </label>
                       <input
                         type="text"
-                        value={skillForm.tags?.join(", ") || ""}
-                        onChange={(e) =>
-                          setSkillForm({
-                            ...skillForm,
-                            tags: e.target.value
-                              .split(",")
-                              .map((s) => s.trim())
-                              .filter(Boolean),
-                          })
-                        }
+                        value={skillTagsInput}
+                        onChange={(e) => setSkillTagsInput(e.target.value)}
                         placeholder="Next.js, React, Tailwind CSS, TypeScript"
                         className="w-full px-4 py-2.5 rounded-xl bg-[#FAF7F3] border border-[#D8C4AC] text-[#4D0E13] placeholder-[#4D0E13]/35 text-xs font-medium focus:outline-none focus:border-[#4D0E13] focus:bg-[#FFFFFF]"
                       />
+                      <p className="text-[10px] text-[#4D0E13]/60 mt-1 font-mono">
+                        Separadas por comas (ej. Next.js, React, Tailwind CSS)
+                      </p>
                     </div>
 
                     <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#D8C4AC]">
@@ -2392,6 +2443,7 @@ export default function AdminDashboardPage() {
                         onClick={() => {
                           setIsCreatingSkill(false);
                           setEditingSkill(null);
+                          setSkillTagsInput("");
                         }}
                         className="px-4 py-2.5 rounded-xl text-[#8C252C] hover:text-[#4D0E13] text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer font-medium"
                       >
@@ -2424,6 +2476,7 @@ export default function AdminDashboardPage() {
                     onClick={() => {
                       setIsCreatingSkill(true);
                       setEditingSkill(null);
+                      setSkillTagsInput("");
                       setSkillForm({
                         badge: "01 · Experiencia",
                         category: "UX/UI Design",
@@ -2475,6 +2528,7 @@ export default function AdminDashboardPage() {
                             onClick={() => {
                               setEditingSkill(s);
                               setSkillForm(s);
+                              setSkillTagsInput(s.tags?.join(", ") || "");
                             }}
                             className="p-2 rounded-xl bg-[#FAF7F3] hover:bg-[#D8C4AC]/40 text-[#4D0E13] border border-[#D8C4AC] transition-all cursor-pointer shadow-sm"
                             title="Editar"
