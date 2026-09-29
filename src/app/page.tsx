@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -205,6 +205,10 @@ export default function Home() {
     github: "https://github.com/Nayssa10",
   });
 
+  const handleIntroComplete = useCallback(() => {
+    setShowIntro(false);
+  }, []);
+
   useEffect(() => {
     // Show intro only on first visit per session
     try {
@@ -305,7 +309,7 @@ export default function Home() {
         <SignatureIntro
           name="Nayssa Kristel"
           subtitle={liveProfile.title || "Diseño UX/UI · Desarrollo Front-End"}
-          onComplete={() => setShowIntro(false)}
+          onComplete={handleIntroComplete}
         />
       )}
 

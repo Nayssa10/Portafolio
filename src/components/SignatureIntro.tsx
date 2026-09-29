@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles } from "lucide-react";
 
@@ -21,6 +21,11 @@ export default function SignatureIntro({
   const [showDetails, setShowDetails] = useState(false);
 
   const targetText = name.trim() || "Nayssa Kristel";
+  const onCompleteRef = useRef(onComplete);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   // Typewriter effect
   useEffect(() => {
@@ -45,8 +50,8 @@ export default function SignatureIntro({
         // Transition out smoothly
         completeTimer = setTimeout(() => {
           setIsDone(true);
-          if (onComplete) {
-            setTimeout(onComplete, 650);
+          if (onCompleteRef.current) {
+            setTimeout(onCompleteRef.current, 650);
           }
         }, 2200);
       }
@@ -57,12 +62,12 @@ export default function SignatureIntro({
       if (detailTimer) clearTimeout(detailTimer);
       if (completeTimer) clearTimeout(completeTimer);
     };
-  }, [targetText, onComplete]);
+  }, [targetText]);
 
   const handleSkip = () => {
     setIsDone(true);
-    if (onComplete) {
-      setTimeout(onComplete, 250);
+    if (onCompleteRef.current) {
+      setTimeout(onCompleteRef.current, 250);
     }
   };
 
