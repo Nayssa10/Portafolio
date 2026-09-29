@@ -2,10 +2,25 @@ import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 import { getSession } from "@/lib/auth";
 
+const cloudName =
+  process.env.CLOUDINARY_CLOUD_NAME ||
+  process.env.NOMBRE_DE_LA_NUBE_CLOUDINARY ||
+  "nhcv9hfb";
+
+const apiKey =
+  process.env.CLOUDINARY_API_KEY ||
+  process.env.CLAVE_API_DE_CLOUDINARY ||
+  "589482782971371";
+
+const apiSecret =
+  process.env.CLOUDINARY_API_SECRET ||
+  process.env.SECRETO_DE_API_CLOUDINARY ||
+  process.env.SECRETO_API_CLOUDINARY;
+
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: cloudName,
+  api_key: apiKey,
+  api_secret: apiSecret,
 });
 
 async function uploadToCloudinary(buffer: Buffer, folder: string = "portfolio"): Promise<string> {
@@ -29,11 +44,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    if (
-      !process.env.CLOUDINARY_CLOUD_NAME ||
-      !process.env.CLOUDINARY_API_KEY ||
-      !process.env.CLOUDINARY_API_SECRET
-    ) {
+    if (!cloudName || !apiKey || !apiSecret) {
       return NextResponse.json(
         {
           error:
