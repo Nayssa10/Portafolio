@@ -23,7 +23,6 @@ import {
   Calendar,
   Award,
   ExternalLink,
-  ChevronDown,
   X,
 } from "lucide-react";
 import { Experience, defaultExperiences } from "@/data/experience";
@@ -187,7 +186,6 @@ export default function Home() {
   const [liveExperiences, setLiveExperiences] = useState<Experience[]>(defaultExperiences);
   const [liveCertificates, setLiveCertificates] = useState<Certificate[]>(defaultCertificates);
   const [selectedCertImage, setSelectedCertImage] = useState<string | null>(null);
-  const [showAllCertificates, setShowAllCertificates] = useState(false);
   const [liveProfile, setLiveProfile] = useState({
     name: "Nayssa Chu Bustamante",
     title: "Diseño UX/UI & Desarrollo Front-End",
@@ -299,9 +297,7 @@ export default function Home() {
   };
 
   const projects = liveProjects;
-  const displayedCertificates = showAllCertificates
-    ? liveCertificates
-    : liveCertificates.slice(0, 3);
+  const displayedCertificates = liveCertificates.slice(0, 3);
 
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#140507] text-[#EEE4DA] flex flex-col font-sans selection:bg-[#4D0E13] selection:text-[#EEE4DA]">
@@ -946,26 +942,19 @@ export default function Home() {
               ))}
             </div>
 
-            {/* View More Certificates Action Button (shown when more than 3) */}
+            {/* More Certificates Action Button */}
             {liveCertificates.length > 3 && (
               <div className="mt-14 sm:mt-16 flex justify-center">
-                <motion.button
-                  whileHover={{ scale: 1.04, y: -2 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => setShowAllCertificates(!showAllCertificates)}
-                  className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl bg-white/10 hover:bg-[#D8C4AC] border border-[#D8C4AC]/35 hover:border-[#D8C4AC] backdrop-blur-md text-sm font-bold text-white hover:text-[#140507] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_0_30px_rgba(216,196,172,0.45)] transition-all duration-300 cursor-pointer"
-                >
-                  <span>
-                    {showAllCertificates
-                      ? "Ver menos certificados"
-                      : `Ver más certificados (${liveCertificates.length - 3})`}
-                  </span>
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-300 ${
-                      showAllCertificates ? "rotate-180" : "group-hover:translate-y-0.5"
-                    }`}
-                  />
-                </motion.button>
+                <Link href="/certificados">
+                  <motion.div
+                    whileHover={{ scale: 1.04, y: -2 }}
+                    whileTap={{ scale: 0.96 }}
+                    className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl bg-white/10 hover:bg-[#D8C4AC] border border-[#D8C4AC]/35 hover:border-[#D8C4AC] backdrop-blur-md text-sm font-bold text-white hover:text-[#140507] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_0_30px_rgba(216,196,172,0.45)] transition-all duration-300 cursor-pointer"
+                  >
+                    <span>Ver más certificados</span>
+                    <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  </motion.div>
+                </Link>
               </div>
             )}
           </div>
