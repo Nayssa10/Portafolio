@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
-import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2, X, Play } from "lucide-react";
+import { isVideoUrl, isGifUrl } from "@/lib/media";
 
 interface ProjectCarouselProps {
   images?: string[];
@@ -53,7 +54,7 @@ export default function ProjectCarousel({
   images = [],
   title,
   category,
-  highlight,
+  highlight: _highlight,
   color,
   className = "",
   autoPlay = true,
@@ -176,15 +177,27 @@ export default function ProjectCarousel({
             }}
             className="absolute inset-0 flex items-center justify-center cursor-grab active:cursor-grabbing"
           >
-            <div className="relative w-full h-full">
-              <Image
-                src={activeImage}
-                alt={`${title} - Imagen ${currentIndex + 1} de ${images.length}`}
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
-                className="object-cover object-top select-none"
-                priority={currentIndex === 0}
-              />
+            <div className="relative w-full h-full flex items-center justify-center">
+              {isVideoUrl(activeImage) ? (
+                <video
+                  src={activeImage}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover object-top select-none pointer-events-none"
+                />
+              ) : (
+                <Image
+                  src={activeImage}
+                  alt={`${title} - Multimedia ${currentIndex + 1} de ${images.length}`}
+                  fill
+                  unoptimized={isGifUrl(activeImage)}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
+                  className="object-cover object-top select-none"
+                  priority={currentIndex === 0}
+                />
+              )}
             </div>
           </motion.div>
         </AnimatePresence>
@@ -201,6 +214,17 @@ export default function ProjectCarousel({
 
       {/* Top Right Controls: Counter Badge & Zoom */}
       <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+        {isVideoUrl(activeImage) && (
+          <span className="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full bg-black/60 text-[#D8C4AC] backdrop-blur-md border border-white/20 shadow-lg flex items-center gap-1">
+            <Play className="w-2.5 h-2.5 fill-current" />
+            VIDEO
+          </span>
+        )}
+        {isGifUrl(activeImage) && (
+          <span className="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full bg-black/60 text-[#D8C4AC] backdrop-blur-md border border-white/20 shadow-lg">
+            GIF
+          </span>
+        )}
         {isMultiple && (
           <span className="text-[11px] font-semibold tracking-wider px-2.5 py-1 rounded-full bg-black/60 text-[#D8C4AC] backdrop-blur-md border border-white/20 shadow-lg">
             {currentIndex + 1} / {images.length}
@@ -210,7 +234,7 @@ export default function ProjectCarousel({
           type="button"
           onClick={() => setIsZoomed(true)}
           title="Ver en detalle"
-          aria-label="Ampliar imagen"
+          aria-label="Ampliar multimedia"
           className="w-7 h-7 rounded-full bg-black/60 hover:bg-black/85 text-white/80 hover:text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all shadow-lg"
         >
           <Maximize2 className="w-3.5 h-3.5" />
@@ -294,15 +318,26 @@ export default function ProjectCarousel({
                 <X className="w-5 h-5" />
               </button>
 
-              {/* Modal Active Image */}
-              <div className="relative w-full h-full flex items-center justify-center">
-                <Image
-                  src={activeImage}
-                  alt={`${title} - Imagen ampliada`}
-                  fill
-                  sizes="90vw"
-                  className="object-contain"
-                />
+              {/* Modal Active Media */}
+              <div className="relative w-full h-full flex items-center justify-center p-2 sm:p-6">
+                {isVideoUrl(activeImage) ? (
+                  <video
+                    src={activeImage}
+                    controls
+                    autoPlay
+                    playsInline
+                    className="max-w-full max-h-[82vh] object-contain rounded-xl shadow-2xl"
+                  />
+                ) : (
+                  <Image
+                    src={activeImage}
+                    alt={`${title} - Multimedia ampliada`}
+                    fill
+                    unoptimized={isGifUrl(activeImage)}
+                    sizes="90vw"
+                    className="object-contain"
+                  />
+                )}
               </div>
 
               {/* Modal Bottom Controls */}

@@ -26,7 +26,10 @@ cloudinary.config({
 async function uploadToCloudinary(buffer: Buffer, folder: string = "portfolio"): Promise<string> {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
-      { folder },
+      {
+        folder,
+        resource_type: "auto",
+      },
       (error, result) => {
         if (error) return reject(error);
         if (!result?.secure_url) return reject(new Error("No URL returned from Cloudinary"));
@@ -77,10 +80,14 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ urls: uploadedUrls });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Upload error:", error);
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Error al procesar la subida del archivo a Cloudinary";
     return NextResponse.json(
-      { error: "Error al procesar la subida de imagen a Cloudinary" },
+      { error: message },
       { status: 500 }
     );
   }

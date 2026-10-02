@@ -31,7 +31,9 @@ import {
   Image as ImageIcon,
   Loader2,
   Award,
+  Film,
 } from "lucide-react";
+import { isVideoUrl, isGifUrl } from "@/lib/media";
 
 interface Project {
   id: string;
@@ -232,7 +234,7 @@ export default function AdminDashboardPage() {
 
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || "Error al subir imágenes");
+        throw new Error(errData.error || "Error al subir archivos");
       }
 
       const data = await res.json();
@@ -244,7 +246,7 @@ export default function AdminDashboardPage() {
       }
     } catch (err: any) {
       console.error(err);
-      setUploadError(err.message || "Error al subir imágenes");
+      setUploadError(err.message || "Error al subir archivos");
     } finally {
       setIsUploadingImages(false);
       if (fileInputRef.current) {
@@ -1296,14 +1298,14 @@ export default function AdminDashboardPage() {
                     <div className="lg:col-span-5 space-y-6 lg:pl-8 lg:border-l lg:border-[#D8C4AC]/60">
                       <div>
                         <label className="block text-xs font-mono uppercase tracking-widest text-[#4D0E13] font-semibold mb-2">
-                          Imágenes del Proyecto ({projectForm.images?.length || 0})
+                          Imágenes y Multimedia ({projectForm.images?.length || 0})
                         </label>
 
                         <input
                           type="file"
                           ref={fileInputRef}
                           onChange={handleImageFilesSelected}
-                          accept="image/*"
+                          accept="image/*,video/*"
                           multiple
                           className="hidden"
                         />
@@ -1321,10 +1323,10 @@ export default function AdminDashboardPage() {
                           </div>
                           <div className="text-left">
                             <p className="text-sm font-semibold text-[#4D0E13]">
-                              {isUploadingImages ? "Subiendo imágenes..." : "Subir capturas o mockups"}
+                              {isUploadingImages ? "Subiendo archivos..." : "Subir imágenes, videos o GIFs"}
                             </p>
                             <p className="text-[11px] text-[#8C252C] font-mono mt-0.5">
-                              PNG, JPG, SVG o WebP
+                              PNG, JPG, SVG, WebP, GIF, MP4 o WebM
                             </p>
                           </div>
                         </div>
@@ -1341,16 +1343,43 @@ export default function AdminDashboardPage() {
                                 key={index}
                                 className="relative group rounded-xl overflow-hidden border border-[#D8C4AC] bg-[#FAF7F3] aspect-video flex items-center justify-center shadow-sm"
                               >
-                                <img
-                                  src={imgUrl}
-                                  alt={`Imagen ${index + 1}`}
-                                  className="w-full h-full object-cover"
-                                />
+                                {isVideoUrl(imgUrl) ? (
+                                  <div className="w-full h-full relative bg-black/10 flex items-center justify-center">
+                                    <video
+                                      src={imgUrl}
+                                      className="w-full h-full object-cover"
+                                      muted
+                                      playsInline
+                                      preload="metadata"
+                                    />
+                                    <div className="absolute top-1.5 right-1.5 bg-[#4D0E13]/85 text-[#EEE4DA] px-1.5 py-0.5 rounded text-[9px] flex items-center gap-1 font-mono font-semibold pointer-events-none shadow-sm">
+                                      <Film className="w-2.5 h-2.5" />
+                                      <span>VIDEO</span>
+                                    </div>
+                                  </div>
+                                ) : isGifUrl(imgUrl) ? (
+                                  <div className="w-full h-full relative">
+                                    <img
+                                      src={imgUrl}
+                                      alt={`GIF ${index + 1}`}
+                                      className="w-full h-full object-cover"
+                                    />
+                                    <div className="absolute top-1.5 right-1.5 bg-[#4D0E13]/85 text-[#EEE4DA] px-1.5 py-0.5 rounded text-[9px] font-mono font-bold pointer-events-none shadow-sm">
+                                      GIF
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <img
+                                    src={imgUrl}
+                                    alt={`Imagen ${index + 1}`}
+                                    className="w-full h-full object-cover"
+                                  />
+                                )}
                                 <button
                                   type="button"
                                   onClick={() => handleRemoveImage(index)}
                                   className="absolute inset-0 bg-[#4D0E13]/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-rose-200 hover:text-white cursor-pointer"
-                                  title="Eliminar imagen"
+                                  title="Eliminar elemento"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
