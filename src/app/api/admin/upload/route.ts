@@ -40,6 +40,44 @@ async function uploadToCloudinary(buffer: Buffer, folder: string = "portfolio"):
   });
 }
 
+export async function GET() {
+  try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    }
+
+    if (!cloudName || !apiKey || !apiSecret) {
+      return NextResponse.json(
+        {
+          error:
+            "Faltan configurar las variables de Cloudinary en el entorno",
+        },
+        { status: 500 }
+      );
+    }
+
+    const timestamp = Math.round(new Date().getTime() / 1000);
+    const signature = cloudinary.utils.api_sign_request(
+      { folder: "portfolio", timestamp },
+      apiSecret
+    );
+
+    return NextResponse.json({
+      signature,
+      timestamp,
+      apiKey,
+      cloudName,
+      folder: "portfolio",
+    });
+  } catch (error: unknown) {
+    console.error("Signature error:", error);
+    const message =
+      error instanceof Error ? error.message : "Error al generar firma de subida";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const session = await getSession();

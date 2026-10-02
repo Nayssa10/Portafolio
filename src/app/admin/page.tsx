@@ -221,32 +221,55 @@ export default function AdminDashboardPage() {
     setIsUploadingImages(true);
     setUploadError("");
 
-    const formData = new FormData();
-    for (let i = 0; i < files.length; i++) {
-      formData.append("files", files[i]);
-    }
-
     try {
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
+      // Direct-to-Cloudinary signed upload: bypasses serverless 4.5MB request payload limit
+      const signRes = await fetch("/api/admin/upload");
+      if (!signRes.ok) {
+        const signData = await signRes.json().catch(() => ({}));
+        throw new Error(signData.error || "No se pudo autorizar la subida");
+      }
+      const { signature, timestamp, apiKey, cloudName, folder } = await signRes.json();
 
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || "Error al subir archivos");
+      const newUrls: string[] = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("api_key", apiKey);
+        formData.append("timestamp", String(timestamp));
+        formData.append("signature", signature);
+        formData.append("folder", folder || "portfolio");
+
+        const uploadRes = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok || !uploadData.secure_url) {
+          throw new Error(
+            uploadData.error?.message ||
+              `Error al subir ${file.name} (${uploadRes.status})`
+          );
+        }
+
+        newUrls.push(uploadData.secure_url);
       }
 
-      const data = await res.json();
-      if (data.urls && data.urls.length > 0) {
+      if (newUrls.length > 0) {
         setProjectForm((prev) => ({
           ...prev,
-          images: [...(prev.images || []), ...data.urls],
+          images: [...(prev.images || []), ...newUrls],
         }));
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setUploadError(err.message || "Error al subir archivos");
+      const message = err instanceof Error ? err.message : "Error al subir archivos";
+      setUploadError(message);
     } finally {
       setIsUploadingImages(false);
       if (fileInputRef.current) {
@@ -565,30 +588,47 @@ export default function AdminDashboardPage() {
     if (!files || files.length === 0) return;
 
     setIsUploadingCertImage(true);
-    const formData = new FormData();
-    formData.append("files", files[0]);
 
     try {
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const signRes = await fetch("/api/admin/upload");
+      if (!signRes.ok) {
+        const signData = await signRes.json().catch(() => ({}));
+        throw new Error(signData.error || "No se pudo autorizar la subida");
+      }
+      const { signature, timestamp, apiKey, cloudName, folder } = await signRes.json();
 
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || "Error al subir imagen");
+      const formData = new FormData();
+      formData.append("file", files[0]);
+      formData.append("api_key", apiKey);
+      formData.append("timestamp", String(timestamp));
+      formData.append("signature", signature);
+      formData.append("folder", folder || "portfolio");
+
+      const uploadRes = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const uploadData = await uploadRes.json();
+      if (!uploadRes.ok || !uploadData.secure_url) {
+        throw new Error(
+          uploadData.error?.message ||
+            `Error al subir la imagen (${uploadRes.status})`
+        );
       }
 
-      const data = await res.json();
-      if (data.urls && data.urls.length > 0) {
-        setCertificateForm((prev) => ({
-          ...prev,
-          image: data.urls[0],
-        }));
-      }
-    } catch (err: any) {
+      setCertificateForm((prev) => ({
+        ...prev,
+        image: uploadData.secure_url,
+      }));
+    } catch (err: unknown) {
       console.error(err);
-      alert(err.message || "Error al subir la imagen del certificado");
+      const msg =
+        err instanceof Error ? err.message : "Error al subir la imagen del certificado";
+      alert(msg);
     } finally {
       setIsUploadingCertImage(false);
       if (certFileInputRef.current) {
